@@ -233,7 +233,10 @@ body::after{
 .notice-text{font-size:1.5vw;font-weight:600;line-height:1.5;}
 .notice-text b{color:var(--bronze);font-weight:800;}
 
-/* ---------- bottom ticker bar — priority 2 (ynet), enlarged ---------- */
+/* ---------- bottom ticker bar — priority 2 (ynet), enlarged again in
+   v3.2: bigger bar, bigger real ynet wordmark logo (pulled fresh from
+   ynet.co.il — includes the full "net" + tagline, transparent bg,
+   replacing the smaller old logo file) ---------- */
 .ticker-bar{
   flex-shrink:0;
   background:var(--glass-strong);
@@ -241,30 +244,30 @@ body::after{
   -webkit-backdrop-filter:blur(18px);
   border:1px solid var(--line);
   border-radius:1vw;
-  height:6vw;
+  height:7.6vw;
   display:flex;align-items:center;
-  padding:0 1.6vw;
-  gap:1.6vw;
+  padding:0 2vw;
+  gap:2vw;
 }
-.brand-block{display:flex;align-items:center;gap:.7vw;flex-shrink:0;}
-.brand-dot{width:2.3vw;height:2.3vw;border-radius:.6vw;background:var(--bronze);color:#241a0c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05vw;}
+.brand-block{display:flex;align-items:center;gap:.8vw;flex-shrink:0;}
+.brand-dot{width:2.8vw;height:2.8vw;border-radius:.7vw;background:var(--bronze);color:#fff8ec;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3vw;}
 .brand-text{line-height:1.15;}
-.brand-text b{display:block;font-size:1.05vw;font-weight:800;}
-.brand-text span{font-size:.8vw;color:var(--ink-dim);font-weight:600;}
+.brand-text b{display:block;font-size:1.3vw;font-weight:800;}
+.brand-text span{font-size:1vw;color:var(--ink-dim);font-weight:600;}
 .ticker-sep{width:1px;align-self:stretch;background:var(--line);}
 .ticker-flow{flex:1;min-width:0;overflow:hidden;white-space:nowrap;direction:ltr;}
 .ticker-flow-track{
-  display:inline-flex;gap:3.6vw;
+  display:inline-flex;gap:4.4vw;
   animation:scroll-rtl 55s linear infinite;
-  font-size:1.15vw;font-weight:600;
+  font-size:1.5vw;font-weight:600;
 }
 .ticker-flow-track b{font-weight:800;color:var(--bronze);margin-inline-end:.4vw;}
 @keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.ynet-block{display:flex;align-items:center;gap:.8vw;flex-shrink:0;}
-.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:.8vw;color:var(--ink-dim);font-weight:700;}
-.live-dot{width:.55vw;height:.55vw;border-radius:50%;background:var(--bronze);animation:pulse 1.8s ease-in-out infinite;}
+.ynet-block{display:flex;align-items:center;gap:1vw;flex-shrink:0;}
+.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:1vw;color:var(--ink-dim);font-weight:700;}
+.live-dot{width:.6vw;height:.6vw;border-radius:50%;background:var(--bronze);animation:pulse 1.8s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
-.ynet-logo{height:2.2vw;width:auto;display:block;border-radius:.3vw;}
+.ynet-logo{height:4.2vw;width:auto;display:block;}
 
 @media (prefers-reduced-motion: reduce){
   .ticker-flow-track,.live-dot,.one-ticker-track{animation:none;}

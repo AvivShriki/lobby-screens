@@ -69,7 +69,40 @@ function lobby_screens_get_ynet_headlines( $limit = 6 ) {
 }
 
 /**
- * ONE.co.il — official RSS, includes a real image per story.
+ * ONE.co.il — text-only headlines (client asked for logo + text, no
+ * images, in a vertically auto-scrolling list). Same feed as
+ * lobby_screens_get_one_stories(), just without the per-item image fetch.
+ */
+function lobby_screens_get_one_headlines( $limit = 10 ) {
+	$cache_key = 'lobby_one_headlines';
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	require_once ABSPATH . WPINC . '/feed.php';
+	$feed = fetch_feed( 'https://www.one.co.il/rss' );
+
+	$headlines = array();
+	if ( ! is_wp_error( $feed ) ) {
+		$items = $feed->get_items( 0, $limit );
+		foreach ( $items as $item ) {
+			$headlines[] = html_entity_decode( $item->get_title(), ENT_QUOTES, 'UTF-8' );
+		}
+	}
+
+	if ( empty( $headlines ) ) {
+		$headlines = array( 'עדכוני ספורט ONE — מתעדכן בקרוב' );
+	}
+
+	set_transient( $cache_key, $headlines, 10 * MINUTE_IN_SECONDS );
+	return $headlines;
+}
+
+/**
+ * ONE.co.il — official RSS, includes a real image per story. No longer
+ * used on the page itself (v3 dropped images from the ONE section per
+ * client request) but kept since it may be useful again later.
  */
 function lobby_screens_get_one_stories( $limit = 3 ) {
 	$cache_key = 'lobby_one_stories';

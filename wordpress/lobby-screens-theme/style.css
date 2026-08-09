@@ -1,28 +1,25 @@
 /*
 Theme Name: Lobby Screens
 Description: TV display for residential building lobbies (35-45"). Static presentation, no user interaction — server-rendered live data (Ynet, ONE, weather, Shabbat times) refreshed on each reload.
-Version: 2.0
+Version: 3.0
 
-Design tokens below are sampled from the client's own reference (GoMixApp
-digital-signage screenshots, examples/): #102e3b navy, #16a06b green,
-#c9f4e3 mint. Pill-header + white-card is the reference's structural
-pattern — this replaces the v1 photo-with-text-overlay treatment on
-every card except the hero, where a full-bleed photo matches the
-reference too (see the sunset/ad examples).
+v3 — dropped the green/navy palette (client feedback: "not pretty").
+New tokens sampled from the building photo itself (assets/images/
+building-nachal-hever.jpg): cool concrete grey + warm wood-trim bronze.
+The building photo is now the page background; every panel is frosted
+glass over it instead of a solid-color card.
 */
 
 :root{
-  --bg:#eef1f0;
-  --card:#ffffff;
-  --ink:#0f2530;
-  --ink-dim:#5f7079;
-  --line:rgba(15,37,48,0.08);
-  --navy:#102e3b;
-  --green:#16a06b;
-  --green-deep:#0d8058;
-  --mint:#c9f4e3;
-  --mint-pop:#4be3a4;
-  --warm:#c9743f;
+  --ink:#f5f3ee;
+  --ink-dim:rgba(245,243,238,0.7);
+  --line:rgba(255,255,255,0.14);
+  --glass:rgba(20,21,23,0.52);
+  --glass-strong:rgba(14,15,17,0.68);
+  --bronze:#cda06a;
+  --bronze-deep:#a97d46;
+  --bronze-soft:rgba(205,160,106,0.18);
+  --warm:#e0a860;
 }
 @font-face{
   font-family:'Fraunces';
@@ -36,8 +33,10 @@ reference too (see the sunset/ad examples).
 html,body{height:100%;margin:0;overflow:hidden;}
 body{
   font-family:'Segoe UI','Arial Hebrew',-apple-system,system-ui,sans-serif;
-  background:var(--bg);
   color:var(--ink);
+  background:
+    linear-gradient(180deg, rgba(10,11,12,0.62) 0%, rgba(10,11,12,0.78) 100%),
+    url('assets/images/building-nachal-hever.jpg') center 42%/cover fixed;
 }
 .screen{
   height:100vh;width:100vw;
@@ -50,38 +49,37 @@ body{
 /* ---------- top bar ---------- */
 .topbar{
   flex-shrink:0;
-  background:var(--navy);
+  background:var(--glass-strong);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--line);
   border-radius:1.1vw;
   height:5.6vw;
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   padding:0 1.6vw;
-  color:#fff;
 }
 .tb-brand{display:flex;align-items:center;gap:.8vw;justify-self:start;}
 .tb-mark{
   width:2.2vw;height:2.2vw;border-radius:.6vw;
-  background:var(--green);
+  background:var(--bronze);
+  color:#241a0c;
   display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:1.05vw;flex-shrink:0;
 }
 .tb-name{font-weight:800;font-size:1.15vw;line-height:1.15;}
 .tb-addr{font-size:.75vw;opacity:.72;font-weight:600;}
 
-/* centered clock cluster: analog face + digital readout */
-.tb-clock{
-  justify-self:center;
-  display:flex;align-items:center;gap:1.1vw;
-}
+.tb-clock{justify-self:center;display:flex;align-items:center;gap:1.1vw;}
 .tb-analog{width:3.6vw;height:3.6vw;flex-shrink:0;}
-.tb-analog-face{fill:rgba(255,255,255,0.06);stroke:rgba(255,255,255,0.35);stroke-width:1.5;}
-.tb-analog-tick{stroke:rgba(255,255,255,0.5);stroke-width:2;stroke-linecap:round;}
+.tb-analog-face{fill:rgba(255,255,255,0.05);stroke:rgba(255,255,255,0.3);stroke-width:1.5;}
+.tb-analog-tick{stroke:rgba(255,255,255,0.45);stroke-width:2;stroke-linecap:round;}
 .tb-analog-hand{stroke:#fff;stroke-linecap:round;transform-origin:50px 50px;transition:transform .25s cubic-bezier(.4,2,.6,1);}
 .tb-analog-hour{stroke-width:6;}
 .tb-analog-min{stroke-width:4;}
-.tb-analog-sec{stroke:var(--mint-pop);stroke-width:2;}
-.tb-analog-pin{fill:var(--mint-pop);}
+.tb-analog-sec{stroke:var(--bronze);stroke-width:2;}
+.tb-analog-pin{fill:var(--bronze);}
 .tb-digital{text-align:right;}
 .tb-time{
   font-family:'Fraunces',serif;
@@ -90,12 +88,10 @@ body{
 }
 .tb-date{font-size:.78vw;opacity:.78;font-weight:600;margin-top:.25vw;}
 
-/* 3-column layout matching the client's reference exactly: ONE carousel
-   centered and dominant, weather+Shabbat on the visual right, ad+player
-   on the visual left. Track order below is right-to-left on purpose —
-   under dir=rtl the FIRST token in grid-template-areas/columns is the
-   RIGHTMOST physical column (confirmed empirically earlier in this
-   project), so "sidebar-right" must come first to land on the right. */
+/* 3-column layout: ONE-free center now hosts building notices; ONE moved
+   left; weather+Shabbat stay right. Track order is right-to-left on
+   purpose — under dir=rtl the FIRST token in grid-template-areas/columns
+   is the RIGHTMOST physical column (confirmed empirically earlier). */
 .main{
   flex:1;
   min-height:0;
@@ -105,7 +101,6 @@ body{
   gap:1vw;
 }
 
-/* ---------- sidebar ---------- */
 .sidebar-right,.sidebar-left{
   display:flex;flex-direction:column;gap:1vw;
   min-height:0;
@@ -113,35 +108,38 @@ body{
 .sidebar-right{grid-area:sidebar-right;}
 .sidebar-left{grid-area:sidebar-left;}
 
-/* pill-header + white-card pattern, matching the client's reference */
+/* glass-card pattern: frosted panel over the building-photo background */
 .pcard{
-  background:var(--card);
+  background:var(--glass);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
   border:1px solid var(--line);
   border-radius:1.1vw;
-  box-shadow:0 .7vw 1.8vw -1.5vw rgba(15,37,48,0.35);
+  box-shadow:0 .8vw 2vw -1.4vw rgba(0,0,0,0.55);
   display:flex;flex-direction:column;
   overflow:hidden;
   container-type:inline-size;
 }
 .pill-head{
   flex-shrink:0;
-  display:flex;align-items:center;gap:1.8cqw;
-  background:var(--green);
-  color:#fff;
-  padding:1.8cqw 3.2cqw;
-  font-size:2.9cqw;font-weight:800;
+  display:flex;align-items:center;gap:1.6cqw;
+  border-bottom:1px solid var(--line);
+  color:var(--bronze);
+  padding:1.6cqw 3cqw;
+  font-size:2.6cqw;font-weight:800;
 }
-.pill-icon{width:3.8cqw;height:3.8cqw;flex-shrink:0;}
+.pill-icon{width:3.2cqw;height:3.2cqw;flex-shrink:0;}
+.pill-icon use{stroke:var(--bronze);}
 .pill-badge{
   margin-inline-start:auto;
-  font-size:2cqw;font-weight:700;
-  background:rgba(255,255,255,0.25);
-  border-radius:999px;padding:.6cqw 2.2cqw;
+  font-size:1.8cqw;font-weight:700;
+  color:var(--ink-dim);
+  background:rgba(255,255,255,0.08);
+  border-radius:999px;padding:.5cqw 2cqw;
 }
 .pcard-body{flex:1;min-height:0;padding:3cqw 3.6cqw;}
 
-/* weather card — compact horizontal strip, sized by content only (not
-   flex-grow), so the Shabbat card below can take the rest of the height */
+/* weather — compact horizontal strip, sized by content only */
 .weather-card{flex:0 0 auto;}
 .weather-card .pcard-body{padding:1.6cqw 1.8cqw;}
 .wx-strip{display:flex;justify-content:space-between;gap:.6cqw;}
@@ -151,121 +149,80 @@ body{
 .wx-col-max{font-size:2.1cqw;font-weight:800;color:var(--warm);font-variant-numeric:tabular-nums;}
 .wx-col-min{font-size:1.8cqw;font-weight:700;color:var(--ink-dim);font-variant-numeric:tabular-nums;}
 
-/* shabbat card */
-/* shabbat card: client supplies a ready-made weekly graphic (synagogue-
-   style — candles/times/parasha already composed into the image) rather
-   than us re-deriving that layout in code. Swapped weekly for now;
-   client-side upload is a planned future step, not built yet. */
+/* shabbat: client's ready-made weekly graphic (see README) */
 .shabbat-card{flex:1;min-height:0;}
-.shabbat-card .pill-head{background:linear-gradient(90deg,var(--green),var(--green-deep));}
 .shabbat-card .pcard-body{padding:0;min-height:0;background:#e8d3ac;}
 .shabbat-graphic{width:100%;height:100%;object-fit:contain;display:block;}
 
-/* left column: static business-ad card (priority 5) + background-music player */
-.ad-card{flex:1;min-height:0;color:#fff;position:relative;}
-.ad-card .pill-head{background:linear-gradient(90deg,var(--navy),#1a4256);}
-.ad-card .pcard-body{
-  background:linear-gradient(150deg,var(--green),var(--green-deep));
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:.8cqw;
+/* left column: ONE headlines (logo + text-only vertical ticker) + music player */
+.one-card{flex:1.4;min-height:0;}
+.one-card .pill-head{padding:2.6cqw 3cqw;border-bottom:1px solid var(--line);justify-content:center;background:rgba(255,255,255,0.03);}
+.one-logo-big{height:14cqw;width:auto;display:block;}
+.one-card .pcard-body{padding:0;min-height:0;position:relative;overflow:hidden;}
+.one-ticker{position:absolute;inset:0;overflow:hidden;}
+.one-ticker-track{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;flex-direction:column;
+  animation:scrollDownY 40s linear infinite;
 }
-.ad-ring{
-  width:9cqw;height:9cqw;border-radius:50%;
-  border:2px dashed rgba(255,255,255,0.5);
-  display:flex;align-items:center;justify-content:center;
-  font-size:4cqw;font-weight:300;
+.one-item{
+  padding:2.4cqw 3.4cqw;
+  border-bottom:1px solid var(--line);
+  font-size:2.5cqw;font-weight:700;line-height:1.4;
 }
-.ad-card h3{font-size:3.4cqw;font-weight:800;margin:0;}
-.ad-card p{font-size:2cqw;font-weight:600;margin:0;opacity:.92;max-width:85%;}
+@keyframes scrollDownY{from{transform:translateY(-50%);}to{transform:translateY(0);}}
 
 .player-card{flex:0 0 auto;}
-.player-card .pill-head{background:linear-gradient(90deg,var(--green),var(--green-deep));}
-.player-card .pcard-body{padding:0;aspect-ratio:16/9;}
+.player-card .pcard-body{padding:0;aspect-ratio:16/10;}
 .player-frame{width:100%;height:100%;border:0;display:block;}
 
-/* ---------- hero carousel — priority 1 (sports), centered, dominant ---------- */
-.hero{
-  grid-area:hero-center;
-  position:relative;
-  container-type:inline-size;
-  border-radius:1.3vw;
-  overflow:hidden;
-  background:var(--card);
-  border:1px solid var(--line);
-  box-shadow:0 1vw 2.4vw -1.6vw rgba(15,37,48,0.4);
+/* center: building notices, replaces the ONE carousel that used to live here */
+.notices-card{grid-area:hero-center;}
+.notices-card .pill-head{font-size:1.7vw;padding:1.4vw 1.8vw;}
+.notices-card .pill-icon{width:2vw;height:2vw;}
+.notices-card .pcard-body{padding:1.8vw 2.2vw;display:flex;flex-direction:column;gap:1.1vw;justify-content:center;}
+.notice-row{
+  display:flex;align-items:flex-start;gap:1vw;
+  padding-bottom:1.1vw;border-bottom:1px solid var(--line);
 }
-.slide{
-  position:absolute;inset:0;
-  opacity:0;
-  transform:scale(1.02);
-  transition:opacity .9s ease, transform 1.2s ease;
-  pointer-events:none;
-  color:#fff;
-}
-.slide.active{opacity:1;transform:scale(1);pointer-events:auto;}
-.slide .bg{position:absolute;inset:0;background-size:cover;background-position:center 32%;}
-.slide .scrim{
-  position:absolute;inset:0;
-  background:linear-gradient(0deg, rgba(16,46,59,0.92) 0%, rgba(16,46,59,0.5) 50%, rgba(16,46,59,0.08) 80%);
-}
-.slide .content{
-  position:relative;z-index:1;height:100%;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:2.3cqw;
-}
-.slide-eyebrow{
-  align-self:flex-start;
-  display:flex;align-items:center;gap:.6cqw;
-  font-size:.9cqw;font-weight:800;
-  background:var(--green);
-  border-radius:999px;padding:.4cqw 1.1cqw .4cqw .8cqw;margin-bottom:auto;
-}
-.eyebrow-icon{width:1.2cqw;height:1.2cqw;flex-shrink:0;}
-.eyebrow-logo{height:1.3cqw;width:auto;display:block;border-radius:.25cqw;}
-.slide h2{font-size:2.4cqw;font-weight:800;margin:0;line-height:1.2;}
+.notice-row:last-child{border-bottom:none;padding-bottom:0;}
+.notice-dot{width:.6vw;height:.6vw;border-radius:50%;background:var(--bronze);flex-shrink:0;margin-top:.55vw;}
+.notice-text{font-size:1.5vw;font-weight:600;line-height:1.5;}
+.notice-text b{color:var(--bronze);font-weight:800;}
 
-.slide p{font-size:1.05cqw;font-weight:600;margin:.5cqw 0 0;opacity:.92;}
-
-.dots{
-  position:absolute;bottom:1.1cqw;left:50%;transform:translateX(-50%);
-  display:flex;gap:.6cqw;z-index:2;
-}
-.dot{width:.6cqw;height:.6cqw;border-radius:50%;background:rgba(255,255,255,0.35);transition:background .3s, transform .3s;}
-.dot.on{background:var(--mint-pop);transform:scale(1.25);}
-
-/* ---------- bottom ticker bar — priority 2 (ynet) ---------- */
+/* ---------- bottom ticker bar — priority 2 (ynet), enlarged ---------- */
 .ticker-bar{
   flex-shrink:0;
-  background:var(--card);
+  background:var(--glass-strong);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
   border:1px solid var(--line);
   border-radius:1vw;
-  height:4.2vw;
+  height:6vw;
   display:flex;align-items:center;
-  padding:0 1.3vw;
-  gap:1.3vw;
-  box-shadow:0 .6vw 1.6vw -1.4vw rgba(15,37,48,0.35);
+  padding:0 1.6vw;
+  gap:1.6vw;
 }
-.brand-block{display:flex;align-items:center;gap:.6vw;flex-shrink:0;}
-.brand-dot{width:1.8vw;height:1.8vw;border-radius:.5vw;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9vw;}
+.brand-block{display:flex;align-items:center;gap:.7vw;flex-shrink:0;}
+.brand-dot{width:2.3vw;height:2.3vw;border-radius:.6vw;background:var(--bronze);color:#241a0c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05vw;}
 .brand-text{line-height:1.15;}
-.brand-text b{display:block;font-size:.88vw;font-weight:800;}
-.brand-text span{font-size:.68vw;color:var(--ink-dim);font-weight:600;}
+.brand-text b{display:block;font-size:1.05vw;font-weight:800;}
+.brand-text span{font-size:.8vw;color:var(--ink-dim);font-weight:600;}
 .ticker-sep{width:1px;align-self:stretch;background:var(--line);}
 .ticker-flow{flex:1;min-width:0;overflow:hidden;white-space:nowrap;direction:ltr;}
 .ticker-flow-track{
-  display:inline-flex;gap:3.2vw;
+  display:inline-flex;gap:3.6vw;
   animation:scroll-rtl 55s linear infinite;
-  font-size:.95vw;font-weight:600;
+  font-size:1.15vw;font-weight:600;
 }
-.ticker-flow-track b{font-weight:800;color:var(--green-deep);margin-inline-end:.4vw;}
+.ticker-flow-track b{font-weight:800;color:var(--bronze);margin-inline-end:.4vw;}
 @keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.ynet-block{display:flex;align-items:center;gap:.7vw;flex-shrink:0;}
-.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:.68vw;color:var(--ink-dim);font-weight:700;}
-.live-dot{width:.5vw;height:.5vw;border-radius:50%;background:var(--mint-pop);animation:pulse 1.8s ease-in-out infinite;}
+.ynet-block{display:flex;align-items:center;gap:.8vw;flex-shrink:0;}
+.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:.8vw;color:var(--ink-dim);font-weight:700;}
+.live-dot{width:.55vw;height:.55vw;border-radius:50%;background:var(--bronze);animation:pulse 1.8s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
-.ynet-logo{height:1.8vw;width:auto;display:block;}
+.ynet-logo{height:2.2vw;width:auto;display:block;border-radius:.3vw;}
 
 @media (prefers-reduced-motion: reduce){
-  .ticker-flow-track,.live-dot{animation:none;}
-  .slide{transition:opacity .3s;}
+  .ticker-flow-track,.live-dot,.one-ticker-track{animation:none;}
 }

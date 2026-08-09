@@ -5,20 +5,21 @@
  * server-side on each load (see functions.php) so there's no CORS/CSP wall
  * like a client-side fetch would hit.
  *
- * v2 — restructured around the client's own reference examples (see
- * examples/ and the README design-decision log): pill-header + white-card
- * for every sidebar module, dark navy top bar for identity/clock, full-bleed
- * photo only in the rotating hero.
+ * v3 — client asked to move away from the green/navy palette entirely
+ * (now bronze/glass over the building photo), moved ONE to the left
+ * column as a text-only auto-scrolling headline list (logo + no images),
+ * and put "הודעות לדיירים" (building notices — placeholder content, see
+ * README) in the center where the ONE carousel used to be.
  *
  * Section order follows the client's stated priority:
  * 1) Sports (ONE)  2) Ynet ticker  3) Weekly weather  4) Shabbat times
  * 5) Business ad   6) Clock/date
  */
 
-$one_stories = lobby_screens_get_one_stories( 3 );
-$ynet_lines  = lobby_screens_get_ynet_headlines( 6 );
-$weather     = lobby_screens_get_weekly_weather();
-$shabbat     = lobby_screens_get_shabbat_times();
+$one_headlines = lobby_screens_get_one_headlines( 10 );
+$ynet_lines    = lobby_screens_get_ynet_headlines( 6 );
+$weather       = lobby_screens_get_weekly_weather();
+$shabbat       = lobby_screens_get_shabbat_times();
 
 $ynet_track = '';
 foreach ( array_merge( $ynet_lines, $ynet_lines ) as $i => $line ) {
@@ -47,10 +48,6 @@ $theme_uri = get_stylesheet_directory_uri();
       <path d="M12 2c1.5 2 1.5 3.2 0 5-1.5-1.8-1.5-3 0-5Z" fill="#fff"/>
       <rect x="9.5" y="8" width="5" height="10" rx="1"/>
       <path d="M6 21h12"/>
-    </symbol>
-    <symbol id="icoBall" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="9"/>
-      <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/>
     </symbol>
     <symbol id="icoMega" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 11v2a2 2 0 0 0 2 2h1l4 4v-6M3 11l7-4v10M3 11h1M16 8a4 4 0 0 1 0 8M19 5a8 8 0 0 1 0 14"/>
@@ -169,45 +166,45 @@ $theme_uri = get_stylesheet_directory_uri();
       </div>
     </div>
 
-    <!-- hero: priority 1 (sports), centered — dedicated entirely to ONE, per client request -->
-    <div class="hero" id="hero">
-      <?php
-      $slide_index = 0;
-      foreach ( $one_stories as $story ) :
-      ?>
-      <div class="slide <?php echo 0 === $slide_index ? 'active' : ''; ?>" data-slide="<?php echo esc_attr( $slide_index ); ?>">
-        <?php if ( $story['image'] ) : ?>
-          <div class="bg" style="background-image:url('<?php echo esc_url( $story['image'] ); ?>')"></div>
-        <?php endif; ?>
-        <div class="scrim"></div>
-        <div class="content">
-          <span class="slide-eyebrow">
-            <img class="eyebrow-logo" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE">
-            עדכוני ספורט · ONE
-          </span>
-          <h2><?php echo esc_html( $story['title'] ); ?></h2>
-        </div>
+    <!-- center: building notices — replaces the ONE carousel that used to
+         live here. PLACEHOLDER TEXT: no real notices supplied yet, do not
+         treat these as real content. -->
+    <div class="pcard notices-card">
+      <div class="pill-head">
+        <svg class="pill-icon"><use href="#icoMega"/></svg>
+        הודעות לדיירים
       </div>
-      <?php $slide_index++; endforeach; ?>
-
-      <div class="dots" id="dots">
-        <?php for ( $i = 0; $i < $slide_index; $i++ ) : ?>
-          <span class="dot <?php echo 0 === $i ? 'on' : ''; ?>"></span>
-        <?php endfor; ?>
+      <div class="pcard-body">
+        <div class="notice-row">
+          <span class="notice-dot"></span>
+          <span class="notice-text"><b>ישיבת ועד בית</b> תתקיים ביום רביעי הקרוב בשעה 20:00, בלובי הבניין</span>
+        </div>
+        <div class="notice-row">
+          <span class="notice-dot"></span>
+          <span class="notice-text">נא לשמור על ניקיון וסדר בחדר האשפה ובחניון המשותף</span>
+        </div>
+        <div class="notice-row">
+          <span class="notice-dot"></span>
+          <span class="notice-text">עבודות תחזוקה במעלית הצפונית ביום שני, 09:00–13:00 — נא להשתמש במעלית הדרומית</span>
+        </div>
       </div>
     </div>
 
     <div class="sidebar-left">
-      <!-- priority 5: business ad -->
-      <div class="pcard ad-card">
+      <!-- priority 1: ONE headlines — text-only per client request, big
+           logo, vertical auto-scroll. Moved out of the center carousel. -->
+      <div class="pcard one-card">
         <div class="pill-head">
-          <svg class="pill-icon"><use href="#icoMega"/></svg>
-          פרסומת
+          <img class="one-logo-big" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
         </div>
         <div class="pcard-body">
-          <div class="ad-ring">+</div>
-          <h3>בית הפול, באר שבע</h3>
-          <p>שולחנות פול, בר משקאות ואווירה</p>
+          <div class="one-ticker">
+            <div class="one-ticker-track">
+              <?php foreach ( array_merge( $one_headlines, $one_headlines ) as $headline ) : ?>
+                <div class="one-item"><?php echo esc_html( $headline ); ?></div>
+              <?php endforeach; ?>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -268,21 +265,6 @@ function tick(){
   if(secEl) secEl.style.transform='rotate('+secDeg+'deg)';
 }
 tick();setInterval(tick,1000);
-
-(function(){
-  var slides=document.querySelectorAll('.slide');
-  var dots=document.querySelectorAll('.dot');
-  var i=0;
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce || slides.length<2) return;
-  setInterval(function(){
-    slides[i].classList.remove('active');
-    dots[i].classList.remove('on');
-    i=(i+1)%slides.length;
-    slides[i].classList.add('active');
-    dots[i].classList.add('on');
-  },7000);
-})();
 </script>
 <?php wp_footer(); ?>
 </body>

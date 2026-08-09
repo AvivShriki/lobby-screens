@@ -152,16 +152,27 @@ $theme_uri = get_stylesheet_directory_uri();
         </div>
       </div>
 
-      <!-- priority 4: shabbat — client-supplied weekly graphic (see README:
-           this is swapped by hand for now; an upload UI is a planned future
-           step, not built yet) -->
+      <!-- priority 4: shabbat — client-supplied decorative graphic (generic
+           template, no real times baked into the image itself, unlike the
+           previous one) + the real live Hebcal data as text underneath. -->
       <div class="pcard shabbat-card">
         <div class="pill-head">
           <svg class="pill-icon"><use href="#icoCandle"/></svg>
           כניסת שבת
         </div>
         <div class="pcard-body">
-          <img class="shabbat-graphic" src="<?php echo esc_url( $theme_uri . '/assets/images/shabbat-times-graphic.jpg' ); ?>" alt="זמני כניסת ויציאת שבת, פרשת <?php echo esc_attr( $shabbat['parasha'] ?? '' ); ?>">
+          <img class="shabbat-graphic" src="<?php echo esc_url( $theme_uri . '/assets/images/shabbat-times-graphic.jpg' ); ?>" alt="זמני כניסת ויציאת שבת">
+          <div class="shabbat-data">
+            <div class="shabbat-time-col">
+              <span class="shabbat-time-label">כניסה</span>
+              <span class="shabbat-time-val"><?php echo esc_html( $shabbat['primary']['candle'] ?? '--:--' ); ?></span>
+            </div>
+            <div class="shabbat-parasha"><?php echo esc_html( $shabbat['parasha'] ?? '' ); ?></div>
+            <div class="shabbat-time-col">
+              <span class="shabbat-time-label">יציאה</span>
+              <span class="shabbat-time-val"><?php echo esc_html( $shabbat['primary']['havdalah'] ?? '--:--' ); ?></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

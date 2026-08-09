@@ -132,21 +132,21 @@ $theme_uri = get_stylesheet_directory_uri();
           <span class="pill-badge">שבוע קדימה</span>
         </div>
         <div class="pcard-body">
+          <div class="wx-strip">
           <?php if ( empty( $weather ) ) : ?>
-            <div class="wx-row"><span class="wx-row-day">—</span><span>אין נתונים כרגע</span></div>
+            <span>אין נתונים כרגע</span>
           <?php else : foreach ( $weather as $day ) :
             $kind    = lobby_screens_weather_icon_kind( $day['code'] );
             $icon_id = 'sun' === $kind ? 'wxSun' : ( 'rain' === $kind ? 'wxRain' : 'wxCloud' );
           ?>
-            <div class="wx-row">
-              <span class="wx-row-day"><?php echo esc_html( $day['label'] ); ?></span>
-              <svg class="wx-row-icon"><use href="#<?php echo esc_attr( $icon_id ); ?>"/></svg>
-              <span class="wx-row-temps">
-                <span class="wx-row-max"><?php echo esc_html( $day['max'] ); ?>°</span>
-                <span class="wx-row-min"><?php echo esc_html( $day['min'] ); ?>°</span>
-              </span>
+            <div class="wx-col">
+              <span class="wx-col-day"><?php echo esc_html( $day['label'] ); ?></span>
+              <svg class="wx-col-icon"><use href="#<?php echo esc_attr( $icon_id ); ?>"/></svg>
+              <span class="wx-col-max"><?php echo esc_html( $day['max'] ); ?>°</span>
+              <span class="wx-col-min"><?php echo esc_html( $day['min'] ); ?>°</span>
             </div>
           <?php endforeach; endif; ?>
+          </div>
         </div>
       </div>
 

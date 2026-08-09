@@ -196,8 +196,8 @@ $theme_uri = get_stylesheet_directory_uri();
            hero element), vertical auto-scroll. -->
       <div class="pcard one-card">
         <div class="pill-head">
-          <span>חדשות ספורט ONE</span>
           <img class="one-logo-side" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
+          <span>חדשות ספורט ONE</span>
         </div>
         <div class="pcard-body">
           <div class="one-ticker">

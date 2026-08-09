@@ -181,13 +181,13 @@ body::after{
 /* weather — compact horizontal strip, sized by content only.
    v3.1: text was unreadably small — bumped every size up substantially. */
 .weather-card{flex:0 0 auto;}
-.weather-card .pcard-body{padding:2.2cqw 2cqw;}
-.wx-strip{display:flex;justify-content:space-between;gap:.8cqw;}
-.wx-col{display:flex;flex-direction:column;align-items:center;gap:.7cqw;}
-.wx-col-day{font-size:3.6cqw;font-weight:800;}
-.wx-col-icon{width:6.4cqw;height:6.4cqw;flex-shrink:0;}
-.wx-col-max{font-size:3.4cqw;font-weight:800;color:var(--warm);font-variant-numeric:tabular-nums;}
-.wx-col-min{font-size:2.7cqw;font-weight:700;color:var(--ink-dim);font-variant-numeric:tabular-nums;}
+.weather-card .pcard-body{padding:2.6cqw 2.2cqw;}
+.wx-strip{display:flex;justify-content:space-between;gap:.6cqw;}
+.wx-col{display:flex;flex-direction:column;align-items:center;gap:.8cqw;}
+.wx-col-day{font-size:4.2cqw;font-weight:800;}
+.wx-col-icon{width:7.6cqw;height:7.6cqw;flex-shrink:0;}
+.wx-col-max{font-size:4cqw;font-weight:800;color:var(--warm);font-variant-numeric:tabular-nums;}
+.wx-col-min{font-size:3.2cqw;font-weight:700;color:var(--ink-dim);font-variant-numeric:tabular-nums;}
 
 /* shabbat: client's ready-made weekly graphic (see README) */
 .shabbat-card{flex:1;min-height:0;}
@@ -200,7 +200,7 @@ body::after{
    to the side instead of being the big centered hero of the card. */
 .one-card{flex:1.4;min-height:0;}
 .one-card .pill-head{padding:2cqw 3cqw;border-bottom:1px solid var(--line);justify-content:space-between;}
-.one-logo-side{height:6.4cqw;width:auto;display:block;flex-shrink:0;}
+.one-logo-side{height:4.4cqw;width:auto;display:block;flex-shrink:0;}
 .one-card .pcard-body{padding:0;min-height:0;position:relative;overflow:hidden;}
 .one-ticker{position:absolute;inset:0;overflow:hidden;}
 .one-ticker-track{

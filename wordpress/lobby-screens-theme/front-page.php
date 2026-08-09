@@ -45,7 +45,7 @@ $theme_uri = get_stylesheet_directory_uri();
       <path d="M12 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0Z"/>
     </symbol>
     <symbol id="icoCandle" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2c1.5 2 1.5 3.2 0 5-1.5-1.8-1.5-3 0-5Z" fill="#fff"/>
+      <path d="M12 2c1.5 2 1.5 3.2 0 5-1.5-1.8-1.5-3 0-5Z" fill="var(--warm)" stroke="none"/>
       <rect x="9.5" y="8" width="5" height="10" rx="1"/>
       <path d="M6 21h12"/>
     </symbol>
@@ -191,11 +191,13 @@ $theme_uri = get_stylesheet_directory_uri();
     </div>
 
     <div class="sidebar-left">
-      <!-- priority 1: ONE headlines — text-only per client request, big
-           logo, vertical auto-scroll. Moved out of the center carousel. -->
+      <!-- priority 1: ONE headlines — text-only per client request, large
+           scrolling headline text, ONE logo as a small side mark (not the
+           hero element), vertical auto-scroll. -->
       <div class="pcard one-card">
         <div class="pill-head">
-          <img class="one-logo-big" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
+          <span>חדשות ספורט ONE</span>
+          <img class="one-logo-side" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
         </div>
         <div class="pcard-body">
           <div class="one-ticker">

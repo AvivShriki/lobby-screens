@@ -55,6 +55,11 @@ $theme_uri = get_stylesheet_directory_uri();
     <symbol id="icoMega" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 11v2a2 2 0 0 0 2 2h1l4 4v-6M3 11l7-4v10M3 11h1M16 8a4 4 0 0 1 0 8M19 5a8 8 0 0 1 0 14"/>
     </symbol>
+    <symbol id="icoNote" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V5l11-2v13"/>
+      <circle cx="6" cy="18" r="3"/>
+      <circle cx="17" cy="16" r="3"/>
+    </symbol>
     <linearGradient id="sunGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#ffdd7a"/><stop offset="100%" stop-color="#f2a93c"/>
     </linearGradient>
@@ -122,7 +127,7 @@ $theme_uri = get_stylesheet_directory_uri();
   </div>
 
   <div class="main">
-    <div class="sidebar">
+    <div class="sidebar-right">
 
       <!-- priority 3: weekly weather -->
       <div class="pcard weather-card">
@@ -164,25 +169,13 @@ $theme_uri = get_stylesheet_directory_uri();
       </div>
     </div>
 
-    <!-- hero: priority 1 (sports) dominates the rotation; welcome + ad get one slot each -->
+    <!-- hero: priority 1 (sports), centered — dedicated entirely to ONE, per client request -->
     <div class="hero" id="hero">
-      <div class="slide slide-welcome active" data-slide="0">
-        <div class="bg" style="background-image:url('<?php echo esc_url( $theme_uri . '/assets/images/candles-pixabay.jpg' ); ?>')"></div>
-        <div class="scrim"></div>
-        <div class="content">
-          <span class="slide-eyebrow"><svg class="eyebrow-icon"><use href="#icoCandle"/></svg>ברוכים הבאים</span>
-          <h2>שבת שלום לדיירי נחל חבר 16-18</h2>
-          <?php if ( $shabbat && $shabbat['primary'] ) : ?>
-            <p>הדלקת נרות היום ב־<?php echo esc_html( $shabbat['primary']['candle'] ); ?> · שבת נעימה ומבורכת לכל המשפחות בבניין</p>
-          <?php endif; ?>
-        </div>
-      </div>
-
       <?php
-      $slide_index = 1;
+      $slide_index = 0;
       foreach ( $one_stories as $story ) :
       ?>
-      <div class="slide" data-slide="<?php echo esc_attr( $slide_index ); ?>">
+      <div class="slide <?php echo 0 === $slide_index ? 'active' : ''; ?>" data-slide="<?php echo esc_attr( $slide_index ); ?>">
         <?php if ( $story['image'] ) : ?>
           <div class="bg" style="background-image:url('<?php echo esc_url( $story['image'] ); ?>')"></div>
         <?php endif; ?>
@@ -197,20 +190,40 @@ $theme_uri = get_stylesheet_directory_uri();
       </div>
       <?php $slide_index++; endforeach; ?>
 
+      <div class="dots" id="dots">
+        <?php for ( $i = 0; $i < $slide_index; $i++ ) : ?>
+          <span class="dot <?php echo 0 === $i ? 'on' : ''; ?>"></span>
+        <?php endfor; ?>
+      </div>
+    </div>
+
+    <div class="sidebar-left">
       <!-- priority 5: business ad -->
-      <div class="slide slide-ad" data-slide="<?php echo esc_attr( $slide_index ); ?>" style="background:linear-gradient(135deg,#16a06b,#0d8058);">
-        <div class="scrim"></div>
-        <div class="content">
-          <span class="ad-label">פרסומת</span>
-          <h2>בית הפול, באר שבע</h2>
-          <p>שולחנות פול, בר משקאות ואווירה — הבילוי הבא שלכם בשכונה</p>
+      <div class="pcard ad-card">
+        <div class="pill-head">
+          <svg class="pill-icon"><use href="#icoMega"/></svg>
+          פרסומת
+        </div>
+        <div class="pcard-body">
+          <div class="ad-ring">+</div>
+          <h3>בית הפול, באר שבע</h3>
+          <p>שולחנות פול, בר משקאות ואווירה</p>
         </div>
       </div>
 
-      <div class="dots" id="dots">
-        <?php for ( $i = 0; $i <= $slide_index; $i++ ) : ?>
-          <span class="dot <?php echo 0 === $i ? 'on' : ''; ?>"></span>
-        <?php endfor; ?>
+      <!-- background music player -->
+      <div class="pcard player-card">
+        <div class="pill-head">
+          <svg class="pill-icon"><use href="#icoNote"/></svg>
+          מוזיקת רקע
+        </div>
+        <div class="pcard-body">
+          <iframe class="player-frame"
+            src="https://www.youtube-nocookie.com/embed/eaqW5eQXTdM?autoplay=1&mute=1&loop=1&playlist=eaqW5eQXTdM&controls=1&modestbranding=1&rel=0"
+            title="נגן מוזיקת רקע"
+            allow="autoplay; encrypted-media"
+            allowfullscreen></iframe>
+        </div>
       </div>
     </div>
   </div>

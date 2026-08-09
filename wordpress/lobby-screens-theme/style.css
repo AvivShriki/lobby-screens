@@ -90,21 +90,28 @@ body{
 }
 .tb-date{font-size:.78vw;opacity:.78;font-weight:600;margin-top:.25vw;}
 
+/* 3-column layout matching the client's reference exactly: ONE carousel
+   centered and dominant, weather+Shabbat on the visual right, ad+player
+   on the visual left. Track order below is right-to-left on purpose —
+   under dir=rtl the FIRST token in grid-template-areas/columns is the
+   RIGHTMOST physical column (confirmed empirically earlier in this
+   project), so "sidebar-right" must come first to land on the right. */
 .main{
   flex:1;
   min-height:0;
   display:grid;
-  grid-template-columns:1.15fr 2fr;
-  grid-template-areas:"sidebar hero";
+  grid-template-columns:.95fr 1.75fr .85fr;
+  grid-template-areas:"sidebar-right hero-center sidebar-left";
   gap:1vw;
 }
 
 /* ---------- sidebar ---------- */
-.sidebar{
-  grid-area:sidebar;
+.sidebar-right,.sidebar-left{
   display:flex;flex-direction:column;gap:1vw;
   min-height:0;
 }
+.sidebar-right{grid-area:sidebar-right;}
+.sidebar-left{grid-area:sidebar-left;}
 
 /* pill-header + white-card pattern, matching the client's reference */
 .pcard{
@@ -154,9 +161,31 @@ body{
 .shabbat-card .pcard-body{padding:0;min-height:0;background:#e8d3ac;}
 .shabbat-graphic{width:100%;height:100%;object-fit:contain;display:block;}
 
-/* ---------- hero carousel — priority 1 (sports) dominates ---------- */
+/* left column: static business-ad card (priority 5) + background-music player */
+.ad-card{flex:1;min-height:0;color:#fff;position:relative;}
+.ad-card .pill-head{background:linear-gradient(90deg,var(--navy),#1a4256);}
+.ad-card .pcard-body{
+  background:linear-gradient(150deg,var(--green),var(--green-deep));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:.8cqw;
+}
+.ad-ring{
+  width:9cqw;height:9cqw;border-radius:50%;
+  border:2px dashed rgba(255,255,255,0.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:4cqw;font-weight:300;
+}
+.ad-card h3{font-size:3.4cqw;font-weight:800;margin:0;}
+.ad-card p{font-size:2cqw;font-weight:600;margin:0;opacity:.92;max-width:85%;}
+
+.player-card{flex:0 0 auto;}
+.player-card .pill-head{background:linear-gradient(90deg,var(--green),var(--green-deep));}
+.player-card .pcard-body{padding:0;aspect-ratio:16/9;}
+.player-frame{width:100%;height:100%;border:0;display:block;}
+
+/* ---------- hero carousel — priority 1 (sports), centered, dominant ---------- */
 .hero{
-  grid-area:hero;
+  grid-area:hero-center;
   position:relative;
   container-type:inline-size;
   border-radius:1.3vw;
@@ -195,20 +224,7 @@ body{
 .eyebrow-logo{height:1.3cqw;width:auto;display:block;border-radius:.25cqw;}
 .slide h2{font-size:2.4cqw;font-weight:800;margin:0;line-height:1.2;}
 
-/* welcome slide — building/candle photo, replaces the old always-photo sidebar cards */
-.slide-welcome .content{justify-content:flex-end;}
-.slide-welcome p{font-size:1.05cqw;font-weight:600;margin:.5cqw 0 0;opacity:.92;}
-
-/* ad slide — priority 5, lowest weight */
-.slide-ad .scrim{background:linear-gradient(0deg, rgba(16,20,20,0.6) 0%, rgba(16,20,20,0.15) 100%);}
-.slide-ad .content{justify-content:center;align-items:center;text-align:center;}
-.ad-label{
-  font-size:.85cqw;font-weight:700;letter-spacing:.04em;
-  background:#fff;color:var(--navy);
-  border-radius:999px;padding:.35cqw 1.1cqw;margin-bottom:1.1cqw;
-}
-.slide-ad h2{font-size:2.7cqw;}
-.slide-ad p{font-size:1.1cqw;font-weight:600;margin:.6cqw 0 0;opacity:.95;}
+.slide p{font-size:1.05cqw;font-weight:600;margin:.5cqw 0 0;opacity:.92;}
 
 .dots{
   position:absolute;bottom:1.1cqw;left:50%;transform:translateX(-50%);

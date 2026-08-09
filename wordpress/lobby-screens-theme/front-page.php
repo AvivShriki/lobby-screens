@@ -98,8 +98,26 @@ $theme_uri = get_stylesheet_directory_uri();
       </div>
     </div>
     <div class="tb-clock">
-      <div class="tb-date"><?php echo esc_html( lobby_screens_hebrew_date() ); ?></div>
-      <div class="tb-time" id="clockTime">--:--</div>
+      <svg class="tb-analog" viewBox="0 0 100 100">
+        <circle class="tb-analog-face" cx="50" cy="50" r="46"/>
+        <?php for ( $i = 0; $i < 12; $i++ ) :
+          $angle = $i * 30;
+          $x1    = 50 + 40 * sin( deg2rad( $angle ) );
+          $y1    = 50 - 40 * cos( deg2rad( $angle ) );
+          $x2    = 50 + 45 * sin( deg2rad( $angle ) );
+          $y2    = 50 - 45 * cos( deg2rad( $angle ) );
+        ?>
+          <line class="tb-analog-tick" x1="<?php echo esc_attr( $x1 ); ?>" y1="<?php echo esc_attr( $y1 ); ?>" x2="<?php echo esc_attr( $x2 ); ?>" y2="<?php echo esc_attr( $y2 ); ?>"/>
+        <?php endfor; ?>
+        <line class="tb-analog-hand tb-analog-hour" id="handHour" x1="50" y1="50" x2="50" y2="28"/>
+        <line class="tb-analog-hand tb-analog-min" id="handMin" x1="50" y1="50" x2="50" y2="18"/>
+        <line class="tb-analog-hand tb-analog-sec" id="handSec" x1="50" y1="50" x2="50" y2="14"/>
+        <circle class="tb-analog-pin" cx="50" cy="50" r="3"/>
+      </svg>
+      <div class="tb-digital">
+        <div class="tb-time" id="clockTime">--:--</div>
+        <div class="tb-date"><?php echo esc_html( lobby_screens_hebrew_date() ); ?></div>
+      </div>
     </div>
   </div>
 
@@ -132,30 +150,16 @@ $theme_uri = get_stylesheet_directory_uri();
         </div>
       </div>
 
-      <!-- priority 4: shabbat + multi-city (client-editable later — see README) -->
+      <!-- priority 4: shabbat — client-supplied weekly graphic (see README:
+           this is swapped by hand for now; an upload UI is a planned future
+           step, not built yet) -->
       <div class="pcard shabbat-card">
         <div class="pill-head">
           <svg class="pill-icon"><use href="#icoCandle"/></svg>
-          כניסת שבת — באר שבע
+          כניסת שבת
         </div>
         <div class="pcard-body">
-          <?php if ( $shabbat && $shabbat['primary'] ) : ?>
-            <div class="shabbat-time"><?php echo esc_html( $shabbat['primary']['candle'] ); ?></div>
-            <div class="shabbat-parasha-row">
-              פרשת השבוע <b class="shabbat-parasha"><?php echo esc_html( $shabbat['parasha'] ); ?></b>
-              · יציאה <?php echo esc_html( $shabbat['primary']['havdalah'] ); ?>
-            </div>
-            <div class="city-row">
-              <?php foreach ( $shabbat['cities'] as $city ) : ?>
-                <div class="city-chip">
-                  <span class="city-chip-k"><?php echo esc_html( $city['label'] ); ?></span>
-                  <span class="city-chip-v"><?php echo esc_html( $city['candle'] ); ?></span>
-                </div>
-              <?php endforeach; ?>
-            </div>
-          <?php else : ?>
-            <div class="shabbat-time">—</div>
-          <?php endif; ?>
+          <img class="shabbat-graphic" src="<?php echo esc_url( $theme_uri . '/assets/images/shabbat-times-graphic.jpg' ); ?>" alt="זמני כניסת ויציאת שבת, פרשת <?php echo esc_attr( $shabbat['parasha'] ?? '' ); ?>">
         </div>
       </div>
     </div>
@@ -238,8 +242,19 @@ function tick(){
   var p=function(n){return String(n).padStart(2,'0');};
   var el=document.getElementById('clockTime');
   if(el) el.textContent=p(d.getHours())+':'+p(d.getMinutes());
+
+  var h=d.getHours()%12, m=d.getMinutes(), s=d.getSeconds();
+  var hourDeg=(h+m/60)*30;
+  var minDeg=(m+s/60)*6;
+  var secDeg=s*6;
+  var hourEl=document.getElementById('handHour');
+  var minEl=document.getElementById('handMin');
+  var secEl=document.getElementById('handSec');
+  if(hourEl) hourEl.style.transform='rotate('+hourDeg+'deg)';
+  if(minEl) minEl.style.transform='rotate('+minDeg+'deg)';
+  if(secEl) secEl.style.transform='rotate('+secDeg+'deg)';
 }
-tick();setInterval(tick,15000);
+tick();setInterval(tick,1000);
 
 (function(){
   var slides=document.querySelectorAll('.slide');

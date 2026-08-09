@@ -1,21 +1,28 @@
 /*
 Theme Name: Lobby Screens
 Description: TV display for residential building lobbies (35-45"). Static presentation, no user interaction — server-rendered live data (Ynet, ONE, weather, Shabbat times) refreshed on each reload.
-Version: 1.0
+Version: 2.0
+
+Design tokens below are sampled from the client's own reference (GoMixApp
+digital-signage screenshots, examples/): #102e3b navy, #16a06b green,
+#c9f4e3 mint. Pill-header + white-card is the reference's structural
+pattern — this replaces the v1 photo-with-text-overlay treatment on
+every card except the hero, where a full-bleed photo matches the
+reference too (see the sunset/ad examples).
 */
 
 :root{
-  --bg:#f4f1ea;
+  --bg:#eef1f0;
   --card:#ffffff;
-  --ink:#232530;
-  --ink-dim:#6c7080;
-  --line:rgba(35,37,48,0.09);
-  --blue:#2f5ea8;
-  --blue-soft:#eaf0fa;
+  --ink:#0f2530;
+  --ink-dim:#5f7079;
+  --line:rgba(15,37,48,0.08);
+  --navy:#102e3b;
+  --green:#16a06b;
+  --green-deep:#0d8058;
+  --mint:#c9f4e3;
+  --mint-pop:#4be3a4;
   --warm:#c9743f;
-  --warm-soft:#f7e9dd;
-  --green:#2f9e6f;
-  --green-soft:#e7f5ee;
 }
 @font-face{
   font-family:'Fraunces';
@@ -36,16 +43,44 @@ body{
   height:100vh;width:100vw;
   display:flex;
   flex-direction:column;
-  padding:1.3vw;
-  gap:1.1vw;
+  padding:1.2vw;
+  gap:1vw;
 }
+
+/* ---------- top bar ---------- */
+.topbar{
+  flex-shrink:0;
+  background:var(--navy);
+  border-radius:1.1vw;
+  height:4.6vw;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.6vw;
+  color:#fff;
+}
+.tb-brand{display:flex;align-items:center;gap:.8vw;}
+.tb-mark{
+  width:2.2vw;height:2.2vw;border-radius:.6vw;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1.05vw;flex-shrink:0;
+}
+.tb-name{font-weight:800;font-size:1.15vw;line-height:1.15;}
+.tb-addr{font-size:.75vw;opacity:.72;font-weight:600;}
+.tb-clock{display:flex;align-items:baseline;gap:.7vw;}
+.tb-time{
+  font-family:'Fraunces',serif;
+  font-size:1.9vw;font-weight:600;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.tb-date{font-size:.78vw;opacity:.78;font-weight:600;}
+
 .main{
   flex:1;
   min-height:0;
   display:grid;
   grid-template-columns:1.15fr 2fr;
   grid-template-areas:"sidebar hero";
-  gap:1.1vw;
+  gap:1vw;
 }
 
 /* ---------- sidebar ---------- */
@@ -54,102 +89,77 @@ body{
   display:flex;flex-direction:column;gap:1vw;
   min-height:0;
 }
-.sb-card{
+
+/* pill-header + white-card pattern, matching the client's reference */
+.pcard{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:1.3vw;
-  box-shadow:0 .8vw 2vw -1.5vw rgba(35,37,48,0.35);
-  position:relative;
+  border-radius:1.1vw;
+  box-shadow:0 .7vw 1.8vw -1.5vw rgba(15,37,48,0.35);
+  display:flex;flex-direction:column;
   overflow:hidden;
+  container-type:inline-size;
 }
+.pill-head{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:1.8cqw;
+  background:var(--green);
+  color:#fff;
+  padding:1.8cqw 3.2cqw;
+  font-size:2.9cqw;font-weight:800;
+}
+.pill-icon{width:3.8cqw;height:3.8cqw;flex-shrink:0;}
+.pill-badge{
+  margin-inline-start:auto;
+  font-size:2cqw;font-weight:700;
+  background:rgba(255,255,255,0.25);
+  border-radius:999px;padding:.6cqw 2.2cqw;
+}
+.pcard-body{flex:1;min-height:0;padding:3cqw 3.6cqw;}
 
-/* priority 6: clock + building photo — compact */
-.sb-photo{flex:0 0 26%;min-height:0;container-type:inline-size;color:#fff;}
-.sb-photo .bg{position:absolute;inset:0;background:url('assets/images/building-nachal-hever.jpg') center 62%/cover;}
-.sb-photo .scrim{position:absolute;inset:0;background:linear-gradient(195deg, rgba(15,18,15,0.1) 0%, rgba(10,13,11,0.78) 100%);}
-.sb-photo .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:1.4cqw 1.6cqw;}
-.sb-head{display:flex;align-items:center;gap:.7cqw;}
-.sb-mark{
-  width:2.4cqw;height:2.4cqw;border-radius:.7cqw;
-  background:rgba(255,255,255,0.18);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:1.15cqw;flex-shrink:0;
-}
-.sb-name{font-weight:800;font-size:1.2cqw;line-height:1.15;}
-.sb-addr{font-size:.8cqw;opacity:.82;font-weight:600;margin-top:.1cqw;}
-.sb-clock{margin-top:auto;display:flex;align-items:baseline;justify-content:space-between;gap:.6cqw;}
-.sb-time{
-  font-family:'Fraunces',serif;
-  font-size:3.6cqw;font-weight:600;line-height:1;
-  font-variant-numeric:tabular-nums;letter-spacing:.01em;
-}
-.sb-date{font-size:.78cqw;opacity:.85;font-weight:600;text-align:left;}
-
-/* priority 3: weekly weather — dominant sidebar card, vertical list */
-.sb-weather{flex:1.25;min-height:0;padding:1.1cqw 1.4cqw;display:flex;flex-direction:column;}
-.wx-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7cqw;flex-shrink:0;}
-.wx-title{font-size:1cqw;font-weight:800;color:var(--ink-dim);}
-.wx-badge{font-size:.7cqw;font-weight:700;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:.25cqw .8cqw;}
-.wx-list{display:flex;flex-direction:column;gap:0;flex:1;min-height:0;justify-content:space-between;}
-.wx-row{display:flex;align-items:center;justify-content:space-between;padding:.35cqw 0;border-bottom:1px solid var(--line);}
+/* weather card */
+.weather-card{flex:1.2;}
+.weather-card .pcard-body{display:flex;flex-direction:column;justify-content:space-between;}
+.wx-row{display:flex;align-items:center;justify-content:space-between;padding:.9cqw 0;border-bottom:1px solid var(--line);}
 .wx-row:last-child{border-bottom:none;}
-.wx-row-day{font-size:.92cqw;font-weight:700;width:3.4cqw;}
-.wx-row-icon{width:1.7cqw;height:1.7cqw;flex-shrink:0;}
-.wx-row-temps{display:flex;gap:.6cqw;font-variant-numeric:tabular-nums;font-weight:800;font-size:.92cqw;}
+.wx-row-day{font-size:2.7cqw;font-weight:700;width:9cqw;}
+.wx-row-icon{width:4.6cqw;height:4.6cqw;flex-shrink:0;}
+.wx-row-temps{display:flex;gap:1.6cqw;font-variant-numeric:tabular-nums;font-weight:800;font-size:2.6cqw;}
 .wx-row-max{color:var(--warm);}
 .wx-row-min{color:var(--ink-dim);}
 
-/* priority 4: shabbat + multi-city */
-.shabbat-card{flex:1;min-height:0;container-type:inline-size;color:#fff;}
-.shabbat-card .bg{position:absolute;inset:0;background:url('assets/images/candles-pixabay.jpg') center 40%/cover;}
-.shabbat-card .scrim{position:absolute;inset:0;background:linear-gradient(200deg, rgba(20,10,5,0.2) 0%, rgba(15,8,4,0.85) 100%);}
-.shabbat-card .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:1.5cqw 1.6cqw;}
-.shabbat-tag{
-  display:flex;align-items:center;gap:.6cqw;
-  font-size:.9cqw;font-weight:700;
-  background:rgba(255,255,255,0.16);backdrop-filter:blur(4px);
-  border-radius:999px;padding:.35cqw 1cqw;
-  align-self:flex-start;margin-bottom:auto;
-}
-.flame{width:.95cqw;height:1.2cqw;position:relative;flex-shrink:0;}
-.flame::before{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 70%, #ffe3b0, #f0a84e 50%, var(--warm) 80%);
-  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
-  animation:flicker 2.6s ease-in-out infinite;
-}
-@keyframes flicker{
-  0%,100%{transform:scale(1) rotate(-2deg);}
-  50%{transform:scale(1.08,0.94) rotate(2deg);}
-}
+/* shabbat card */
+.shabbat-card{flex:1;}
+.shabbat-card .pill-head{background:linear-gradient(90deg,var(--green),var(--green-deep));}
+.shabbat-card .pcard-body{display:flex;flex-direction:column;justify-content:center;}
 .shabbat-time{
   font-family:'Fraunces',serif;
-  font-size:3cqw;font-weight:600;line-height:1;
+  font-size:9.5cqw;font-weight:600;line-height:1;color:var(--navy);
   font-variant-numeric:tabular-nums;
 }
 .shabbat-parasha-row{
-  display:flex;align-items:baseline;gap:.6cqw;
-  margin-top:.5cqw;font-size:.95cqw;font-weight:600;opacity:.92;
+  display:flex;align-items:baseline;gap:1.4cqw;
+  margin-top:1.6cqw;font-size:2.6cqw;font-weight:600;color:var(--ink-dim);
 }
-.shabbat-parasha{color:#f6c877;font-weight:800;}
+.shabbat-parasha{color:var(--green-deep);font-weight:800;}
 .city-row{
-  display:flex;justify-content:space-between;gap:.4cqw;
-  margin-top:1cqw;padding-top:1cqw;border-top:1px solid rgba(255,255,255,0.2);
+  display:flex;justify-content:space-between;gap:1cqw;
+  margin-top:2.6cqw;padding-top:2.6cqw;border-top:1px solid var(--line);
 }
-.city-chip{display:flex;flex-direction:column;align-items:center;gap:.2cqw;}
-.city-chip-k{font-size:.68cqw;opacity:.78;font-weight:700;}
-.city-chip-v{font-size:.82cqw;font-weight:800;font-variant-numeric:tabular-nums;}
+.city-chip{display:flex;flex-direction:column;align-items:center;gap:.4cqw;}
+.city-chip-k{font-size:1.9cqw;color:var(--ink-dim);font-weight:700;}
+.city-chip-v{font-size:2.4cqw;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;}
 
 /* ---------- hero carousel — priority 1 (sports) dominates ---------- */
 .hero{
   grid-area:hero;
   position:relative;
   container-type:inline-size;
-  border-radius:1.5cqw;
+  border-radius:1.3vw;
   overflow:hidden;
   background:var(--card);
   border:1px solid var(--line);
-  box-shadow:0 1cqw 2.6cqw -1.6cqw rgba(35,37,48,0.4);
+  box-shadow:0 1vw 2.4vw -1.6vw rgba(15,37,48,0.4);
 }
 .slide{
   position:absolute;inset:0;
@@ -163,74 +173,79 @@ body{
 .slide .bg{position:absolute;inset:0;background-size:cover;background-position:center 32%;}
 .slide .scrim{
   position:absolute;inset:0;
-  background:linear-gradient(0deg, rgba(10,16,28,0.9) 0%, rgba(10,16,28,0.5) 50%, rgba(10,16,28,0.1) 80%);
+  background:linear-gradient(0deg, rgba(16,46,59,0.92) 0%, rgba(16,46,59,0.5) 50%, rgba(16,46,59,0.08) 80%);
 }
 .slide .content{
   position:relative;z-index:1;height:100%;
   display:flex;flex-direction:column;justify-content:flex-end;
-  padding:2.4cqw;
+  padding:2.3cqw;
 }
 .slide-eyebrow{
   align-self:flex-start;
   display:flex;align-items:center;gap:.6cqw;
-  font-size:.9cqw;font-weight:700;
-  background:rgba(255,255,255,0.18);backdrop-filter:blur(4px);
-  border-radius:999px;padding:.4cqw 1.1cqw;margin-bottom:auto;
+  font-size:.9cqw;font-weight:800;
+  background:var(--green);
+  border-radius:999px;padding:.4cqw 1.1cqw .4cqw .8cqw;margin-bottom:auto;
 }
+.eyebrow-icon{width:1.2cqw;height:1.2cqw;flex-shrink:0;}
 .eyebrow-logo{height:1.3cqw;width:auto;display:block;border-radius:.25cqw;}
-.slide h2{font-size:2.5cqw;font-weight:800;margin:0;line-height:1.15;}
+.slide h2{font-size:2.4cqw;font-weight:800;margin:0;line-height:1.2;}
 
-/* ad slide — priority 5, lowest weight, plain treatment */
-.slide-ad .scrim{background:linear-gradient(0deg, rgba(20,20,20,0.55) 0%, rgba(20,20,20,0.15) 100%);}
+/* welcome slide — building/candle photo, replaces the old always-photo sidebar cards */
+.slide-welcome .content{justify-content:flex-end;}
+.slide-welcome p{font-size:1.05cqw;font-weight:600;margin:.5cqw 0 0;opacity:.92;}
+
+/* ad slide — priority 5, lowest weight */
+.slide-ad .scrim{background:linear-gradient(0deg, rgba(16,20,20,0.6) 0%, rgba(16,20,20,0.15) 100%);}
 .slide-ad .content{justify-content:center;align-items:center;text-align:center;}
 .ad-label{
   font-size:.85cqw;font-weight:700;letter-spacing:.04em;
-  background:rgba(255,255,255,0.85);color:var(--ink);
-  border-radius:999px;padding:.35cqw 1.1cqw;margin-bottom:1.2cqw;
+  background:#fff;color:var(--navy);
+  border-radius:999px;padding:.35cqw 1.1cqw;margin-bottom:1.1cqw;
 }
-.slide-ad h2{font-size:2.8cqw;}
+.slide-ad h2{font-size:2.7cqw;}
 .slide-ad p{font-size:1.1cqw;font-weight:600;margin:.6cqw 0 0;opacity:.95;}
 
 .dots{
-  position:absolute;bottom:1.2cqw;left:50%;transform:translateX(-50%);
+  position:absolute;bottom:1.1cqw;left:50%;transform:translateX(-50%);
   display:flex;gap:.6cqw;z-index:2;
 }
 .dot{width:.6cqw;height:.6cqw;border-radius:50%;background:rgba(255,255,255,0.35);transition:background .3s, transform .3s;}
-.dot.on{background:#fff;transform:scale(1.25);}
+.dot.on{background:var(--mint-pop);transform:scale(1.25);}
 
 /* ---------- bottom ticker bar — priority 2 (ynet) ---------- */
 .ticker-bar{
   flex-shrink:0;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:1.1vw;
-  height:4.6vw;
+  border-radius:1vw;
+  height:4.2vw;
   display:flex;align-items:center;
-  padding:0 1.4vw;
-  gap:1.4vw;
-  box-shadow:0 .6vw 1.6vw -1.4vw rgba(35,37,48,0.35);
+  padding:0 1.3vw;
+  gap:1.3vw;
+  box-shadow:0 .6vw 1.6vw -1.4vw rgba(15,37,48,0.35);
 }
 .brand-block{display:flex;align-items:center;gap:.6vw;flex-shrink:0;}
-.brand-dot{width:1.9vw;height:1.9vw;border-radius:.5vw;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95vw;}
+.brand-dot{width:1.8vw;height:1.8vw;border-radius:.5vw;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9vw;}
 .brand-text{line-height:1.15;}
-.brand-text b{display:block;font-size:.92vw;font-weight:800;}
-.brand-text span{font-size:.7vw;color:var(--ink-dim);font-weight:600;}
+.brand-text b{display:block;font-size:.88vw;font-weight:800;}
+.brand-text span{font-size:.68vw;color:var(--ink-dim);font-weight:600;}
 .ticker-sep{width:1px;align-self:stretch;background:var(--line);}
 .ticker-flow{flex:1;min-width:0;overflow:hidden;white-space:nowrap;direction:ltr;}
 .ticker-flow-track{
-  display:inline-flex;gap:3.4vw;
+  display:inline-flex;gap:3.2vw;
   animation:scroll-rtl 55s linear infinite;
-  font-size:1vw;font-weight:600;
+  font-size:.95vw;font-weight:600;
 }
-.ticker-flow-track b{font-weight:800;margin-inline-end:.4vw;}
+.ticker-flow-track b{font-weight:800;color:var(--green-deep);margin-inline-end:.4vw;}
 @keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .ynet-block{display:flex;align-items:center;gap:.7vw;flex-shrink:0;}
-.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:.72vw;color:var(--ink-dim);font-weight:700;}
-.live-dot{width:.5vw;height:.5vw;border-radius:50%;background:#e0453f;animation:pulse 1.8s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
-.ynet-logo{height:1.9vw;width:auto;display:block;}
+.live-wrap{display:flex;align-items:center;gap:.4vw;font-size:.68vw;color:var(--ink-dim);font-weight:700;}
+.live-dot{width:.5vw;height:.5vw;border-radius:50%;background:var(--mint-pop);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.ynet-logo{height:1.8vw;width:auto;display:block;}
 
 @media (prefers-reduced-motion: reduce){
-  .ticker-flow-track,.live-dot,.flame::before{animation:none;}
+  .ticker-flow-track,.live-dot{animation:none;}
   .slide{transition:opacity .3s;}
 }

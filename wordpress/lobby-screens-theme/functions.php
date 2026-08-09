@@ -224,3 +224,16 @@ function lobby_screens_get_shabbat_times() {
 	set_transient( $cache_key, $result, HOUR_IN_SECONDS );
 	return $result;
 }
+
+/**
+ * Hebrew Gregorian date string. WP's date_i18n() needs the site locale
+ * switched to he_IL to localize day/month names — simpler to just hardcode
+ * the two small lookup arrays for this single display line.
+ */
+function lobby_screens_hebrew_date() {
+	$days   = array( 'ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת' );
+	$months = array( 'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר' );
+	$day    = $days[ (int) current_time( 'w' ) ];
+	$month  = $months[ (int) current_time( 'n' ) - 1 ];
+	return sprintf( 'יום %s · %s ב%s %s', $day, current_time( 'j' ), $month, current_time( 'Y' ) );
+}

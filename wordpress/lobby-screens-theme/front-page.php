@@ -92,6 +92,7 @@ $theme_uri = get_stylesheet_directory_uri();
   </defs>
 </svg>
 
+<div class="fit" id="fitCanvas">
 <div class="bg-photo"></div>
 <img class="ornament ornament-top" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-ornament.png' ); ?>" alt="">
 <img class="ornament ornament-bottom" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-ornament.png' ); ?>" alt="">
@@ -203,8 +204,19 @@ $theme_uri = get_stylesheet_directory_uri();
     </div>
   </footer>
 </div>
+</div><!-- /.fit -->
 
 <script>
+/* fit-to-screen: scale the fixed 1920x1080 canvas to the window, keeping
+   the full frame visible on any monitor/TV (letterboxed when needed) */
+function fitScreen(){
+  var s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
+  document.getElementById('fitCanvas').style.transform=
+    'translate(-50%,-50%) scale('+s+')';
+}
+window.addEventListener('resize',fitScreen);
+fitScreen();
+
 function tick(){
   var d=new Date();
   var p=function(n){return String(n).padStart(2,'0');};

@@ -108,6 +108,10 @@ window (.fit) — see v4.2 note near the .fit rule.
   --glass:rgba(18,20,24,0.55);
   --glass-strong:rgba(13,14,17,0.72);
   --line:rgba(255,255,255,0.10);
+  /* v5.5: Aviv asked to take the grey frames to white. One token drives
+     every card/bubble/bar outline; a softer one for the inner pills. */
+  --frame:rgba(255,255,255,0.52);
+  --frame-soft:rgba(255,255,255,0.20);
   --gold:#9D9379;        /* brand value, sampled from the client's PDFs */
   --gold-bright:#C9BC9C; /* lifted for small text over photo */
   --white:#F4F3EF;
@@ -213,7 +217,7 @@ body{
     var(--glass);
   backdrop-filter:blur(30px) saturate(1.25);
   -webkit-backdrop-filter:blur(30px) saturate(1.25);
-  border:1px solid rgba(201,188,156,.20);
+  border:1px solid var(--frame);
   border-radius:28px;
   padding:24px 28px 26px;
   box-shadow:
@@ -283,43 +287,43 @@ body{
    so it reads as "the building is speaking to you". Because the text has
    its own surface, the right-side scrim on the photo could be eased —
    the background reads brighter than before. */
+/* v5.5: the two dots didn't read as a speech bubble, so this is a real
+   pointed tail. The trick that makes it seamless: the bubble's gradient
+   runs VERTICALLY, so its bottom edge is one flat colour across the
+   whole width — the tail can then use that exact colour and, because a
+   child paints over its parent's border, its fill hides the bubble's
+   bottom border where the two meet. Earlier attempts used a diagonal
+   gradient, so the tail never matched and read as a floating diamond. */
 .w-ann-bubble{
   position:relative;
   margin-top:16px;
   border-radius:44px;
   padding:44px 52px;
   background:
-    linear-gradient(158deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.05) 34%, rgba(10,11,13,.34) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.05) 42%, rgba(9,10,13,.30) 100%),
     var(--glass-strong);
   backdrop-filter:blur(30px) saturate(1.25);
   -webkit-backdrop-filter:blur(30px) saturate(1.25);
-  border:1px solid rgba(201,188,156,.22);
+  border:1px solid var(--frame);
   box-shadow:
     0 36px 70px -34px rgba(0,0,0,.8),
     inset 0 1px 0 rgba(255,255,255,.22);
 }
-/* the tail — two descending dots (the thought-bubble idiom). A single
-   pointed tail needs to fuse with the bubble's 1px border and reads as a
-   detached diamond instead; separate dots are meant to be separate, so
-   they stay clean at any size. */
-.w-ann-bubble::before,
 .w-ann-bubble::after{
   content:'';
   position:absolute;
-  border-radius:50%;
-  background:var(--glass-strong);
+  bottom:-27px;right:96px;
+  width:54px;height:54px;
+  /* identical composite to the bubble's bottom edge */
+  background:
+    linear-gradient(0deg, rgba(9,10,13,.30), rgba(9,10,13,.30)),
+    var(--glass-strong);
   backdrop-filter:blur(30px) saturate(1.25);
   -webkit-backdrop-filter:blur(30px) saturate(1.25);
-  border:1px solid rgba(201,188,156,.22);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
-}
-.w-ann-bubble::before{
-  width:30px;height:30px;
-  bottom:-20px;right:76px;
-}
-.w-ann-bubble::after{
-  width:15px;height:15px;
-  bottom:-44px;right:52px;
+  border-right:1px solid var(--frame);
+  border-bottom:1px solid var(--frame);
+  border-bottom-right-radius:10px;
+  transform:rotate(45deg);
 }
 .w-ann-viewport{position:relative;height:252px;}
 .w-ann-item{
@@ -360,7 +364,7 @@ body{
   padding:10px 4px 12px;
   border-radius:16px;
   background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.06);
+  border:1px solid var(--frame-soft);
 }
 .w-weather-day{font-size:15px;font-weight:600;color:var(--gold-bright);letter-spacing:.04em;}
 .w-weather-icon{width:32px;height:32px;}
@@ -378,7 +382,7 @@ body{
   padding:12px 8px 14px;
   border-radius:18px;
   background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.06);
+  border:1px solid var(--frame-soft);
 }
 .w-shabbat-t-label{font-size:14px;font-weight:400;color:var(--dim);letter-spacing:.14em;}
 .w-shabbat-t-val{
@@ -423,7 +427,7 @@ body{
     var(--glass-strong);
   backdrop-filter:blur(30px) saturate(1.25);
   -webkit-backdrop-filter:blur(30px) saturate(1.25);
-  border:1px solid rgba(201,188,156,.20);
+  border:1px solid var(--frame);
   border-radius:26px;
   height:96px;
   padding:0 30px;

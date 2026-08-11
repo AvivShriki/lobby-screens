@@ -155,10 +155,13 @@ body{
    the hero text lives (RTL reading side) */
 .bg-scrim{
   position:absolute;inset:0;z-index:1;
+  /* v5.2: scrims eased right back — the point of the brighter photo is
+     that it stays bright. Only enough darkening to hold white text: a
+     little at the top (clock), a soft veil on the right (headline), and
+     a firmer band at the very bottom (ticker sits on it). */
   background:
-    linear-gradient(180deg, rgba(9,10,12,.7) 0%, rgba(9,10,12,.2) 24%, rgba(9,10,12,.14) 58%, rgba(9,10,12,.74) 100%),
-    /* deepen the right side, where the RTL hero headline sits */
-    linear-gradient(270deg, rgba(9,10,12,.62) 0%, rgba(9,10,12,.2) 44%, transparent 64%);
+    linear-gradient(180deg, rgba(9,10,12,.5) 0%, rgba(9,10,12,.1) 22%, rgba(9,10,12,.06) 56%, rgba(9,10,12,.62) 100%),
+    linear-gradient(270deg, rgba(9,10,12,.34) 0%, rgba(9,10,12,.1) 46%, transparent 66%);
 }
 
 /* ---------- frame / zones ---------- */

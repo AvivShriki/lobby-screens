@@ -160,7 +160,25 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
               <span class="stage-dot"></span>
           </div>
 
-    <div class="weather">
+    <!-- ONE sports strip — swapped with weather per Aviv (v4.1) -->
+    <div class="one-strip">
+      <img class="one-logo" src="assets/images/one-logo.png" alt="ONE.CO.IL">
+      <div class="one-rotator">
+                  <div class="one-headline is-active">גוברות השמועות: ניימאר ממשיך להתקרב למיאמי</div>
+                  <div class="one-headline">אורן גולן עשוי לשמש כמנכ&quot;ל עירוני רחובות</div>
+                  <div class="one-headline">איבדה נכס? משה אסולין לא ימשיך במ.ס דימונה</div>
+                  <div class="one-headline">ביה&quot;ד העליון דחה את הערעור של אשדוד על מוצ&#039;ה</div>
+                  <div class="one-headline">רביבו יחזור להרכב? במכבי טוענים: הכל פתוח</div>
+                  <div class="one-headline">שלושה שחקני מכבי ת&quot;א הושאלו לבית&quot;ר ירושלים</div>
+                  <div class="one-headline">נטו מועמד לארסנל, באיירן מינכן סימנה את טיאגו</div>
+                  <div class="one-headline">היוזמה של הלוחם נתן לוי למחווה של פיטר פלצ&#039;יק</div>
+              </div>
+    </div>
+  </main>
+
+  <!-- news footer: compact weather row + ynet ticker, kept quiet -->
+  <footer class="news">
+    <div class="news-weather">
             <div class="wx-col">
         <span class="wx-day">שלישי</span>
         <svg class="wx-icon"><use href="#wxSun"/></svg>
@@ -204,23 +222,6 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
         <span class="wx-min">23°</span>
       </div>
           </div>
-  </main>
-
-  <!-- news footer: sports headline rotator + ynet ticker, kept quiet -->
-  <footer class="news">
-    <div class="news-one" id="oneRotator">
-      <img class="one-logo" src="assets/images/one-logo.png" alt="ONE.CO.IL">
-      <div class="one-rotator">
-                  <div class="one-headline is-active">גוברות השמועות: ניימאר ממשיך להתקרב למיאמי</div>
-                  <div class="one-headline">אורן גולן עשוי לשמש כמנכ&quot;ל עירוני רחובות</div>
-                  <div class="one-headline">איבדה נכס? משה אסולין לא ימשיך במ.ס דימונה</div>
-                  <div class="one-headline">ביה&quot;ד העליון דחה את הערעור של אשדוד על מוצ&#039;ה</div>
-                  <div class="one-headline">רביבו יחזור להרכב? במכבי טוענים: הכל פתוח</div>
-                  <div class="one-headline">שלושה שחקני מכבי ת&quot;א הושאלו לבית&quot;ר ירושלים</div>
-                  <div class="one-headline">נטו מועמד לארסנל, באיירן מינכן סימנה את טיאגו</div>
-                  <div class="one-headline">היוזמה של הלוחם נתן לוי למחווה של פיטר פלצ&#039;יק</div>
-              </div>
-    </div>
     <div class="news-ynet">
       <span class="ynet-chip"><img src="assets/images/ynet-logo.png" alt="Ynet"></span>
       <div class="ticker-flow">

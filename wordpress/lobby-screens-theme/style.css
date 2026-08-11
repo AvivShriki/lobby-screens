@@ -136,11 +136,15 @@ body{
 }
 
 /* ---------- ambient background ---------- */
-/* the photo IS the surface — full presence, very slow Ken Burns drift */
+/* the photo IS the surface — full presence, very slow Ken Burns drift.
+   v5.1: the client's own construction-site photo was dropped (Aviv: too
+   grey / not at the level of the references). Replaced with a graded
+   blue-hour tower facade (Pexels, free for commercial use — see README):
+   dark mass on the right where the RTL hero text sits, and a warm
+   vertical light line that echoes the Otzma logo's tower strokes. */
 .bg-photo{
   position:absolute;inset:0;z-index:0;
-  background:url('assets/images/building-nachal-hever.jpg') center 40%/cover;
-  filter:brightness(.92) saturate(.88);
+  background:url('assets/images/lobby-bg-tower.jpg') center center/cover;
   animation:kenburns 52s ease-in-out infinite alternate;
 }
 @keyframes kenburns{
@@ -153,9 +157,8 @@ body{
   position:absolute;inset:0;z-index:1;
   background:
     linear-gradient(180deg, rgba(9,10,12,.7) 0%, rgba(9,10,12,.2) 24%, rgba(9,10,12,.14) 58%, rgba(9,10,12,.74) 100%),
-    linear-gradient(270deg, rgba(9,10,12,.5) 0%, rgba(9,10,12,.12) 46%, transparent 62%),
-    /* warm brand-gold veil — takes the chill off the grey concrete */
-    linear-gradient(0deg, rgba(157,147,121,.09), rgba(157,147,121,.09));
+    /* deepen the right side, where the RTL hero headline sits */
+    linear-gradient(270deg, rgba(9,10,12,.62) 0%, rgba(9,10,12,.2) 44%, transparent 64%);
 }
 
 /* ---------- frame / zones ---------- */

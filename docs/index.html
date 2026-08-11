@@ -49,13 +49,13 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <linearGradient id="sunGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#d8c793"/><stop offset="100%" stop-color="#9D9379"/>
+      <stop offset="0%" stop-color="#e8d9a8"/><stop offset="100%" stop-color="#B9A87E"/>
     </linearGradient>
     <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#d6d4cd"/><stop offset="100%" stop-color="#a3a19a"/>
+      <stop offset="0%" stop-color="#e3e2dd"/><stop offset="100%" stop-color="#b0afa8"/>
     </linearGradient>
     <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#b0aca1"/><stop offset="100%" stop-color="#8a867c"/>
+      <stop offset="0%" stop-color="#c0bdb2"/><stop offset="100%" stop-color="#94908a"/>
     </linearGradient>
     <symbol id="wxSun" viewBox="0 0 40 40">
       <circle cx="20" cy="20" r="10" fill="url(#sunGrad)"/>
@@ -80,158 +80,141 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </svg>
 
 <div class="fit" id="fitCanvas">
-<div class="bg-photo"></div>
-<img class="ornament ornament-top" src="assets/images/otzma-ornament.png" alt="">
-<img class="ornament ornament-bottom" src="assets/images/otzma-ornament.png" alt="">
+  <div class="bg-photo"></div>
+  <div class="bg-scrim"></div>
 
-<div class="frame" dir="rtl" lang="he">
+  <div class="frame" dir="rtl" lang="he">
 
-  <!-- identity column: fixed info per spec §3 — company brand, building,
-       clock/date, plus shabbat (the client's own sign opens with בס"ד) -->
-  <aside class="identity">
-    <img class="identity-logo" src="assets/images/otzma-logo-dark.png" alt="עוצמה — ניהול ואחזקת מבנים">
-    <div class="identity-slogan">&quot;דרכינו היא עוצמתנו&quot;</div>
-
-    <div class="divider"><span class="divider-gem"></span></div>
-
-    <h1 class="identity-building">נחל חבר 16-18</h1>
-    <div class="identity-city">באר שבע</div>
-
-    <div class="identity-clock">
-      <svg class="clock-analog" viewBox="0 0 100 100">
-        <circle class="clock-analog-face" cx="50" cy="50" r="47"/>
-                  <line class="clock-analog-tick" x1="50" y1="9" x2="50" y2="4.5"/>
-                  <line class="clock-analog-tick" x1="70.5" y1="14.49" x2="72.75" y2="10.6"/>
-                  <line class="clock-analog-tick" x1="85.51" y1="29.5" x2="89.4" y2="27.25"/>
-                  <line class="clock-analog-tick" x1="91" y1="50" x2="95.5" y2="50"/>
-                  <line class="clock-analog-tick" x1="85.51" y1="70.5" x2="89.4" y2="72.75"/>
-                  <line class="clock-analog-tick" x1="70.5" y1="85.51" x2="72.75" y2="89.4"/>
-                  <line class="clock-analog-tick" x1="50" y1="91" x2="50" y2="95.5"/>
-                  <line class="clock-analog-tick" x1="29.5" y1="85.51" x2="27.25" y2="89.4"/>
-                  <line class="clock-analog-tick" x1="14.49" y1="70.5" x2="10.6" y2="72.75"/>
-                  <line class="clock-analog-tick" x1="9" y1="50" x2="4.5" y2="50"/>
-                  <line class="clock-analog-tick" x1="14.49" y1="29.5" x2="10.6" y2="27.25"/>
-                  <line class="clock-analog-tick" x1="29.5" y1="14.49" x2="27.25" y2="10.6"/>
-                <line class="clock-analog-hand clock-analog-hour" id="handHour" x1="50" y1="50" x2="50" y2="29"/>
-        <line class="clock-analog-hand clock-analog-min" id="handMin" x1="50" y1="50" x2="50" y2="19"/>
-        <line class="clock-analog-hand clock-analog-sec" id="handSec" x1="50" y1="50" x2="50" y2="15"/>
-        <circle class="clock-analog-pin" cx="50" cy="50" r="2.6"/>
-      </svg>
-      <div class="clock-digital" id="clockTime">--:--</div>
-      <div class="clock-date">יום שלישי · 11 באוגוסט 2026</div>
-    </div>
-
-        <div class="shabbat">
-      <div class="divider"><span class="divider-gem"></span></div>
-      <div class="shabbat-parasha">פרשת ראה</div>
-      <div class="shabbat-times">
-        <div class="shabbat-t">
-          <span class="shabbat-t-label">כניסת שבת</span>
-          <span class="shabbat-t-val">19:04</span>
-        </div>
-        <div class="shabbat-t">
-          <span class="shabbat-t-label">יציאת שבת</span>
-          <span class="shabbat-t-val">20:02</span>
-        </div>
-      </div>
-    </div>
-      </aside>
-
-  <!-- stage: ONE notice at a time, huge type, slow crossfade — the
-       anti-dashboard heart of the design -->
-  <main class="stage">
-    <div class="stage-label">הודעות לדיירים</div>
-    <div class="stage-viewport" id="stageViewport">
-            <div class="stage-item is-active">
-        <div class="stage-title">ישיבת ועד בית ביום רביעי הקרוב בשעה 20:00</div>
-                  <div class="stage-detail">הישיבה תתקיים בלובי הבניין. נוכחות כלל הדיירים חשובה.</div>
-              </div>
-            <div class="stage-item">
-        <div class="stage-title">נא לשמור על ניקיון חדר האשפה והחניון המשותף</div>
-                  <div class="stage-detail">סביבה נקיה היא הבית של כולנו. תודה על שיתוף הפעולה.</div>
-              </div>
-            <div class="stage-item">
-        <div class="stage-title">עבודות תחזוקה במעלית הצפונית ביום שני</div>
-                  <div class="stage-detail">בין השעות 09:00–13:00. נא להשתמש במעלית הדרומית.</div>
-              </div>
-          </div>
-    <div class="stage-dots" id="stageDots">
-              <span class="stage-dot is-active"></span>
-              <span class="stage-dot"></span>
-              <span class="stage-dot"></span>
-          </div>
-
-    <!-- ONE sports strip — swapped with weather per Aviv (v4.1) -->
-    <div class="one-strip">
-      <img class="one-logo" src="assets/images/one-logo.png" alt="ONE.CO.IL">
-      <div class="one-rotator">
-                  <div class="one-headline is-active">גוברות השמועות: ניימאר ממשיך להתקרב למיאמי</div>
-                  <div class="one-headline">אורן גולן עשוי לשמש כמנכ&quot;ל עירוני רחובות</div>
-                  <div class="one-headline">איבדה נכס? משה אסולין לא ימשיך במ.ס דימונה</div>
-                  <div class="one-headline">ביה&quot;ד העליון דחה את הערעור של אשדוד על מוצ&#039;ה</div>
-                  <div class="one-headline">רביבו יחזור להרכב? במכבי טוענים: הכל פתוח</div>
-                  <div class="one-headline">שלושה שחקני מכבי ת&quot;א הושאלו לבית&quot;ר ירושלים</div>
-                  <div class="one-headline">נטו מועמד לארסנל, באיירן מינכן סימנה את טיאגו</div>
-                  <div class="one-headline">היוזמה של הלוחם נתן לוי למחווה של פיטר פלצ&#039;יק</div>
-              </div>
-    </div>
-  </main>
-
-  <!-- news footer: compact weather row + ynet ticker, kept quiet -->
-  <footer class="news">
-    <div class="news-weather">
-            <div class="wx-col">
-        <span class="wx-day">שלישי</span>
-        <svg class="wx-icon"><use href="#wxSun"/></svg>
-        <span class="wx-max">38°</span>
-        <span class="wx-min">22°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">רביעי</span>
-        <svg class="wx-icon"><use href="#wxSun"/></svg>
-        <span class="wx-max">37°</span>
-        <span class="wx-min">23°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">חמישי</span>
-        <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">36°</span>
-        <span class="wx-min">24°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">שישי</span>
-        <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">35°</span>
-        <span class="wx-min">24°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">שבת</span>
-        <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">35°</span>
-        <span class="wx-min">24°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">ראשון</span>
-        <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">33°</span>
-        <span class="wx-min">24°</span>
-      </div>
-            <div class="wx-col">
-        <span class="wx-day">שני</span>
-        <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">32°</span>
-        <span class="wx-min">23°</span>
-      </div>
-          </div>
-    <div class="news-ynet">
-      <span class="ynet-chip"><img src="assets/images/ynet-logo.png" alt="Ynet"></span>
-      <div class="ticker-flow">
-        <div class="ticker-track"><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span></div>
-      </div>
-      <div class="news-brand">עוצמה · ניהול ואחזקת מבנים</div>
-    </div>
-  </footer>
+    <header class="zone-top">
+      <div class="w-identity">
+  <img class="w-identity-mark" src="assets/images/otzma-mark.png" alt="">
+  <div class="w-identity-text">
+    <div class="w-identity-building">נחל חבר 16-18</div>
+    <div class="w-identity-sub">באר שבע · עוצמה · ניהול ואחזקת מבנים</div>
+  </div>
 </div>
+<div class="w-clock">
+  <div class="w-clock-time" id="clockTime">--:--</div>
+  <div class="w-clock-date">יום שלישי · 11 באוגוסט 2026</div>
+</div>
+    </header>
+
+    <main class="zone-hero">
+      <div class="w-ann">
+  <div class="w-ann-label"><span class="w-ann-label-dot"></span>הודעות לדיירים</div>
+  <div class="w-ann-viewport">
+        <div class="w-ann-item is-active">
+      <div class="w-ann-title">ישיבת ועד בית ביום רביעי הקרוב בשעה 20:00</div>
+              <div class="w-ann-detail">הישיבה תתקיים בלובי הבניין. נוכחות כלל הדיירים חשובה.</div>
+          </div>
+        <div class="w-ann-item">
+      <div class="w-ann-title">נא לשמור על ניקיון חדר האשפה והחניון המשותף</div>
+              <div class="w-ann-detail">סביבה נקיה היא הבית של כולנו. תודה על שיתוף הפעולה.</div>
+          </div>
+        <div class="w-ann-item">
+      <div class="w-ann-title">עבודות תחזוקה במעלית הצפונית ביום שני</div>
+              <div class="w-ann-detail">בין השעות 09:00–13:00. נא להשתמש במעלית הדרומית.</div>
+          </div>
+      </div>
+  <div class="w-ann-dots">
+          <span class="w-ann-dot is-active"></span>
+          <span class="w-ann-dot"></span>
+          <span class="w-ann-dot"></span>
+      </div>
+</div>
+    </main>
+
+    <aside class="zone-rail">
+              <div class="card w-weather">
+  <div class="card-label">מזג אוויר · שבוע קדימה</div>
+  <div class="w-weather-grid">
+        <div class="w-weather-col">
+      <span class="w-weather-day">שלישי</span>
+      <svg class="w-weather-icon"><use href="#wxSun"/></svg>
+      <span class="w-weather-max">38°</span>
+      <span class="w-weather-min">22°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">רביעי</span>
+      <svg class="w-weather-icon"><use href="#wxSun"/></svg>
+      <span class="w-weather-max">37°</span>
+      <span class="w-weather-min">23°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">חמישי</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">36°</span>
+      <span class="w-weather-min">24°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">שישי</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">35°</span>
+      <span class="w-weather-min">24°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">שבת</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">35°</span>
+      <span class="w-weather-min">24°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">ראשון</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">33°</span>
+      <span class="w-weather-min">24°</span>
+    </div>
+        <div class="w-weather-col">
+      <span class="w-weather-day">שני</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">32°</span>
+      <span class="w-weather-min">23°</span>
+    </div>
+      </div>
+</div>
+              <div class="card w-shabbat">
+  <div class="card-label">שבת · פרשת ראה</div>
+  <div class="w-shabbat-times">
+    <div class="w-shabbat-t">
+      <span class="w-shabbat-t-label">כניסה</span>
+      <span class="w-shabbat-t-val">19:04</span>
+    </div>
+    <div class="w-shabbat-sep"></div>
+    <div class="w-shabbat-t">
+      <span class="w-shabbat-t-label">יציאה</span>
+      <span class="w-shabbat-t-val">20:02</span>
+    </div>
+  </div>
+</div>
+              <div class="card w-sports">
+  <div class="card-label">
+    ספורט
+    <img class="w-sports-logo" src="assets/images/one-logo.png" alt="ONE.CO.IL">
+  </div>
+  <div class="w-sports-viewport">
+          <div class="w-sports-item is-active">גוברות השמועות: ניימאר ממשיך להתקרב למיאמי</div>
+          <div class="w-sports-item">אורן גולן עשוי לשמש כמנכ&quot;ל עירוני רחובות</div>
+          <div class="w-sports-item">איבדה נכס? משה אסולין לא ימשיך במ.ס דימונה</div>
+          <div class="w-sports-item">ביה&quot;ד העליון דחה את הערעור של אשדוד על מוצ&#039;ה</div>
+          <div class="w-sports-item">רביבו יחזור להרכב? במכבי טוענים: הכל פתוח</div>
+          <div class="w-sports-item">שלושה שחקני מכבי ת&quot;א הושאלו לבית&quot;ר ירושלים</div>
+          <div class="w-sports-item">נטו מועמד לארסנל, באיירן מינכן סימנה את טיאגו</div>
+          <div class="w-sports-item">היוזמה של הלוחם נתן לוי למחווה של פיטר פלצ&#039;יק</div>
+      </div>
+</div>
+          </aside>
+
+    <footer class="zone-ticker">
+      <div class="w-news">
+  <span class="w-news-chip"><img src="assets/images/ynet-logo.png" alt="Ynet"></span>
+  <div class="w-news-flow">
+    <div class="w-news-track"><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span></div>
+  </div>
+  <div class="w-news-brand">עוצמה · ניהול ואחזקת מבנים</div>
+</div>
+    </footer>
+
+  </div>
 </div><!-- /.fit -->
 
 <script>
@@ -245,23 +228,16 @@ function fitScreen(){
 window.addEventListener('resize',fitScreen);
 fitScreen();
 
+/* ClockWidget */
 function tick(){
   var d=new Date();
   var p=function(n){return String(n).padStart(2,'0');};
   var el=document.getElementById('clockTime');
   if(el) el.textContent=p(d.getHours())+':'+p(d.getMinutes());
-
-  var h=d.getHours()%12, m=d.getMinutes(), s=d.getSeconds();
-  var hourEl=document.getElementById('handHour');
-  var minEl=document.getElementById('handMin');
-  var secEl=document.getElementById('handSec');
-  if(hourEl) hourEl.style.transform='rotate('+((h+m/60)*30)+'deg)';
-  if(minEl) minEl.style.transform='rotate('+((m+s/60)*6)+'deg)';
-  if(secEl) secEl.style.transform='rotate('+(s*6)+'deg)';
 }
 tick();setInterval(tick,1000);
 
-/* slow rotators: one visible item at a time, long holds, gentle fades */
+/* shared rotator: one visible item at a time, long holds, gentle fades */
 function rotate(itemSel,dotSel,holdMs){
   var items=document.querySelectorAll(itemSel);
   var dots=dotSel?document.querySelectorAll(dotSel):[];
@@ -275,8 +251,8 @@ function rotate(itemSel,dotSel,holdMs){
     if(dots[i]) dots[i].classList.add('is-active');
   },holdMs);
 }
-rotate('.stage-item','.stage-dot',11000);
-rotate('.one-headline',null,8000);
+rotate('.w-ann-item','.w-ann-dot',11000);   /* AnnouncementWidget */
+rotate('.w-sports-item',null,8000);          /* SportsWidget */
 </script>
 <script type="module">
 /*! This file is auto-generated */

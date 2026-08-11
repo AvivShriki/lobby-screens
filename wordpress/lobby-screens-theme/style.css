@@ -122,14 +122,17 @@ Anti-dashboard rules from the spec, applied here:
 }
 
 :root{
-  --charcoal:#1B1C1A;
-  --charcoal-lift:#232420;
+  /* v4.1: Aviv approved the style but found it too black — the base is
+     lifted from the brand's sign charcoal (#1B1C1A) to a warmer graphite,
+     and the photo layer shows through more. Gold/ivory stay untouched. */
+  --charcoal:#2B2C28;
+  --charcoal-deep:#232421;
   --gold:#9D9379;
   --gold-bright:#BCB198;
   --gold-soft:rgba(157,147,121,0.16);
   --ivory:#EAE9E4;
-  --ivory-dim:rgba(234,233,228,0.6);
-  --hairline:rgba(157,147,121,0.3);
+  --ivory-dim:rgba(234,233,228,0.68);
+  --hairline:rgba(157,147,121,0.34);
   --serif:'Frank Ruhl Libre',serif;
   --sans:'Heebo','Arial Hebrew',sans-serif;
 }
@@ -148,8 +151,8 @@ body{
 .bg-photo{
   position:fixed;inset:-4%;z-index:0;
   background:url('assets/images/building-nachal-hever.jpg') center 40%/cover;
-  opacity:.13;
-  filter:saturate(.55) brightness(.85);
+  opacity:.22;
+  filter:saturate(.6) brightness(1.05);
   animation:kenburns 52s ease-in-out infinite alternate;
 }
 @keyframes kenburns{
@@ -193,7 +196,7 @@ body{
   text-align:center;
   /* solid anchor: keeps the brand column calm and flat while the stage
      carries the photo tint */
-  background:var(--charcoal);
+  background:var(--charcoal-deep);
   min-height:0;
   overflow:hidden;
 }
@@ -330,14 +333,46 @@ body{
 }
 .stage-dot.is-active{background:var(--gold);transform:scale(1.35);}
 
-/* weather — a quiet typographic strip, no boxes */
-.weather{
+/* ONE sports strip — swapped with weather (v4.1, Aviv's request): the
+   rotating sports headline now lives at the stage bottom, bigger type */
+.one-strip{
   border-top:1px solid var(--hairline);
-  padding:1.3vw 0 1.5vw;
-  display:flex;justify-content:space-between;
+  padding:1.2vw 0 1.4vw;
+  display:flex;align-items:center;gap:1.6vw;
+}
+.one-logo{height:1.9vw;width:auto;display:block;flex-shrink:0;}
+.one-rotator{position:relative;flex:1;min-width:0;height:2.7vw;}
+.one-headline{
+  position:absolute;inset:0;
+  display:flex;align-items:center;
+  font-family:var(--serif);font-weight:500;
+  font-size:1.85vw;line-height:1.2;
+  color:var(--ivory);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(.5vw);
+  transition:opacity 1s ease, transform 1s ease;
+}
+.one-headline.is-active{opacity:1;transform:translateY(0);}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(.8vw);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ---------- news footer ---------- */
+.news{
+  grid-area:news;
+  border-top:1px solid var(--hairline);
+  background:rgba(35,36,33,0.6);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+/* weather — compact inline row in the footer (swapped with ONE, v4.1) */
+.news-weather{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75vw 3.4vw .55vw;
 }
 .wx-col{
-  display:flex;flex-direction:column;align-items:center;gap:.45vw;
+  display:flex;align-items:center;gap:.55vw;
   opacity:0;
   animation:fadeUp 1.1s ease forwards;
 }
@@ -348,51 +383,21 @@ body{
 .wx-col:nth-child(5){animation-delay:.75s;}
 .wx-col:nth-child(6){animation-delay:.9s;}
 .wx-col:nth-child(7){animation-delay:1.05s;}
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(.8vw);}
-  to{opacity:1;transform:translateY(0);}
-}
 .wx-day{
-  font-size:1vw;font-weight:600;
-  color:var(--gold-bright);letter-spacing:.08em;
+  font-size:.95vw;font-weight:600;
+  color:var(--gold-bright);letter-spacing:.06em;
 }
-.wx-icon{width:2.9vw;height:2.9vw;}
+.wx-icon{width:1.8vw;height:1.8vw;}
 .wx-max{
   font-family:var(--serif);font-weight:700;
-  font-size:1.5vw;color:var(--ivory);
+  font-size:1.15vw;color:var(--ivory);
   font-variant-numeric:tabular-nums;
 }
 .wx-min{
-  font-size:1.05vw;font-weight:400;
+  font-size:.95vw;font-weight:400;
   color:var(--ivory-dim);
   font-variant-numeric:tabular-nums;
 }
-
-/* ---------- news footer ---------- */
-.news{
-  grid-area:news;
-  border-top:1px solid var(--hairline);
-  background:rgba(27,28,26,0.6);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-}
-.news-one{
-  display:flex;align-items:center;gap:1.4vw;
-  padding:.9vw 3.4vw .7vw;
-}
-.one-logo{height:1.7vw;width:auto;display:block;flex-shrink:0;}
-.one-rotator{position:relative;flex:1;min-width:0;height:2.4vw;}
-.one-headline{
-  position:absolute;inset:0;
-  display:flex;align-items:center;
-  font-family:var(--serif);font-weight:500;
-  font-size:1.55vw;line-height:1.2;
-  color:var(--ivory);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  opacity:0;transform:translateY(.5vw);
-  transition:opacity 1s ease, transform 1s ease;
-}
-.one-headline.is-active{opacity:1;transform:translateY(0);}
 .news-ynet{
   display:flex;align-items:center;gap:1.2vw;
   border-top:1px solid rgba(157,147,121,0.16);

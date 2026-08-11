@@ -168,7 +168,20 @@ $theme_uri = get_stylesheet_directory_uri();
       <?php endforeach; ?>
     </div>
 
-    <div class="weather">
+    <!-- ONE sports strip — swapped with weather per Aviv (v4.1) -->
+    <div class="one-strip">
+      <img class="one-logo" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
+      <div class="one-rotator">
+        <?php foreach ( $one_headlines as $i => $headline ) : ?>
+          <div class="one-headline<?php echo 0 === $i ? ' is-active' : ''; ?>"><?php echo esc_html( $headline ); ?></div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </main>
+
+  <!-- news footer: compact weather row + ynet ticker, kept quiet -->
+  <footer class="news">
+    <div class="news-weather">
       <?php foreach ( $weather as $day ) :
         $kind    = lobby_screens_weather_icon_kind( $day['code'] );
         $icon_id = 'sun' === $kind ? 'wxSun' : ( 'rain' === $kind ? 'wxRain' : 'wxCloud' );
@@ -180,18 +193,6 @@ $theme_uri = get_stylesheet_directory_uri();
         <span class="wx-min"><?php echo esc_html( $day['min'] ); ?>°</span>
       </div>
       <?php endforeach; ?>
-    </div>
-  </main>
-
-  <!-- news footer: sports headline rotator + ynet ticker, kept quiet -->
-  <footer class="news">
-    <div class="news-one" id="oneRotator">
-      <img class="one-logo" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
-      <div class="one-rotator">
-        <?php foreach ( $one_headlines as $i => $headline ) : ?>
-          <div class="one-headline<?php echo 0 === $i ? ' is-active' : ''; ?>"><?php echo esc_html( $headline ); ?></div>
-        <?php endforeach; ?>
-      </div>
     </div>
     <div class="news-ynet">
       <span class="ynet-chip"><img src="<?php echo esc_url( $theme_uri . '/assets/images/ynet-logo.png' ); ?>" alt="Ynet"></span>

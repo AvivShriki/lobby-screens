@@ -199,22 +199,40 @@ body{
 }
 .zone-ticker{grid-area:ticker;margin-top:24px;}
 
-/* ---------- shared glass card ---------- */
+/* ---------- shared glass card ----------
+   v5.3: the cards were flat dark rectangles. Rebuilt as proper glass:
+   a top-lit gradient surface, a bright 1px inner highlight along the top
+   edge (how real glass catches light), a soft gold rim, and a deeper
+   shadow so each card sits above the photo instead of on it. The label
+   gained a short gold rule — the same diamond/rule motif the client uses
+   in their printed material. */
 .card{
-  background:var(--glass);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:22px 26px;
-  box-shadow:0 24px 48px -26px rgba(0,0,0,.6);
+  position:relative;
+  background:
+    linear-gradient(158deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.05) 34%, rgba(10,11,13,.30) 100%),
+    var(--glass);
+  backdrop-filter:blur(30px) saturate(1.25);
+  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  border:1px solid rgba(201,188,156,.20);
+  border-radius:28px;
+  padding:24px 28px 26px;
+  box-shadow:
+    0 30px 60px -30px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(0,0,0,.18);
 }
 .card-label{
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:center;gap:12px;
   font-size:16px;font-weight:600;
   color:var(--gold-bright);
-  letter-spacing:.09em;
-  margin-bottom:16px;
+  letter-spacing:.14em;
+  margin-bottom:18px;
+}
+/* short gold rule that closes the label line */
+.card-label::after{
+  content:'';
+  flex:1;height:1px;
+  background:linear-gradient(90deg, rgba(201,188,156,.42), transparent);
 }
 
 /* ---------- IdentityWidget ---------- */
@@ -289,28 +307,58 @@ body{
 .w-ann-dot.is-active{background:var(--gold-bright);transform:scale(1.35);}
 
 /* ---------- WeatherWidget ---------- */
-.w-weather-grid{display:flex;justify-content:space-between;}
-.w-weather-col{display:flex;flex-direction:column;align-items:center;gap:7px;}
-.w-weather-day{font-size:15px;font-weight:600;color:var(--dim);}
-.w-weather-icon{width:30px;height:30px;}
-.w-weather-max{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;}
-.w-weather-min{font-size:15px;font-weight:400;color:var(--dim);font-variant-numeric:tabular-nums;}
+/* each day gets its own faint inner pill so the row reads as a set of
+   values rather than loose floating numbers */
+.w-weather-grid{display:flex;justify-content:space-between;gap:6px;}
+.w-weather-col{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:10px 4px 12px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);
+}
+.w-weather-day{font-size:15px;font-weight:600;color:var(--gold-bright);letter-spacing:.04em;}
+.w-weather-icon{width:32px;height:32px;}
+.w-weather-max{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+.w-weather-min{font-size:14px;font-weight:400;color:var(--dim);font-variant-numeric:tabular-nums;line-height:1;}
 
 /* ---------- ShabbatWidget ---------- */
-.w-shabbat-times{display:flex;align-items:center;gap:34px;}
-.w-shabbat-t{display:flex;flex-direction:column;gap:3px;}
-.w-shabbat-t-label{font-size:15px;font-weight:400;color:var(--dim);letter-spacing:.08em;}
+.w-shabbat-times{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px;
+}
+.w-shabbat-t{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 8px 14px;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);
+}
+.w-shabbat-t-label{font-size:14px;font-weight:400;color:var(--dim);letter-spacing:.14em;}
 .w-shabbat-t-val{
-  font-size:40px;font-weight:300;line-height:1;
+  font-size:42px;font-weight:300;line-height:1;
   font-variant-numeric:tabular-nums;
 }
-.w-shabbat-sep{width:1px;height:44px;background:var(--line);}
+/* the client's diamond motif, used as the divider between the two times */
+.w-shabbat-sep{
+  width:7px;height:7px;flex-shrink:0;
+  background:var(--gold);
+  transform:rotate(45deg);
+}
 
 /* ---------- SportsWidget ---------- */
-.w-sports-logo{height:20px;width:auto;display:block;margin-inline-start:auto;}
-.w-sports-viewport{position:relative;height:76px;}
+.w-sports-logo{height:22px;width:auto;display:block;margin-inline-start:auto;}
+.w-sports .card-label::after{display:none;}
+.w-sports-viewport{
+  position:relative;height:82px;
+  padding-inline-start:16px;
+  border-inline-start:2px solid rgba(201,188,156,.45);
+}
 .w-sports-item{
   position:absolute;inset:0;
+  padding-inline-start:16px;
   font-size:23px;font-weight:600;line-height:1.4;
   display:-webkit-box;
   -webkit-line-clamp:2;
@@ -322,25 +370,31 @@ body{
 .w-sports-item.is-active{opacity:1;transform:translateY(0);}
 
 /* ---------- NewsWidget (ticker bar) ---------- */
+/* v5.3: enlarged per Aviv — taller bar, bigger logo and ticker text, and
+   the same glass treatment as the cards so the footer belongs to the set */
 .w-news{
-  display:flex;align-items:center;gap:24px;
-  background:var(--glass-strong);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border:1px solid var(--line);
-  border-radius:20px;
-  height:74px;
-  padding:0 26px;
-  box-shadow:0 24px 48px -26px rgba(0,0,0,.6);
+  display:flex;align-items:center;gap:28px;
+  background:
+    linear-gradient(158deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.04) 34%, rgba(10,11,13,.30) 100%),
+    var(--glass-strong);
+  backdrop-filter:blur(30px) saturate(1.25);
+  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  border:1px solid rgba(201,188,156,.20);
+  border-radius:26px;
+  height:96px;
+  padding:0 30px;
+  box-shadow:
+    0 30px 60px -30px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(255,255,255,.22);
 }
 .w-news-chip{
   background:var(--white);
-  border-radius:10px;
-  padding:5px 11px;
+  border-radius:12px;
+  padding:7px 14px;
   flex-shrink:0;
   display:flex;align-items:center;
 }
-.w-news-chip img{height:25px;width:auto;display:block;}
+.w-news-chip img{height:34px;width:auto;display:block;}
 .w-news-flow{
   flex:1;min-width:0;overflow:hidden;white-space:nowrap;
   direction:ltr; /* RTL marquee gap fix — see README */
@@ -348,18 +402,18 @@ body{
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
 }
 .w-news-track{
-  display:inline-flex;gap:64px;
+  display:inline-flex;gap:72px;
   animation:scroll-rtl 60s linear infinite;
-  font-size:20px;font-weight:400;
-  color:var(--dim);
+  font-size:25px;font-weight:400;
+  color:var(--white);
 }
-.w-news-track b{font-weight:600;color:var(--gold-bright);margin:0 9px;}
+.w-news-track b{font-weight:600;color:var(--gold-bright);margin:0 10px;}
 @keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .w-news-brand{
   flex-shrink:0;
-  font-size:16px;color:var(--gold-bright);
+  font-size:17px;color:var(--gold-bright);
   border-inline-start:1px solid var(--line);
-  padding-inline-start:22px;
+  padding-inline-start:26px;
 }
 
 /* ---------- EventsWidget (stub) ---------- */

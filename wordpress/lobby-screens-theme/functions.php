@@ -12,9 +12,13 @@ function lobby_screens_setup() {
 add_action( 'after_setup_theme', 'lobby_screens_setup' );
 
 function lobby_screens_assets() {
-	wp_enqueue_style( 'lobby-screens-style', get_stylesheet_uri(), array(), '1.0' );
+	wp_enqueue_style( 'lobby-screens-style', get_stylesheet_uri(), array(), '4.0' );
 }
 add_action( 'wp_enqueue_scripts', 'lobby_screens_assets' );
+
+// Unattended TV display — the admin bar's 32px html margin pushes the
+// 100vh frame down and clips the news footer off-screen.
+add_filter( 'show_admin_bar', '__return_false' );
 
 /**
  * Ynet — main RSS feed. Curated: the raw feed on a heavy news day is mostly

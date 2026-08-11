@@ -79,6 +79,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
   </defs>
 </svg>
 
+<div class="fit" id="fitCanvas">
 <div class="bg-photo"></div>
 <img class="ornament ornament-top" src="assets/images/otzma-ornament.png" alt="">
 <img class="ornament ornament-bottom" src="assets/images/otzma-ornament.png" alt="">
@@ -182,14 +183,14 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
             <div class="wx-col">
         <span class="wx-day">שלישי</span>
         <svg class="wx-icon"><use href="#wxSun"/></svg>
-        <span class="wx-max">37°</span>
+        <span class="wx-max">38°</span>
         <span class="wx-min">22°</span>
       </div>
             <div class="wx-col">
         <span class="wx-day">רביעי</span>
         <svg class="wx-icon"><use href="#wxSun"/></svg>
         <span class="wx-max">37°</span>
-        <span class="wx-min">22°</span>
+        <span class="wx-min">23°</span>
       </div>
             <div class="wx-col">
         <span class="wx-day">חמישי</span>
@@ -200,20 +201,20 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
             <div class="wx-col">
         <span class="wx-day">שישי</span>
         <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">34°</span>
+        <span class="wx-max">35°</span>
         <span class="wx-min">24°</span>
       </div>
             <div class="wx-col">
         <span class="wx-day">שבת</span>
         <svg class="wx-icon"><use href="#wxCloud"/></svg>
-        <span class="wx-max">34°</span>
+        <span class="wx-max">35°</span>
         <span class="wx-min">24°</span>
       </div>
             <div class="wx-col">
         <span class="wx-day">ראשון</span>
         <svg class="wx-icon"><use href="#wxCloud"/></svg>
         <span class="wx-max">33°</span>
-        <span class="wx-min">23°</span>
+        <span class="wx-min">24°</span>
       </div>
             <div class="wx-col">
         <span class="wx-day">שני</span>
@@ -231,8 +232,19 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     </div>
   </footer>
 </div>
+</div><!-- /.fit -->
 
 <script>
+/* fit-to-screen: scale the fixed 1920x1080 canvas to the window, keeping
+   the full frame visible on any monitor/TV (letterboxed when needed) */
+function fitScreen(){
+  var s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
+  document.getElementById('fitCanvas').style.transform=
+    'translate(-50%,-50%) scale('+s+')';
+}
+window.addEventListener('resize',fitScreen);
+fitScreen();
+
 function tick(){
   var d=new Date();
   var p=function(n){return String(n).padStart(2,'0');};

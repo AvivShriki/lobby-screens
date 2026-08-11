@@ -142,6 +142,21 @@ html,body{height:100%;overflow:hidden;}
 body{
   font-family:var(--sans);
   color:var(--ivory);
+  /* letterbox bars when the window aspect differs from 16:9 */
+  background:#101010;
+}
+
+/* ---------- fit-to-screen canvas ----------
+   v4.2: the whole design is laid out on a fixed 1920x1080 canvas (all
+   sizes in design px) and scaled as one unit to fit whatever window or
+   screen it runs on — signage-player style. A 24" monitor with browser
+   chrome, a TV, a projector: the full screen is always visible,
+   letterboxed if the aspect differs. JS sets --fit-scale on resize. */
+.fit{
+  position:absolute;top:50%;left:50%;
+  width:1920px;height:1080px;
+  transform:translate(-50%,-50%) scale(var(--fit-scale,1));
+  overflow:hidden;
   background:var(--charcoal);
 }
 
@@ -149,7 +164,7 @@ body{
 /* building photo, heavily dimmed, with a very slow Ken Burns drift so the
    screen feels alive without ever competing with the text */
 .bg-photo{
-  position:fixed;inset:-4%;z-index:0;
+  position:absolute;inset:-4%;z-index:0;
   background:url('assets/images/building-nachal-hever.jpg') center 40%/cover;
   opacity:.22;
   filter:saturate(.6) brightness(1.05);
@@ -162,7 +177,7 @@ body{
 /* the client's topographic contour ornament, top and bottom edges — its
    own background is the same charcoal so it blends seamlessly */
 .ornament{
-  position:fixed;left:0;right:0;z-index:1;
+  position:absolute;left:0;right:0;z-index:1;
   width:100%;height:auto;
   opacity:.5;
   pointer-events:none;
@@ -175,11 +190,11 @@ body{
    right (reading start), the stage fills the rest, news spans the bottom. */
 .frame{
   position:relative;z-index:2;
-  height:100vh;
+  height:1080px;
   display:grid;
-  grid-template-columns:25vw 1fr;
+  grid-template-columns:480px 1fr;
   /* minmax(0,1fr): without the explicit 0 minimum the identity column's
-     stacked content sets a min-content floor, the row overflows 100vh and
+     stacked content sets a min-content floor, the row overflows 1080px and
      the news footer gets pushed below the screen edge */
   grid-template-rows:minmax(0,1fr) auto;
   grid-template-areas:
@@ -191,7 +206,7 @@ body{
 .identity{
   grid-area:identity;
   display:flex;flex-direction:column;align-items:center;
-  padding:2vw 2vw 1.4vw;
+  padding:38.4px 38.4px 26.9px;
   border-inline-end:1px solid var(--hairline);
   text-align:center;
   /* solid anchor: keeps the brand column calm and flat while the stage
@@ -201,45 +216,45 @@ body{
   overflow:hidden;
 }
 .identity-logo{
-  width:8.5vw;height:auto;display:block;
+  width:163.2px;height:auto;display:block;
 }
 .identity-slogan{
   font-family:var(--serif);font-weight:500;
   color:var(--gold);
-  font-size:.85vw;letter-spacing:.12em;
-  margin-top:.7vw;
+  font-size:16.3px;letter-spacing:.12em;
+  margin-top:13.4px;
 }
 /* the small diamond divider used across the client's printed material */
 .divider{
-  display:flex;align-items:center;gap:.55vw;
+  display:flex;align-items:center;gap:10.6px;
   width:70%;
-  margin:1vw 0;
+  margin:19.2px 0;
 }
 .divider::before,.divider::after{
   content:'';flex:1;height:1px;background:var(--hairline);
 }
 .divider-gem{
-  width:.42vw;height:.42vw;
+  width:8.1px;height:8.1px;
   background:var(--gold);
   transform:rotate(45deg);
   flex-shrink:0;
 }
 .identity-building{
   font-family:var(--serif);font-weight:900;
-  font-size:2.5vw;line-height:1.15;
+  font-size:48px;line-height:1.15;
   color:var(--ivory);
 }
 .identity-city{
-  font-size:1.05vw;font-weight:400;
+  font-size:20.2px;font-weight:400;
   color:var(--ivory-dim);
   letter-spacing:.28em;
-  margin-top:.5vw;
+  margin-top:9.6px;
 }
 .identity-clock{
   margin-top:auto;
   display:flex;flex-direction:column;align-items:center;
 }
-.clock-analog{width:6.4vw;height:6.4vw;margin-bottom:1vw;}
+.clock-analog{width:122.9px;height:122.9px;margin-bottom:19.2px;}
 .clock-analog-face{fill:none;stroke:var(--hairline);stroke-width:1.6;}
 .clock-analog-tick{stroke:var(--gold);stroke-width:2;stroke-linecap:round;opacity:.75;}
 .clock-analog-hand{stroke:var(--ivory);stroke-linecap:round;transform-origin:50px 50px;transition:transform .3s cubic-bezier(.4,1.6,.6,1);}
@@ -249,36 +264,36 @@ body{
 .clock-analog-pin{fill:var(--gold);}
 .clock-digital{
   font-family:var(--serif);font-weight:700;
-  font-size:4.2vw;line-height:1;
+  font-size:80.6px;line-height:1;
   font-variant-numeric:tabular-nums;
   color:var(--ivory);
 }
 .clock-date{
-  font-size:.95vw;font-weight:400;
+  font-size:18.2px;font-weight:400;
   color:var(--gold-bright);
   letter-spacing:.1em;
-  margin-top:.55vw;
+  margin-top:10.6px;
 }
 /* shabbat block, bottom of the column — the client's sign opens with
    בס"ד, so shabbat info belongs in the permanent identity zone */
 .shabbat{
   margin-top:auto;
   width:100%;
-  padding-top:1.4vw;
+  padding-top:26.9px;
 }
 .shabbat-parasha{
   font-family:var(--serif);font-weight:700;
-  font-size:1.45vw;color:var(--gold-bright);
+  font-size:27.8px;color:var(--gold-bright);
 }
 .shabbat-times{
-  display:flex;justify-content:center;gap:2.4vw;
-  margin-top:.8vw;
+  display:flex;justify-content:center;gap:46.1px;
+  margin-top:15.4px;
 }
-.shabbat-t{display:flex;flex-direction:column;gap:.15vw;}
-.shabbat-t-label{font-size:.78vw;color:var(--ivory-dim);letter-spacing:.14em;}
+.shabbat-t{display:flex;flex-direction:column;gap:2.9px;}
+.shabbat-t-label{font-size:15px;color:var(--ivory-dim);letter-spacing:.14em;}
 .shabbat-t-val{
   font-family:var(--serif);font-weight:700;
-  font-size:1.7vw;color:var(--ivory);
+  font-size:32.6px;color:var(--ivory);
   font-variant-numeric:tabular-nums;
 }
 
@@ -286,13 +301,13 @@ body{
 .stage{
   grid-area:stage;
   display:flex;flex-direction:column;
-  padding:3.2vw 3.4vw 0;
+  padding:61.4px 65.3px 0;
   min-height:0;
 }
 .stage-label{
-  display:flex;align-items:center;gap:1vw;
+  display:flex;align-items:center;gap:19.2px;
   font-family:var(--serif);font-weight:500;
-  font-size:1.15vw;letter-spacing:.3em;
+  font-size:22.1px;letter-spacing:.3em;
   color:var(--gold);
 }
 .stage-label::after{
@@ -305,29 +320,29 @@ body{
   position:absolute;inset:0;
   display:flex;flex-direction:column;justify-content:center;
   opacity:0;
-  transform:translateY(1.4vw);
+  transform:translateY(26.9px);
   transition:opacity 1.3s ease, transform 1.3s ease;
   pointer-events:none;
 }
 .stage-item.is-active{opacity:1;transform:translateY(0);}
 .stage-title{
   font-family:var(--serif);font-weight:700;
-  font-size:3.1vw;line-height:1.3;
+  font-size:59.5px;line-height:1.3;
   color:var(--ivory);
   max-width:22ch;
 }
 .stage-detail{
-  font-size:1.4vw;font-weight:400;line-height:1.6;
+  font-size:26.9px;font-weight:400;line-height:1.6;
   color:var(--ivory-dim);
-  margin-top:1.2vw;
+  margin-top:23px;
   max-width:40ch;
 }
 .stage-dots{
-  display:flex;gap:.6vw;
-  padding:0 0 1.6vw;
+  display:flex;gap:11.5px;
+  padding:0 0 30.7px;
 }
 .stage-dot{
-  width:.5vw;height:.5vw;border-radius:50%;
+  width:9.6px;height:9.6px;border-radius:50%;
   background:var(--hairline);
   transition:background .6s ease, transform .6s ease;
 }
@@ -337,24 +352,24 @@ body{
    rotating sports headline now lives at the stage bottom, bigger type */
 .one-strip{
   border-top:1px solid var(--hairline);
-  padding:1.2vw 0 1.4vw;
-  display:flex;align-items:center;gap:1.6vw;
+  padding:23px 0 26.9px;
+  display:flex;align-items:center;gap:30.7px;
 }
-.one-logo{height:1.9vw;width:auto;display:block;flex-shrink:0;}
-.one-rotator{position:relative;flex:1;min-width:0;height:2.7vw;}
+.one-logo{height:36.5px;width:auto;display:block;flex-shrink:0;}
+.one-rotator{position:relative;flex:1;min-width:0;height:51.8px;}
 .one-headline{
   position:absolute;inset:0;
   display:flex;align-items:center;
   font-family:var(--serif);font-weight:500;
-  font-size:1.85vw;line-height:1.2;
+  font-size:35.5px;line-height:1.2;
   color:var(--ivory);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  opacity:0;transform:translateY(.5vw);
+  opacity:0;transform:translateY(9.6px);
   transition:opacity 1s ease, transform 1s ease;
 }
 .one-headline.is-active{opacity:1;transform:translateY(0);}
 @keyframes fadeUp{
-  from{opacity:0;transform:translateY(.8vw);}
+  from{opacity:0;transform:translateY(15.4px);}
   to{opacity:1;transform:translateY(0);}
 }
 
@@ -369,10 +384,10 @@ body{
 /* weather — compact inline row in the footer (swapped with ONE, v4.1) */
 .news-weather{
   display:flex;align-items:center;justify-content:space-between;
-  padding:.75vw 3.4vw .55vw;
+  padding:14.4px 65.3px 10.6px;
 }
 .wx-col{
-  display:flex;align-items:center;gap:.55vw;
+  display:flex;align-items:center;gap:10.6px;
   opacity:0;
   animation:fadeUp 1.1s ease forwards;
 }
@@ -384,35 +399,35 @@ body{
 .wx-col:nth-child(6){animation-delay:.9s;}
 .wx-col:nth-child(7){animation-delay:1.05s;}
 .wx-day{
-  font-size:.95vw;font-weight:600;
+  font-size:18.2px;font-weight:600;
   color:var(--gold-bright);letter-spacing:.06em;
 }
-.wx-icon{width:1.8vw;height:1.8vw;}
+.wx-icon{width:34.6px;height:34.6px;}
 .wx-max{
   font-family:var(--serif);font-weight:700;
-  font-size:1.15vw;color:var(--ivory);
+  font-size:22.1px;color:var(--ivory);
   font-variant-numeric:tabular-nums;
 }
 .wx-min{
-  font-size:.95vw;font-weight:400;
+  font-size:18.2px;font-weight:400;
   color:var(--ivory-dim);
   font-variant-numeric:tabular-nums;
 }
 .news-ynet{
-  display:flex;align-items:center;gap:1.2vw;
+  display:flex;align-items:center;gap:23px;
   border-top:1px solid rgba(157,147,121,0.16);
-  padding:.55vw 3.4vw;
+  padding:10.6px 65.3px;
 }
 /* the ynet wordmark is mostly black — give it a small ivory chip so the
    official logo stays legible on charcoal */
 .ynet-chip{
   background:var(--ivory);
-  border-radius:.35vw;
-  padding:.25vw .55vw;
+  border-radius:6.7px;
+  padding:4.8px 10.6px;
   flex-shrink:0;
   display:flex;align-items:center;
 }
-.ynet-chip img{height:1.35vw;width:auto;display:block;}
+.ynet-chip img{height:25.9px;width:auto;display:block;}
 .ticker-flow{
   flex:1;min-width:0;overflow:hidden;white-space:nowrap;
   direction:ltr; /* RTL marquee gap fix — see README */
@@ -420,19 +435,19 @@ body{
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
 }
 .ticker-track{
-  display:inline-flex;gap:3.4vw;
+  display:inline-flex;gap:65.3px;
   animation:scroll-rtl 60s linear infinite;
-  font-size:1.05vw;font-weight:400;
+  font-size:20.2px;font-weight:400;
   color:var(--ivory-dim);
 }
-.ticker-track b{font-weight:600;color:var(--gold-bright);margin:0 .45vw;}
+.ticker-track b{font-weight:600;color:var(--gold-bright);margin:0 8.6px;}
 @keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .news-brand{
   flex-shrink:0;
-  display:flex;align-items:center;gap:.7vw;
-  font-size:.85vw;color:var(--gold);
+  display:flex;align-items:center;gap:13.4px;
+  font-size:16.3px;color:var(--gold);
   border-inline-start:1px solid var(--hairline);
-  padding-inline-start:1.2vw;
+  padding-inline-start:23px;
 }
 
 @media (prefers-reduced-motion: reduce){

@@ -105,17 +105,27 @@ window (.fit) — see v4.2 note near the .fit rule.
 
 :root{
   --night:#131417;
-  --glass:rgba(18,20,24,0.55);
-  --glass-strong:rgba(13,14,17,0.72);
+  /* v6.1: Aviv asked for the card interiors to go transparent so the video
+     shows through. Measured against 9 frames of the actual clip (canvas
+     sampling of the real footage, not a guess): over the ungraded daylight
+     video, 32% cards leave the small text at only ~2.7:1. Grading the
+     video to 70% brightness is what buys the transparency — that pairing
+     measures 4.71:1 worst-case, above the 4.5 bar for small text. */
+  --glass:rgba(30,34,41,0.32);
+  --glass-strong:rgba(26,30,36,0.38);
   --line:rgba(255,255,255,0.10);
   /* v5.5: Aviv asked to take the grey frames to white. One token drives
      every card/bubble/bar outline; a softer one for the inner pills. */
   --frame:rgba(255,255,255,0.52);
   --frame-soft:rgba(255,255,255,0.20);
-  --gold:#9D9379;        /* brand value, sampled from the client's PDFs */
-  --gold-bright:#C9BC9C; /* lifted for small text over photo */
+  --gold:#9D9379;        /* brand value — accents only: rules, diamond, dots */
+  /* label colour. The brand gold (#C9BC9C) tops out at 2.8:1 as small text
+     on transparent glass over this footage and never reaches 4.5 at any
+     workable opacity, so labels use a warm off-white that keeps the
+     champagne cast. Gold stays on the non-text accents. */
+  --gold-bright:#EFE9DA;
   --white:#F4F3EF;
-  --dim:rgba(244,243,239,0.66);
+  --dim:rgba(244,243,239,0.86);
   --sans:'Heebo','Arial Hebrew',sans-serif;
 }
 
@@ -163,6 +173,9 @@ body{
      licence. */
   transform-origin:center top;
   transform:scale(1.10);
+  /* graded down so the glass cards above can stay genuinely transparent —
+     see the --glass note. Also reads more cinematic than raw daylight. */
+  filter:brightness(0.70) saturate(1.05);
 }
 /* legibility scrims: heavier at top/bottom edges and on the right where
    the hero text lives (RTL reading side) */
@@ -222,10 +235,10 @@ body{
 .card{
   position:relative;
   background:
-    linear-gradient(158deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.05) 34%, rgba(10,11,13,.30) 100%),
+    linear-gradient(158deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.07) 34%, rgba(255,255,255,.03) 100%),
     var(--glass);
-  backdrop-filter:blur(30px) saturate(1.25);
-  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  backdrop-filter:blur(44px) saturate(1.3);
+  -webkit-backdrop-filter:blur(44px) saturate(1.3);
   border:1px solid var(--frame);
   border-radius:28px;
   padding:24px 28px 26px;
@@ -311,8 +324,8 @@ body{
   background:
     linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.05) 42%, rgba(9,10,13,.30) 100%),
     var(--glass-strong);
-  backdrop-filter:blur(30px) saturate(1.25);
-  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  backdrop-filter:blur(44px) saturate(1.3);
+  -webkit-backdrop-filter:blur(44px) saturate(1.3);
   border:1px solid var(--frame);
   box-shadow:
     0 36px 70px -34px rgba(0,0,0,.8),
@@ -327,8 +340,8 @@ body{
   background:
     linear-gradient(0deg, rgba(9,10,13,.30), rgba(9,10,13,.30)),
     var(--glass-strong);
-  backdrop-filter:blur(30px) saturate(1.25);
-  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  backdrop-filter:blur(44px) saturate(1.3);
+  -webkit-backdrop-filter:blur(44px) saturate(1.3);
   border-right:1px solid var(--frame);
   border-bottom:1px solid var(--frame);
   border-bottom-right-radius:10px;
@@ -372,7 +385,7 @@ body{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   padding:10px 4px 12px;
   border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  background:linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05));
   border:1px solid var(--frame-soft);
 }
 .w-weather-day{font-size:15px;font-weight:600;color:var(--gold-bright);letter-spacing:.04em;}
@@ -390,7 +403,7 @@ body{
   display:flex;flex-direction:column;align-items:center;gap:5px;
   padding:12px 8px 14px;
   border-radius:18px;
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  background:linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05));
   border:1px solid var(--frame-soft);
 }
 .w-shabbat-t-label{font-size:14px;font-weight:400;color:var(--dim);letter-spacing:.14em;}
@@ -432,10 +445,10 @@ body{
 .w-news{
   display:flex;align-items:center;gap:28px;
   background:
-    linear-gradient(158deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.04) 34%, rgba(10,11,13,.30) 100%),
+    linear-gradient(158deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.06) 34%, rgba(255,255,255,.03) 100%),
     var(--glass-strong);
-  backdrop-filter:blur(30px) saturate(1.25);
-  -webkit-backdrop-filter:blur(30px) saturate(1.25);
+  backdrop-filter:blur(44px) saturate(1.3);
+  -webkit-backdrop-filter:blur(44px) saturate(1.3);
   border:1px solid var(--frame);
   border-radius:26px;
   height:96px;

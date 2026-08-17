@@ -80,7 +80,14 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </svg>
 
 <div class="fit" id="fitCanvas">
-  <div class="bg-photo"></div>
+  <!-- ambient background. muted+playsinline are required for autoplay to
+       be allowed at all; the still frame stays as poster so the screen is
+       never blank while the file buffers, and as the fallback if a player
+       refuses to decode the video. -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto"
+    poster="assets/images/lobby-bg-tower.jpg">
+    <source src="assets/images/lobby-bg.mp4" type="video/mp4">
+  </video>
   <div class="bg-scrim"></div>
 
   <div class="frame" dir="rtl" lang="he">
@@ -95,7 +102,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </div>
 <div class="w-clock">
   <div class="w-clock-time" id="clockTime">--:--</div>
-  <div class="w-clock-date">יום שלישי · 11 באוגוסט 2026</div>
+  <div class="w-clock-date">יום שני · 17 באוגוסט 2026</div>
 </div>
     </header>
 
@@ -131,60 +138,60 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
   <div class="card-label">מזג אוויר · שבוע קדימה</div>
   <div class="w-weather-grid">
         <div class="w-weather-col">
+      <span class="w-weather-day">שני</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">33°</span>
+      <span class="w-weather-min">24°</span>
+    </div>
+        <div class="w-weather-col">
       <span class="w-weather-day">שלישי</span>
-      <svg class="w-weather-icon"><use href="#wxSun"/></svg>
-      <span class="w-weather-max">38°</span>
-      <span class="w-weather-min">22°</span>
+      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
+      <span class="w-weather-max">33°</span>
+      <span class="w-weather-min">21°</span>
     </div>
         <div class="w-weather-col">
       <span class="w-weather-day">רביעי</span>
       <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
-      <span class="w-weather-max">37°</span>
-      <span class="w-weather-min">23°</span>
+      <span class="w-weather-max">33°</span>
+      <span class="w-weather-min">21°</span>
     </div>
         <div class="w-weather-col">
       <span class="w-weather-day">חמישי</span>
       <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
-      <span class="w-weather-max">36°</span>
-      <span class="w-weather-min">24°</span>
+      <span class="w-weather-max">34°</span>
+      <span class="w-weather-min">22°</span>
     </div>
         <div class="w-weather-col">
       <span class="w-weather-day">שישי</span>
       <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
-      <span class="w-weather-max">35°</span>
+      <span class="w-weather-max">34°</span>
       <span class="w-weather-min">24°</span>
     </div>
         <div class="w-weather-col">
       <span class="w-weather-day">שבת</span>
       <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
-      <span class="w-weather-max">35°</span>
+      <span class="w-weather-max">33°</span>
       <span class="w-weather-min">24°</span>
     </div>
         <div class="w-weather-col">
       <span class="w-weather-day">ראשון</span>
       <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
       <span class="w-weather-max">33°</span>
-      <span class="w-weather-min">24°</span>
-    </div>
-        <div class="w-weather-col">
-      <span class="w-weather-day">שני</span>
-      <svg class="w-weather-icon"><use href="#wxCloud"/></svg>
-      <span class="w-weather-max">32°</span>
-      <span class="w-weather-min">23°</span>
+      <span class="w-weather-min">22°</span>
     </div>
       </div>
 </div>
               <div class="card w-shabbat">
-  <div class="card-label">שבת · פרשת ראה</div>
+  <div class="card-label">שבת · פרשת כי־תצא</div>
   <div class="w-shabbat-times">
     <div class="w-shabbat-t">
       <span class="w-shabbat-t-label">כניסה</span>
-      <span class="w-shabbat-t-val">19:04</span>
+      <span class="w-shabbat-t-val">18:57</span>
     </div>
     <div class="w-shabbat-sep"></div>
     <div class="w-shabbat-t">
       <span class="w-shabbat-t-label">יציאה</span>
-      <span class="w-shabbat-t-val">20:02</span>
+      <span class="w-shabbat-t-val">19:54</span>
     </div>
   </div>
 </div>
@@ -194,14 +201,14 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     <img class="w-sports-logo" src="assets/images/one-logo.png" alt="ONE.CO.IL">
   </div>
   <div class="w-sports-viewport">
-          <div class="w-sports-item is-active">גוברות השמועות: ניימאר ממשיך להתקרב למיאמי</div>
-          <div class="w-sports-item">אורן גולן עשוי לשמש כמנכ&quot;ל עירוני רחובות</div>
-          <div class="w-sports-item">איבדה נכס? משה אסולין לא ימשיך במ.ס דימונה</div>
-          <div class="w-sports-item">ביה&quot;ד העליון דחה את הערעור של אשדוד על מוצ&#039;ה</div>
-          <div class="w-sports-item">רביבו יחזור להרכב? במכבי טוענים: הכל פתוח</div>
-          <div class="w-sports-item">שלושה שחקני מכבי ת&quot;א הושאלו לבית&quot;ר ירושלים</div>
-          <div class="w-sports-item">נטו מועמד לארסנל, באיירן מינכן סימנה את טיאגו</div>
-          <div class="w-sports-item">היוזמה של הלוחם נתן לוי למחווה של פיטר פלצ&#039;יק</div>
+          <div class="w-sports-item is-active">&quot;לא פוטרתי או זומנתי לשימוע, אני בחופשת מחלה&quot;</div>
+          <div class="w-sports-item">בשעה זו: הדיון בבקשת הדחייה של מ.ס אשדוד</div>
+          <div class="w-sports-item">בעפולה התפלאו: ברגמן זה שקבע את הלו&quot;ז לעתירה</div>
+          <div class="w-sports-item">&quot;קשה להבין איך ריאל מדריד נתנה לרודרי לברוח&quot;</div>
+          <div class="w-sports-item">אכזבה לנבחרת השייט שנותרה מחוץ לשיוט המדליות</div>
+          <div class="w-sports-item">מי צריך את ויניסיוס? צוליס זוהר בתחילת דרכו</div>
+          <div class="w-sports-item">בית&quot;ר מבשרת ציון המתינה 25 שנים לעלות לליגה ב&#039;</div>
+          <div class="w-sports-item">עמית כהן: רוצים במינימום להגיע לפלייאוף העליון</div>
       </div>
 </div>
           </aside>
@@ -210,7 +217,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
       <div class="w-news">
   <span class="w-news-chip"><img src="assets/images/ynet-logo.png" alt="Ynet"></span>
   <div class="w-news-flow">
-    <div class="w-news-track"><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span><span><b>מבזק</b>שרים, ח&quot;כים ויועצים: הפוליטיקאים שוב נוהרים לרב המפורסם לקראת הבחירות</span><span><b>מבזק</b>הבקשה המלאה לשריון כ&quot;ץ - שפעם האמין בפריימריז: &quot;כולנו צריכים לעמוד לבחירה&quot;</span><span><b>מבזק</b>המחטף של נתניהו, הבקשה שנשמרה בסוד - והזעם בליכוד: &quot;שריון כ&quot;ץ? צעד מחפיר&quot;</span><span><b>מבזק</b>פעם נוספת: הפעילים שמטרידים את צה&quot;ל בסוריה חצו את הגבול - והושבו לישראל</span><span><b>מבזק</b>עימות פיזי באולפן - ואגרופים בחוץ: יוסף חדאד התארח בפודקאסט, כך זה נגמר | צפו</span><span><b>מבזק</b>דוח חדש חושף: כך הממשלה &quot;מפרקת את אוסלו&quot; - בלי חקיקה</span></div>
+    <div class="w-news-track"><span><b>מבזק</b>בישראל מזהים סימנים: ההנהגה הניצית באיראן נערכת למהלך התקפי</span><span><b>מבזק</b>נקמה על איראן: טראמפ מפנה עורף לדרום קוריאה, מצמצם תרגיל צבאי ומחמיא לקים</span><span><b>מבזק</b>רוצים להתחיל מחדש? לידיעת מלי וליאל: המדריך האמריקני להיעלמות חוקית</span><span><b>מבזק</b>הפאדיחה של ערוץ 14 היא ממש לא רק קוריוז</span><span><b>מבזק</b>המתפקדים מול הבוחרים</span><span><b>מבזק</b>רק ביבי</span><span><b>מבזק</b>בישראל מזהים סימנים: ההנהגה הניצית באיראן נערכת למהלך התקפי</span><span><b>מבזק</b>נקמה על איראן: טראמפ מפנה עורף לדרום קוריאה, מצמצם תרגיל צבאי ומחמיא לקים</span><span><b>מבזק</b>רוצים להתחיל מחדש? לידיעת מלי וליאל: המדריך האמריקני להיעלמות חוקית</span><span><b>מבזק</b>הפאדיחה של ערוץ 14 היא ממש לא רק קוריוז</span><span><b>מבזק</b>המתפקדים מול הבוחרים</span><span><b>מבזק</b>רק ביבי</span></div>
   </div>
   <div class="w-news-brand">עוצמה · ניהול ואחזקת מבנים</div>
 </div>
@@ -229,6 +236,29 @@ function fitScreen(){
 }
 window.addEventListener('resize',fitScreen);
 fitScreen();
+
+/* background video keep-alive. An unattended lobby screen has nobody to
+   click "play": browsers can refuse the initial autoplay, and a long
+   uptime can leave the element stalled after a tab throttle or a decode
+   hiccup. Retry on the events that typically unblock it, plus a slow
+   watchdog that restarts playback if the clock stops advancing. */
+(function(){
+  var v=document.querySelector('.bg-video');
+  if(!v) return;
+  var kick=function(){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); };
+  ['loadeddata','canplay','pause','stalled','suspend'].forEach(function(e){
+    v.addEventListener(e,kick);
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden) kick();
+  });
+  kick();
+  var last=-1;
+  setInterval(function(){
+    if(v.paused || v.currentTime===last) kick();
+    last=v.currentTime;
+  },5000);
+})();
 
 /* ClockWidget */
 function tick(){

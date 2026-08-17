@@ -146,14 +146,23 @@ body{
    blue-hour tower facade (Pexels, free for commercial use — see README):
    dark mass on the right where the RTL hero text sits, and a warm
    vertical light line that echoes the Otzma logo's tower strokes. */
-.bg-photo{
+/* v6: the background is now a looping video (Aviv supplied a 1:42 clip).
+   Ken Burns is gone — the footage already moves, and animating it on top
+   would fight the camera. The still image survives as the <video> poster,
+   so the screen is never blank while the file buffers. */
+.bg-video{
   position:absolute;inset:0;z-index:0;
-  background:url('assets/images/lobby-bg-tower.jpg') center center/cover;
-  animation:kenburns 52s ease-in-out infinite alternate;
-}
-@keyframes kenburns{
-  from{transform:scale(1) translate(0,0);}
-  to{transform:scale(1.09) translate(1.2%,-1%);}
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+  /* the supplied clip carries the videographer's watermark burned into
+     the bottom-left (measured: y 93.3%-96.9%). Anchoring the scale at the
+     top and zooming 1.10 pushes that strip past the bottom edge, where it
+     is clipped. 1.071 is the exact threshold — 1.10 leaves a margin in
+     case the mark drifts. See README: this is a cosmetic patch, not a
+     licence. */
+  transform-origin:center top;
+  transform:scale(1.10);
 }
 /* legibility scrims: heavier at top/bottom edges and on the right where
    the hero text lives (RTL reading side) */

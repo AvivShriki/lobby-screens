@@ -43,6 +43,8 @@ $lobby = array(
 		'rail' => array( 'weather', 'shabbat', 'sports' ),
 	),
 );
+
+$theme_uri = get_stylesheet_directory_uri();
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -88,7 +90,14 @@ $lobby = array(
 </svg>
 
 <div class="fit" id="fitCanvas">
-  <div class="bg-photo"></div>
+  <!-- ambient background. muted+playsinline are required for autoplay to
+       be allowed at all; the still frame stays as poster so the screen is
+       never blank while the file buffers, and as the fallback if a player
+       refuses to decode the video. -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto"
+    poster="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg-tower.jpg' ); ?>">
+    <source src="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg.mp4' ); ?>" type="video/mp4">
+  </video>
   <div class="bg-scrim"></div>
 
   <div class="frame" dir="rtl" lang="he">
@@ -135,6 +144,29 @@ function fitScreen(){
 }
 window.addEventListener('resize',fitScreen);
 fitScreen();
+
+/* background video keep-alive. An unattended lobby screen has nobody to
+   click "play": browsers can refuse the initial autoplay, and a long
+   uptime can leave the element stalled after a tab throttle or a decode
+   hiccup. Retry on the events that typically unblock it, plus a slow
+   watchdog that restarts playback if the clock stops advancing. */
+(function(){
+  var v=document.querySelector('.bg-video');
+  if(!v) return;
+  var kick=function(){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); };
+  ['loadeddata','canplay','pause','stalled','suspend'].forEach(function(e){
+    v.addEventListener(e,kick);
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden) kick();
+  });
+  kick();
+  var last=-1;
+  setInterval(function(){
+    if(v.paused || v.currentTime===last) kick();
+    last=v.currentTime;
+  },5000);
+})();
 
 /* ClockWidget */
 function tick(){

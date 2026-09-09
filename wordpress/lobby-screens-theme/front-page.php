@@ -1,46 +1,82 @@
 <?php
 /**
- * The whole screen. One page, static presentation — no user interaction,
- * meant to run unattended on a 35-45" lobby TV. All data is fetched
- * server-side (see functions.php) so there's no CORS/CSP wall.
+ * The whole screen. One page, passive presentation — no navigation, no
+ * buttons, no interaction of any kind (brief §11). Meant to run unattended
+ * for days on a lobby TV, so every external fetch happens server-side
+ * (functions.php) and there is no CORS/CSP wall to work around.
  *
- * v5 — "Otzma Modern" + component architecture (client spec §17-18).
- * Design: full-bleed building photo as the ambient material, floating
- * glass cards, thin/bold Heebo contrast, gold as a sparse accent —
- * grounded in modern smart-building / TV-interface references, NOT the
- * classic-hotel serif look of v4 (Aviv: "לא מתחבר לעיצוב").
+ * v7 — "Otzma Signage" (brief of 9.9.2026): a four-card dashboard over a
+ * full-width Ynet ticker. This deliberately reverses the v5 brief's "not a
+ * dashboard" rule; see the note at the top of style.css.
  *
- * Architecture: every widget is an independent component under
- * template-parts/widgets/ (§18: ClockWidget, WeatherWidget, NewsWidget,
- * AnnouncementWidget, SportsWidget + stubs for Events/Image/Video).
- * This file only holds per-building config ($lobby) and zone composition.
- * Adding a widget = dropping a file in widgets/ and listing it in a zone.
+ * v7.1 follows the client mockup (mockups/v7-client-mockup.png), which arrived
+ * after the first pass and corrected two things the written brief got backwards:
+ * the logo belongs on the RIGHT with the clock on the LEFT (§3 says the
+ * opposite in words, but the mockup is RTL-correct), and the cards read right
+ * to left.
+ *
+ * v7.2 (Aviv's sketch, mockups/v7-2-layout-sketch.png): the Ynet card is gone —
+ * the ticker along the bottom already carries Ynet, so a whole card of it was
+ * the same feed twice. What is left moves to two side columns with the middle
+ * deliberately empty, so the background footage is a real part of the screen
+ * rather than something buried under four panels.
+ *
+ * Architecture (brief §19): this file holds only the per-building config
+ * ($lobby) and the zone composition. Every panel is an independent widget
+ * under template-parts/widgets/, and the two news cards share one body
+ * partial (template-parts/parts/feed-card.php) rather than duplicating it.
+ * Swapping a panel for a given building = editing one line of $lobby.
  */
 
 $lobby = array(
 	'company'  => 'עוצמה · ניהול ואחזקת מבנים',
 	'building' => 'נחל חבר 16-18',
 	'city'     => 'באר שבע',
-	// PLACEHOLDER notices — no real content supplied yet by the client.
+	// Hebcal city key — see lobby_screens_shabbat_cities()
+	'shabbat_city' => 'beersheva',
+	// the mockup sets the greeting on two lines rather than using the brief's
+	// optional one-line motto
+	'welcome'  => 'ברוכים הבאים',
+	'motto'    => 'לבניין שלנו',
+
+	// PLACEHOLDER notices. Wording is the client's own example text from the
+	// brief; the dates were moved to the current week so the demo screen
+	// doesn't advertise stale ones. Still waiting on real content.
 	'notices'  => array(
 		array(
-			'title'  => 'ישיבת ועד בית ביום רביעי הקרוב בשעה 20:00',
-			'detail' => 'הישיבה תתקיים בלובי הבניין. נוכחות כלל הדיירים חשובה.',
+			'title'    => 'תחזוקת מעליות',
+			'detail'   => 'ביום שני הקרוב תתקיים בדיקה תקופתית במעליות הבניין.',
+			'date'     => '14.09.2026',
+			'icon'     => 'wrench',
+			'priority' => true,
 		),
 		array(
-			'title'  => 'נא לשמור על ניקיון חדר האשפה והחניון המשותף',
-			'detail' => 'סביבה נקיה היא הבית של כולנו. תודה על שיתוף הפעולה.',
+			'title'  => 'הסדרי חניה',
+			'detail' => 'לתשומת לב הדיירים — החל מה-1 באוקטובר יחול שינוי בהסדרי החניה.',
+			'date'   => '11.09.2026',
+			'icon'   => 'car',
 		),
 		array(
-			'title'  => 'עבודות תחזוקה במעלית הצפונית ביום שני',
-			'detail' => 'בין השעות 09:00–13:00. נא להשתמש במעלית הדרומית.',
+			'title'  => 'עבודות אינסטלציה',
+			'detail' => 'ביום חמישי תבוצע עבודת תחזוקה במערכת המים בבניין.',
+			'date'   => '10.09.2026',
+			'icon'   => 'water',
+		),
+		array(
+			'title'  => 'ערב דיירים',
+			'detail' => 'ביום שלישי בשעה 19:30 יתקיים ערב דיירים בלובי הבניין.',
+			'date'   => '08.09.2026',
+			'icon'   => 'people',
 		),
 	),
-	// zone composition — the seed of the future per-building widget
-	// config (show/hide/order). Stub widgets (events/image/video) exist
-	// under template-parts/widgets/ and activate by listing them here.
+
+	// The seed of the future per-building widget config (show/hide/order).
+	// 'lead' is the full-height column on the reading side; 'stack' is the
+	// shorter column on the far side, top to bottom. The empty middle between
+	// them is the point of the layout, not a gap left over from it.
 	'zones'    => array(
-		'rail' => array( 'weather', 'shabbat', 'sports' ),
+		'lead'  => array( 'residents-panel' ),
+		'stack' => array( 'sports-panel', 'shabbat-panel' ),
 	),
 );
 
@@ -56,7 +92,7 @@ $theme_uri = get_stylesheet_directory_uri();
 </head>
 <body <?php body_class(); ?>>
 
-<svg width="0" height="0" style="position:absolute">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <linearGradient id="sunGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#e8d9a8"/><stop offset="100%" stop-color="#B9A87E"/>
@@ -90,10 +126,10 @@ $theme_uri = get_stylesheet_directory_uri();
 </svg>
 
 <div class="fit" id="fitCanvas">
-  <!-- ambient background. muted+playsinline are required for autoplay to
-       be allowed at all; the still frame stays as poster so the screen is
-       never blank while the file buffers, and as the fallback if a player
-       refuses to decode the video. -->
+  <!-- ambient background. muted+playsinline are required for autoplay to be
+       allowed at all; the still frame stays as poster so the screen is never
+       blank while the file buffers, and as the fallback if a player refuses
+       to decode the video. -->
   <video class="bg-video" autoplay muted loop playsinline preload="auto"
     poster="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg-tower.jpg' ); ?>">
     <source src="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg.mp4' ); ?>" type="video/mp4">
@@ -103,40 +139,58 @@ $theme_uri = get_stylesheet_directory_uri();
   <div class="frame" dir="rtl" lang="he">
 
     <header class="zone-top">
+      <!-- RTL: the first child lands on the right, where the mockup puts the
+           logo and the greeting; the clock takes the far left. -->
+      <div class="hdr-lead reveal">
+        <?php
+        get_template_part( 'template-parts/widgets/brand' );
+        ?>
+        <div class="hdr-divider"></div>
+        <?php
+        get_template_part( 'template-parts/widgets/welcome', null, array(
+          'title' => $lobby['welcome'],
+          'sub'   => $lobby['motto'],
+        ) );
+        ?>
+      </div>
       <?php
-      get_template_part( 'template-parts/widgets/identity', null, array(
-        'building' => $lobby['building'],
-        'city'     => $lobby['city'],
-        'company'  => $lobby['company'],
+      get_template_part( 'template-parts/widgets/clock-weather', null, array(
+        'city' => $lobby['city'],
       ) );
-      get_template_part( 'template-parts/widgets/clock' );
       ?>
     </header>
 
-    <main class="zone-hero">
-      <?php
-      get_template_part( 'template-parts/widgets/announcements', null, array(
-        'notices' => $lobby['notices'],
-      ) );
-      ?>
+    <main class="zone-grid">
+      <?php foreach ( $lobby['zones']['lead'] as $panel ) : ?>
+        <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
+      <?php endforeach; ?>
+
+      <!-- the open middle: nothing here on purpose, so the footage shows -->
+      <div class="zone-open" aria-hidden="true"></div>
+
+      <div class="zone-stack">
+        <?php foreach ( $lobby['zones']['stack'] as $panel ) : ?>
+          <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
+        <?php endforeach; ?>
+      </div>
     </main>
 
-    <aside class="zone-rail">
-      <?php foreach ( $lobby['zones']['rail'] as $widget ) : ?>
-        <?php get_template_part( 'template-parts/widgets/' . $widget ); ?>
-      <?php endforeach; ?>
-    </aside>
-
     <footer class="zone-ticker">
-      <?php get_template_part( 'template-parts/widgets/news-ticker' ); ?>
+      <?php get_template_part( 'template-parts/widgets/ticker' ); ?>
     </footer>
 
   </div>
+
+  <!-- brief §18: when the feeds can't be reached the screen keeps showing the
+       last good render; this is the only hint that anything is stale. -->
+  <div class="stale-badge" id="staleBadge">הנתונים מתעדכנים…</div>
 </div><!-- /.fit -->
 
 <script>
-/* fit-to-screen: scale the fixed 1920x1080 canvas to the window, keeping
-   the full frame visible on any monitor/TV (letterboxed when needed) */
+/* ---- fit-to-screen ----
+   Scale the fixed 1920x1080 canvas to the window so the whole frame is
+   visible on any monitor or TV (letterboxed when the aspect differs).
+   This is what makes the design responsive without a second layout. */
 function fitScreen(){
   var s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
   document.getElementById('fitCanvas').style.transform=
@@ -145,11 +199,12 @@ function fitScreen(){
 window.addEventListener('resize',fitScreen);
 fitScreen();
 
-/* background video keep-alive. An unattended lobby screen has nobody to
-   click "play": browsers can refuse the initial autoplay, and a long
-   uptime can leave the element stalled after a tab throttle or a decode
-   hiccup. Retry on the events that typically unblock it, plus a slow
-   watchdog that restarts playback if the clock stops advancing. */
+/* ---- background video keep-alive ----
+   An unattended lobby screen has nobody to click "play": browsers can refuse
+   the initial autoplay, and a long uptime can leave the element stalled after
+   a tab throttle or a decode hiccup. Retry on the events that typically
+   unblock it, plus a slow watchdog that restarts playback if the clock stops
+   advancing. */
 (function(){
   var v=document.querySelector('.bg-video');
   if(!v) return;
@@ -168,7 +223,7 @@ fitScreen();
   },5000);
 })();
 
-/* ClockWidget */
+/* ---- ClockWidget ---- the only value rendered client-side */
 function tick(){
   var d=new Date();
   var p=function(n){return String(n).padStart(2,'0');};
@@ -177,22 +232,56 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
-/* shared rotator: one visible item at a time, long holds, gentle fades */
-function rotate(itemSel,dotSel,holdMs){
-  var items=document.querySelectorAll(itemSel);
-  var dots=dotSel?document.querySelectorAll(dotSel):[];
-  if(items.length<2) return;
-  var i=0;
-  setInterval(function(){
-    items[i].classList.remove('is-active');
-    if(dots[i]) dots[i].classList.remove('is-active');
-    i=(i+1)%items.length;
-    items[i].classList.add('is-active');
-    if(dots[i]) dots[i].classList.add('is-active');
-  },holdMs);
-}
-rotate('.w-ann-item','.w-ann-dot',11000);   /* AnnouncementWidget */
-rotate('.w-sports-item',null,8000);          /* SportsWidget */
+/* ---- rotators ----
+   One generic driver for every crossfading block on the screen. A container
+   marked data-rotator="<hold ms>" cycles .is-active across its element
+   children; a container with a single child never animates, which is why the
+   notices card sits still when a building has four notices or fewer. */
+(function(){
+  document.querySelectorAll('[data-rotator]').forEach(function(box){
+    var items=box.children;
+    if(items.length<2) return;
+    var hold=parseInt(box.getAttribute('data-rotator'),10)||12000;
+    var i=0;
+    setInterval(function(){
+      items[i].classList.remove('is-active');
+      i=(i+1)%items.length;
+      items[i].classList.add('is-active');
+    },hold);
+  });
+})();
+
+/* ---- data refresh (brief §17-18) ----
+   The feeds are server-rendered, so the only way to get fresh news onto a
+   screen that never gets touched is to reload the page. Two rules make that
+   safe for an unattended display:
+     1. never reload blind. If the probe fails the network is down and a
+        reload would replace a good screen with a browser error page — the
+        exact "broken screen" the brief rules out. Instead the last good
+        render stays up and a small badge admits the data is stale.
+     2. fade out first, so the refresh reads as a transition and not a flash.
+   The interval is longer than the feed transients (10 min), so a reload
+   always lands on data that has actually changed. */
+(function(){
+  var REFRESH=15*60*1000;
+  var badge=document.getElementById('staleBadge');
+  function stale(on){ if(badge) badge.classList.toggle('is-on',on); }
+
+  function cycle(){
+    if(!navigator.onLine){ stale(true); return; }
+    fetch(window.location.href,{method:'HEAD',cache:'no-store'})
+      .then(function(r){
+        if(!r.ok) throw new Error('bad status');
+        stale(false);
+        document.body.classList.add('is-refreshing');
+        setTimeout(function(){ window.location.reload(); },700);
+      })
+      .catch(function(){ stale(true); });
+  }
+  setInterval(cycle,REFRESH);
+  window.addEventListener('online',function(){ stale(false); });
+  window.addEventListener('offline',function(){ stale(true); });
+})();
 </script>
 <?php wp_footer(); ?>
 </body>

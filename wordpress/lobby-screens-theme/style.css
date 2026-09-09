@@ -1,25 +1,38 @@
 /*
 Theme Name: Lobby Screens
 Description: TV display for residential building lobbies (35-45"). Static presentation, no user interaction — server-rendered live data (Ynet, ONE, weather, Shabbat times) refreshed on each reload.
-Version: 5.0
+Version: 7.2
 
-v5 — "Otzma Modern". Aviv didn't connect to v4's classic-hotel look
-(serif + ornament read as old-world). Rebuilt against the modern
-references he pointed to (Dribbble/Behance: digital signage UI, smart
-building dashboards, TV interfaces, luxury hotel screens). The patterns
-adopted from that research:
-  - the building photo is the ambient material — full-bleed, not a tint
-  - content floats in glass cards: large radius, backdrop blur, light
-    1px hairline, soft deep shadow
-  - Heebo only, thin-vs-bold contrast (huge thin clock, small spaced
-    labels, bold headlines) — the serif and the ornament strips are gone
-  - brand gold (#9D9379 family, sampled from the client's PDFs) survives
-    as a sparse accent: labels, dots, hairlines
-Layout is composed of independent widget components (see
-template-parts/widgets/) — every .w-* block here is one widget's CSS.
+v7 — "Otzma Signage". Aviv rewrote the brief: the screen is an explicit
+four-card dashboard (Ynet · ONE · Shabbat · resident notices) over a
+full-width Ynet ticker. This reverses the v5 brief's "לא Dashboard — אין רשת
+של כרטיסים קטנים"; the reversal is deliberate and Aviv's call, recorded here
+so the older note in the README isn't read as still binding.
 
-All sizes are design-px on a fixed 1920x1080 canvas scaled to fit the
-window (.fit) — see v4.2 note near the .fit rule.
+v7.1 is built against the client mockup (mockups/v7-client-mockup.png), which
+turned up after the first pass and corrected two structural mistakes made from
+the written brief alone:
+  - the logo sits on the RIGHT and the clock on the LEFT. §3 of the brief says
+    the opposite in words, but the mockup is RTL-correct and wins.
+  - the cards run, right to left: notices · Shabbat · ONE · Ynet. The first
+    pass had that order mirrored.
+The surface treatment moved with it: near-opaque black panels with a thin gold
+rule, not the translucent glass of v5/v6. The background photo is only really
+present behind the header, exactly as the mockup stages it.
+
+v7.2 acts on Aviv's sketch (mockups/v7-2-layout-sketch.png): the Ynet card is
+gone — the ticker already carries that feed, so a card of it was the same
+source twice — and the three that remain move to two side columns with the
+middle left open. The background clip is the reason for the change, so the
+grading was reopened to match: it is now a foreground element in its own strip
+rather than texture under four panels.
+
+What carries over: Heebo only with thin-vs-bold contrast, gold as a measured
+accent, and the fixed 1920x1080 canvas scaled to fit any TV (.fit).
+
+All sizes are design-px on the fixed canvas — see the .fit rule. Layout is
+composed of independent widget components; every .w-* block below is one
+widget's CSS (see template-parts/widgets/).
 */
 
 @font-face{
@@ -104,43 +117,68 @@ window (.fit) — see v4.2 note near the .fit rule.
 }
 
 :root{
-  --night:#131417;
-  /* v6.1: Aviv asked for the card interiors to go transparent so the video
-     shows through. Measured against 9 frames of the actual clip (canvas
-     sampling of the real footage, not a guess): over the ungraded daylight
-     video, 32% cards leave the small text at only ~2.7:1. Grading the
-     video to 70% brightness is what buys the transparency — that pairing
-     measures 4.71:1 worst-case, above the 4.5 bar for small text. */
-  --glass:rgba(30,34,41,0.32);
-  --glass-strong:rgba(26,30,36,0.38);
-  --line:rgba(255,255,255,0.10);
-  /* v5.5: Aviv asked to take the grey frames to white. One token drives
-     every card/bubble/bar outline; a softer one for the inner pills. */
-  --frame:rgba(255,255,255,0.52);
-  --frame-soft:rgba(255,255,255,0.20);
-  --gold:#9D9379;        /* brand value — accents only: rules, diamond, dots */
-  /* label colour. The brand gold (#C9BC9C) tops out at 2.8:1 as small text
-     on transparent glass over this footage and never reaches 4.5 at any
-     workable opacity, so labels use a warm off-white that keeps the
-     champagne cast. Gold stays on the non-text accents. */
-  --gold-bright:#EFE9DA;
+  --night:#0A0B0E;
+  /* v7.1: the mockup's cards are near-solid black panels, not glass. A little
+     translucency is kept so the background still reads as depth behind them. */
+  /* v7.2: the field behind the cards is a bright clip now, not a blacked-out
+     one, so the panels take a little more body. Measured below. */
+  --card-top:rgba(17,19,25,0.94);
+  --card-bot:rgba(10,11,15,0.965);
+  --line:rgba(255,255,255,0.09);
+  --frame:rgba(201,188,156,0.26);      /* the thin gold rule around a card */
+  --frame-soft:rgba(255,255,255,0.14);
+  --gold:#9D9379;                      /* brand value — rules, diamonds, dots */
+  --gold-line:rgba(157,147,121,0.55);
+  /* Display gold. The brand value is too dark to set text in against black at
+     any useful size; this is the same hue opened up, and it is used only for
+     headings and labels, never for body copy. Measured below. */
+  --gold-text:#D9C79C;
   --white:#F4F3EF;
-  --dim:rgba(244,243,239,0.86);
+  --dim:rgba(244,243,239,0.78);
+  --dimmer:rgba(244,243,239,0.60);
+  --ink:#14161B;                       /* text on the light Shabbat panel */
+  --ink-dim:rgba(20,22,27,0.66);
   --sans:'Heebo','Arial Hebrew',sans-serif;
+
+  --radius:20px;
+  --pad:20px 22px 22px;
 }
+
+/* CONTRAST, re-measured for v7.2 (9.9.2026) by sampling 9 frames of the real
+   background clip, taking the 98th-percentile-brightest pixels behind each
+   region and compositing the CSS layers in maths rather than eyeballing a
+   screenshot. Small-text bar is 4.5:1; large display text is 3:1.
+     card body   --white     15.1 : 1
+     card body   --dim        9.6 : 1
+     notice date --dimmer     6.2 : 1
+     card label  --gold-text 10.1 : 1
+     Shabbat panel --ink on #F2F0EA   14.1 : 1
+     ticker text                      17.3 : 1
+   The header is the only text with no panel under it, measured per band after
+   .zone-top::before:
+     clock, left      8.78 white / 6.09 dim
+     greeting, mid    9.10 white / 6.28 dim / 6.06 gold
+     logo, right     15.56 white
+   Opening the clip to .92 for v7.2 pushed the greeting band's 22px line down
+   to 4.21 — under the bar — until the header scrim's stop positions were
+   re-fitted around it. That line is the binding constraint here, not the
+   headline above it.
+   Redo this if the background clip, the grading or the scrims change. */
 
 *{box-sizing:border-box;margin:0;}
 html,body{height:100%;overflow:hidden;}
 body{
   font-family:var(--sans);
   color:var(--white);
-  /* letterbox bars when the window aspect differs from 16:9 */
-  background:#0b0b0c;
+  background:#000;      /* letterbox bars when the window isn't 16:9 */
+  -webkit-font-smoothing:antialiased;
 }
+img{display:block;}
 
 /* ---------- fit-to-screen canvas ----------
-   fixed 1920x1080 design canvas scaled as one unit to any window/TV
-   (JS sets the transform on resize); full frame always visible. */
+   Fixed 1920x1080 design canvas scaled as one unit to any window/TV (JS sets
+   the transform on resize), so the full frame is always visible and nothing
+   ever needs to scroll. Every size below is a design-px on it. */
 .fit{
   position:absolute;top:50%;left:50%;
   width:1920px;height:1080px;
@@ -149,358 +187,496 @@ body{
   background:var(--night);
 }
 
-/* ---------- ambient background ---------- */
-/* the photo IS the surface — full presence, very slow Ken Burns drift.
-   v5.1: the client's own construction-site photo was dropped (Aviv: too
-   grey / not at the level of the references). Replaced with a graded
-   blue-hour tower facade (Pexels, free for commercial use — see README):
-   dark mass on the right where the RTL hero text sits, and a warm
-   vertical light line that echoes the Otzma logo's tower strokes. */
-/* v6: the background is now a looping video (Aviv supplied a 1:42 clip).
-   Ken Burns is gone — the footage already moves, and animating it on top
-   would fight the camera. The still image survives as the <video> poster,
-   so the screen is never blank while the file buffers. */
+/* ---------- ambient background ----------
+   The mockup stages the photo as a bright band behind the header that falls
+   away to black under the cards. The scrim below does exactly that: almost
+   nothing at the top, solid by a third of the way down.
+   scale(1.10) clips the videographer's watermark off the bottom (v6 finding —
+   the threshold is 1.071); the blur makes the 640x360 source read as depth of
+   field rather than as a low-resolution file. */
 .bg-video{
   position:absolute;inset:0;z-index:0;
   width:100%;height:100%;
   object-fit:cover;
-  display:block;
-  /* the supplied clip carries the videographer's watermark burned into
-     the bottom-left (measured: y 93.3%-96.9%). Anchoring the scale at the
-     top and zooming 1.10 pushes that strip past the bottom edge, where it
-     is clipped. 1.071 is the exact threshold — 1.10 leaves a margin in
-     case the mark drifts. See README: this is a cosmetic patch, not a
-     licence. */
   transform-origin:center top;
   transform:scale(1.10);
-  /* graded down so the glass cards above can stay genuinely transparent —
-     see the --glass note. Also reads more cinematic than raw daylight. */
-  filter:brightness(0.70) saturate(1.05);
+  /* v7.2: with the middle of the screen deliberately empty, the clip is
+     something a resident actually looks at. Grading is close to neutral and
+     the blur is down to 2px — enough to keep the 640x360 source from reading
+     as pixellated, not enough to erase it. Affordable because no body text
+     sits on the footage: the cards are near-opaque, and the header carries its
+     own edge scrim (below). */
+  filter:brightness(0.92) saturate(1.06) blur(2px);
 }
-/* legibility scrims: heavier at top/bottom edges and on the right where
-   the hero text lives (RTL reading side) */
 .bg-scrim{
   position:absolute;inset:0;z-index:1;
-  /* v5.2: scrims eased right back — the point of the brighter photo is
-     that it stays bright. Only enough darkening to hold white text: a
-     little at the top (clock), a soft veil on the right (headline), and
-     a firmer band at the very bottom (ticker sits on it). */
+  /* v7.2: no longer a blackout. Only a vignette — enough weight at the very
+     top and along the bottom to hold the clock and to seat the ticker, and
+     essentially clear through the middle where the open column is. */
   background:
-    linear-gradient(180deg, rgba(9,10,12,.5) 0%, rgba(9,10,12,.1) 22%, rgba(9,10,12,.06) 56%, rgba(9,10,12,.62) 100%),
-    linear-gradient(270deg, rgba(9,10,12,.18) 0%, rgba(9,10,12,.05) 46%, transparent 66%);
+    radial-gradient(128% 108% at 50% 44%, transparent 0%, transparent 42%, rgba(8,9,12,.52) 100%),
+    linear-gradient(180deg,
+      rgba(8,9,12,.40) 0%,
+      rgba(8,9,12,.10) 10%,
+      rgba(8,9,12,0) 26%,
+      rgba(8,9,12,0) 68%,
+      rgba(8,9,12,.34) 88%,
+      rgba(8,9,12,.62) 100%);
 }
 
 /* ---------- frame / zones ---------- */
-/* RTL grid: first column track = rightmost. Hero owns the reading side,
-   the widget rail floats on the left, ticker spans the bottom. */
 .frame{
   position:relative;z-index:2;
   height:1080px;
-  display:grid;
-  padding:52px 64px 36px;
-  gap:0 48px;
-  grid-template-columns:1fr 430px;
-  grid-template-rows:auto minmax(0,1fr) auto;
-  grid-template-areas:
-    "top top"
-    "hero rail"
-    "ticker ticker";
+  display:flex;flex-direction:column;
 }
+/* RTL: the first child lands on the right, which is where the mockup puts the
+   logo. No row-reverse — the DOM order is the visual order. */
+/* The header is the only place text sits straight on the footage. Rather than
+   darken the whole clip for it — which is what made the first pass look flat —
+   the header carries its own scrim, heavy at the two edges where the clock and
+   the logo sit and clear across the middle where the photo should show. */
 .zone-top{
-  grid-area:top;
-  display:flex;justify-content:space-between;align-items:flex-start;
-  margin-bottom:12px;
+  position:relative;
+  flex:0 0 176px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:40px;
+  padding:0 54px;
+  margin-top:24px;
 }
-.zone-hero{
-  grid-area:hero;
-  display:flex;flex-direction:column;justify-content:center;
+.zone-top::before{
+  content:'';
+  position:absolute;top:-24px;bottom:-22px;left:0;right:0;
+  z-index:-1;
+  /* stop positions are measured, not eyeballed: the greeting band sits around
+     x 55-78%, and a clear window that ran that far let its 22px line fall to
+     3.96:1. These bring it back to 4.96 while keeping the widest possible
+     opening over the photo. */
+  background:linear-gradient(90deg,
+    rgba(8,9,12,.88) 0%,
+    rgba(8,9,12,.60) 16%,
+    rgba(8,9,12,.12) 30%,
+    rgba(8,9,12,.10) 44%,
+    rgba(8,9,12,.46) 54%,
+    rgba(8,9,12,.74) 66%,
+    rgba(8,9,12,.86) 80%,
+    rgba(8,9,12,.92) 100%);
+}
+/* v7.2 — two columns with an open middle. RTL puts the first track on the
+   right, so the lead column (resident notices) sits on the reading side, the
+   open column is the wide 1fr in the centre, and the stack goes to the far
+   side. The centre is not a gap between cards; it is the widest single element
+   on the screen, and the clip plays in it. */
+.zone-grid{
+  flex:1 1 auto;min-height:0;
+  display:grid;
+  grid-template-columns:430px minmax(0,1fr) 560px;
+  gap:30px;
+  padding:0 54px;
+  margin:22px 0;
+}
+.zone-open{min-width:0;}
+.zone-stack{
+  display:grid;
+  grid-template-rows:1fr 300px;
+  gap:24px;
   min-height:0;
 }
-.zone-rail{
-  grid-area:rail;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  gap:20px;
-  min-height:0;
-  padding-bottom:8px;
-}
-.zone-ticker{grid-area:ticker;margin-top:24px;}
+.zone-ticker{flex:0 0 88px;}
 
-/* ---------- shared glass card ----------
-   v5.3: the cards were flat dark rectangles. Rebuilt as proper glass:
-   a top-lit gradient surface, a bright 1px inner highlight along the top
-   edge (how real glass catches light), a soft gold rim, and a deeper
-   shadow so each card sits above the photo instead of on it. The label
-   gained a short gold rule — the same diamond/rule motif the client uses
-   in their printed material. */
+/* ---------- shared card ---------- */
 .card{
   position:relative;
-  background:
-    linear-gradient(158deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.07) 34%, rgba(255,255,255,.03) 100%),
-    var(--glass);
-  backdrop-filter:blur(44px) saturate(1.3);
-  -webkit-backdrop-filter:blur(44px) saturate(1.3);
-  border:1px solid var(--frame);
-  border-radius:28px;
-  padding:24px 28px 26px;
-  box-shadow:
-    0 30px 60px -30px rgba(0,0,0,.75),
-    inset 0 1px 0 rgba(255,255,255,.22),
-    inset 0 -1px 0 rgba(0,0,0,.18);
-}
-.card-label{
-  display:flex;align-items:center;gap:12px;
-  font-size:16px;font-weight:600;
-  color:var(--gold-bright);
-  letter-spacing:.14em;
-  margin-bottom:18px;
-}
-/* short gold rule that closes the label line */
-.card-label::after{
-  content:'';
-  flex:1;height:1px;
-  background:linear-gradient(90deg, rgba(201,188,156,.42), transparent);
-}
-
-/* ---------- IdentityWidget ---------- */
-.w-identity{display:flex;align-items:center;gap:22px;}
-.w-identity-mark{height:76px;width:auto;display:block;}
-.w-identity-building{font-size:42px;font-weight:800;line-height:1.1;}
-.w-identity-sub{
-  font-size:19px;font-weight:400;color:var(--dim);
-  margin-top:6px;letter-spacing:.04em;
-}
-
-/* ---------- ClockWidget ---------- */
-.w-clock{text-align:left;}
-.w-clock-time{
-  font-size:148px;font-weight:100;line-height:.95;
-  font-variant-numeric:tabular-nums;
-  letter-spacing:.01em;
-}
-.w-clock-date{
-  font-size:21px;font-weight:400;color:var(--dim);
-  letter-spacing:.06em;
-  margin-top:8px;
-}
-
-/* ---------- AnnouncementWidget (hero) ---------- */
-.w-ann{display:flex;flex-direction:column;max-width:1050px;}
-.w-ann-label{
-  display:inline-flex;align-items:center;gap:12px;
-  align-self:flex-start;
-  background:var(--glass);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border:1px solid var(--line);
-  border-radius:999px;
-  padding:10px 24px;
-  font-size:19px;font-weight:600;
-  color:var(--gold-bright);
-  letter-spacing:.1em;
-}
-.w-ann-label-dot{
-  width:9px;height:9px;border-radius:50%;
-  background:var(--gold);
-  animation:pulse 2.4s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-/* v5.4: the notice now lives inside a speech bubble (Aviv's idea). Same
-   glass language as the widget cards, with a tail on the RTL start side
-   so it reads as "the building is speaking to you". Because the text has
-   its own surface, the right-side scrim on the photo could be eased —
-   the background reads brighter than before. */
-/* v5.5: the two dots didn't read as a speech bubble, so this is a real
-   pointed tail. The trick that makes it seamless: the bubble's gradient
-   runs VERTICALLY, so its bottom edge is one flat colour across the
-   whole width — the tail can then use that exact colour and, because a
-   child paints over its parent's border, its fill hides the bubble's
-   bottom border where the two meet. Earlier attempts used a diagonal
-   gradient, so the tail never matched and read as a floating diamond. */
-.w-ann-bubble{
-  position:relative;
-  margin-top:16px;
-  border-radius:44px;
-  padding:44px 52px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.05) 42%, rgba(9,10,13,.30) 100%),
-    var(--glass-strong);
-  backdrop-filter:blur(44px) saturate(1.3);
-  -webkit-backdrop-filter:blur(44px) saturate(1.3);
-  border:1px solid var(--frame);
-  box-shadow:
-    0 36px 70px -34px rgba(0,0,0,.8),
-    inset 0 1px 0 rgba(255,255,255,.22);
-}
-.w-ann-bubble::after{
-  content:'';
-  position:absolute;
-  bottom:-27px;right:96px;
-  width:54px;height:54px;
-  /* identical composite to the bubble's bottom edge */
-  background:
-    linear-gradient(0deg, rgba(9,10,13,.30), rgba(9,10,13,.30)),
-    var(--glass-strong);
-  backdrop-filter:blur(44px) saturate(1.3);
-  -webkit-backdrop-filter:blur(44px) saturate(1.3);
-  border-right:1px solid var(--frame);
-  border-bottom:1px solid var(--frame);
-  border-bottom-right-radius:10px;
-  transform:rotate(45deg);
-}
-.w-ann-viewport{position:relative;height:252px;}
-.w-ann-item{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;justify-content:center;
-  opacity:0;transform:translateY(26px);
-  transition:opacity 1.3s ease, transform 1.3s ease;
-  pointer-events:none;
-}
-.w-ann-item.is-active{opacity:1;transform:translateY(0);}
-.w-ann-title{
-  font-size:62px;font-weight:800;line-height:1.22;
-  max-width:22ch;
-}
-.w-ann-detail{
-  font-size:26px;font-weight:400;line-height:1.55;
-  color:var(--dim);
-  margin-top:20px;max-width:44ch;
-}
-/* inside the bubble, at the far (left) end: away from the tail dots at
-   the right corner, and always on the bubble's own surface so the
-   inactive dots keep contrast whatever the photo is doing behind */
-.w-ann-dots{display:flex;gap:10px;margin-top:26px;justify-content:flex-end;}
-.w-ann-dot{
-  width:9px;height:9px;border-radius:50%;
-  background:rgba(255,255,255,.22);
-  transition:background .6s ease, transform .6s ease;
-}
-.w-ann-dot.is-active{background:var(--gold-bright);transform:scale(1.35);}
-
-/* ---------- WeatherWidget ---------- */
-/* each day gets its own faint inner pill so the row reads as a set of
-   values rather than loose floating numbers */
-.w-weather-grid{display:flex;justify-content:space-between;gap:6px;}
-.w-weather-col{
-  flex:1;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:10px 4px 12px;
-  border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05));
-  border:1px solid var(--frame-soft);
-}
-.w-weather-day{font-size:15px;font-weight:600;color:var(--gold-bright);letter-spacing:.04em;}
-.w-weather-icon{width:32px;height:32px;}
-.w-weather-max{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
-.w-weather-min{font-size:14px;font-weight:400;color:var(--dim);font-variant-numeric:tabular-nums;line-height:1;}
-
-/* ---------- ShabbatWidget ---------- */
-.w-shabbat-times{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:18px;
-}
-.w-shabbat-t{
-  flex:1;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:12px 8px 14px;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05));
-  border:1px solid var(--frame-soft);
-}
-.w-shabbat-t-label{font-size:14px;font-weight:400;color:var(--dim);letter-spacing:.14em;}
-.w-shabbat-t-val{
-  font-size:42px;font-weight:300;line-height:1;
-  font-variant-numeric:tabular-nums;
-}
-/* the client's diamond motif, used as the divider between the two times */
-.w-shabbat-sep{
-  width:7px;height:7px;flex-shrink:0;
-  background:var(--gold);
-  transform:rotate(45deg);
-}
-
-/* ---------- SportsWidget ---------- */
-.w-sports-logo{height:22px;width:auto;display:block;margin-inline-start:auto;}
-.w-sports .card-label::after{display:none;}
-.w-sports-viewport{
-  position:relative;height:82px;
-  padding-inline-start:16px;
-  border-inline-start:2px solid rgba(201,188,156,.45);
-}
-.w-sports-item{
-  position:absolute;inset:0;
-  padding-inline-start:16px;
-  font-size:23px;font-weight:600;line-height:1.4;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
+  min-height:0;                 /* lets inner lists clip instead of blowing the row */
+  display:flex;flex-direction:column;
   overflow:hidden;
-  opacity:0;transform:translateY(12px);
-  transition:opacity 1s ease, transform 1s ease;
-}
-.w-sports-item.is-active{opacity:1;transform:translateY(0);}
-
-/* ---------- NewsWidget (ticker bar) ---------- */
-/* v5.3: enlarged per Aviv — taller bar, bigger logo and ticker text, and
-   the same glass treatment as the cards so the footer belongs to the set */
-.w-news{
-  display:flex;align-items:center;gap:28px;
-  background:
-    linear-gradient(158deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.06) 34%, rgba(255,255,255,.03) 100%),
-    var(--glass-strong);
-  backdrop-filter:blur(44px) saturate(1.3);
-  -webkit-backdrop-filter:blur(44px) saturate(1.3);
+  background:linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%);
   border:1px solid var(--frame);
-  border-radius:26px;
-  height:96px;
-  padding:0 30px;
-  box-shadow:
-    0 30px 60px -30px rgba(0,0,0,.75),
-    inset 0 1px 0 rgba(255,255,255,.22);
+  border-radius:var(--radius);
+  padding:var(--pad);
+  box-shadow:0 26px 60px -30px rgba(0,0,0,.9);
 }
-.w-news-chip{
-  background:var(--white);
+/* label row: mark on the right, title beside it, a hairline across the gap and
+   the mockup's small chevron closing the line on the left */
+.card-label{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:14px;
+  height:40px;
+  margin-bottom:16px;
+  font-size:19px;font-weight:600;
+  color:var(--gold-text);
+  letter-spacing:.02em;
+}
+.card-label-mark{flex:0 0 auto;display:flex;align-items:center;}
+.card-label-mark img{height:26px;width:auto;}
+.card-label-mark svg{width:24px;height:24px;}
+.card-label-rule{
+  flex:0 0 auto;
+  width:1px;height:24px;
+  background:var(--gold-line);
+}
+.card-label-text{flex:0 0 auto;white-space:nowrap;}
+.card-label-fill{
+  flex:1 1 auto;height:1px;
+  background:linear-gradient(90deg, rgba(157,147,121,.38), transparent);
+}
+.card-label-chev{flex:0 0 auto;width:15px;height:15px;color:var(--gold);}
+
+/* ---------- FeedPanel — shared by the Ynet and ONE cards ----------
+   Both are the same component: a rotating hero (image, category tag, headline,
+   standfirst) over a static list of secondary updates. Only the partner logo,
+   the label and the data source differ, so this lives once. */
+.w-feed-hero{
+  position:relative;
+  flex:0 0 336px;
+  margin-bottom:14px;
+}
+.w-feed-hero-item{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;
+  transition:opacity 1200ms ease;
+}
+.w-feed-hero-item.is-active{opacity:1;}
+.w-feed-media{
+  position:relative;
+  flex:0 0 198px;
   border-radius:12px;
-  padding:7px 14px;
-  flex-shrink:0;
-  display:flex;align-items:center;
+  overflow:hidden;
+  background:rgba(255,255,255,.04);
 }
-.w-news-chip img{height:34px;width:auto;display:block;}
-.w-news-flow{
-  flex:1;min-width:0;overflow:hidden;white-space:nowrap;
-  direction:ltr; /* RTL marquee gap fix — see README */
-  mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
+.w-feed-media img{width:100%;height:100%;object-fit:cover;transform-origin:center;}
+.w-feed-media::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(8,9,12,.42) 0%, rgba(8,9,12,0) 46%, rgba(8,9,12,.34) 100%);
 }
-.w-news-track{
-  display:inline-flex;gap:72px;
-  animation:scroll-rtl 60s linear infinite;
-  font-size:25px;font-weight:400;
+.w-feed-tag{
+  position:absolute;top:12px;left:12px;z-index:2;
+  font-size:12px;font-weight:700;letter-spacing:.06em;
+  color:#fff;
+  background:#D8232A;                 /* Ynet red, from their own roundel */
+  border-radius:4px;
+  padding:4px 10px;
+}
+.is-sport .w-feed-tag{background:#2E4E9E;}   /* ONE blue */
+.w-feed-copy{display:flex;flex-direction:column;min-width:0;}
+.w-feed-title{
+  margin-top:14px;
+  font-size:24px;font-weight:700;line-height:1.26;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.w-feed-standfirst{
+  margin-top:9px;
+  font-size:16px;font-weight:300;line-height:1.45;
+  color:var(--dim);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* wide variant: short card, so the hero image sits BESIDE its headline
+   instead of above it. Same component, same data — only the axis changes. */
+.is-wide .w-feed-hero{flex:0 0 156px;margin-bottom:16px;}
+.is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
+.is-wide .w-feed-media{flex:0 0 238px;height:100%;}
+.is-wide .w-feed-copy{flex:1 1 auto;justify-content:center;}
+.is-wide .w-feed-title{margin-top:0;font-size:23px;-webkit-line-clamp:2;}
+.is-wide .w-feed-standfirst{-webkit-line-clamp:3;}
+
+.w-feed-list{
+  flex:1 1 auto;min-height:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+/* mockup puts the thumbnail on the LEFT of each row; the DOM keeps the
+   text-first order and the row is reversed visually */
+.w-feed-item{
+  display:flex;flex-direction:row-reverse;
+  gap:13px;align-items:center;
+  padding:13px 0;
+  border-top:1px solid var(--line);
+}
+.w-feed-item:first-child{border-top:none;padding-top:2px;}
+.w-feed-thumb{
+  flex:0 0 78px;height:54px;
+  border-radius:8px;overflow:hidden;
+  background:rgba(255,255,255,.04);
+}
+.w-feed-thumb img{width:100%;height:100%;object-fit:cover;}
+.w-feed-item-body{flex:1 1 auto;min-width:0;}
+.w-feed-time{
+  font-size:13px;font-weight:600;
+  color:var(--gold-text);
+  letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;
+}
+.w-feed-item-title{
+  margin-top:3px;
+  font-size:16px;font-weight:400;line-height:1.34;
+  color:var(--white);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* ---------- header, right group: brand + welcome ---------- */
+.hdr-lead{display:flex;align-items:center;gap:30px;}
+/* The client's logo exists only as a vertical lockup — mark over wordmark over
+   tagline, no horizontal variant in their source files. The header is built
+   tall enough to carry it whole rather than cutting it down to fit. */
+.w-brand img{height:152px;width:auto;}
+.hdr-divider{
+  width:1px;height:104px;
+  background:linear-gradient(180deg,transparent,var(--gold-line) 22%,var(--gold-line) 78%,transparent);
+}
+.w-welcome{text-align:right;}
+.w-welcome-title{
+  font-size:44px;font-weight:600;
+  letter-spacing:.16em;
+  color:var(--gold-text);
+  line-height:1.1;
+}
+.w-welcome-sub{
+  margin-top:12px;
+  display:flex;align-items:center;gap:16px;
+  font-size:22px;font-weight:300;letter-spacing:.30em;
   color:var(--white);
 }
-.w-news-track b{font-weight:600;color:var(--gold-bright);margin:0 10px;}
-@keyframes scroll-rtl{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.w-news-brand{
-  flex-shrink:0;
-  font-size:17px;color:var(--gold-bright);
-  border-inline-start:1px solid var(--line);
-  padding-inline-start:26px;
+.w-welcome-sub::before,
+.w-welcome-sub::after{
+  content:'';height:1px;width:64px;
+  background:linear-gradient(90deg,transparent,var(--gold-line),transparent);
 }
 
-/* ---------- EventsWidget (stub) ---------- */
-.w-events-row{display:flex;gap:16px;padding:8px 0;border-bottom:1px solid var(--line);}
-.w-events-row:last-child{border-bottom:none;}
-.w-events-date{font-size:17px;color:var(--gold-bright);font-weight:600;flex-shrink:0;}
-.w-events-title{font-size:19px;}
+/* ---------- ClockWidget (header, left) ---------- */
+.w-clock{text-align:left;}
+.w-clock-time{
+  direction:ltr;
+  font-size:78px;font-weight:200;line-height:.92;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+.w-clock-date{
+  margin-top:12px;
+  font-size:18px;font-weight:300;
+  color:var(--dim);
+}
+.w-clock-weather{
+  margin-top:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.w-clock-weather svg{width:30px;height:30px;}
+.w-clock-temp{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;}
+.w-clock-city{font-size:17px;font-weight:300;color:var(--dim);}
 
-/* ---------- ImageWidget (stub) ---------- */
-.w-image{padding:0;overflow:hidden;}
-.w-image-img{width:100%;height:100%;object-fit:cover;display:block;}
+/* ---------- ShabbatWidget ---------- */
+/* v7.2: short wide card — photo and times side by side. The occasion stays
+   overlaid on the photo so the light panel isn't the card's only content. */
+.w-shabbat-body{
+  flex:1 1 auto;min-height:0;
+  display:flex;gap:18px;
+}
+.w-shabbat-media{
+  position:relative;
+  flex:0 0 228px;
+  border-radius:12px;overflow:hidden;
+}
+.w-shabbat-media img{width:100%;height:100%;object-fit:cover;}
+.w-shabbat-media::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(8,9,12,.06) 0%, rgba(8,9,12,.70) 100%);
+}
+.w-shabbat-parasha{position:absolute;right:14px;bottom:13px;left:14px;z-index:2;}
+.w-shabbat-parasha-label{
+  font-size:13px;font-weight:400;letter-spacing:.12em;
+  color:var(--gold-text);
+}
+/* the occasion can be two words ("ראש השנה 5787") in a 228px column, so it is
+   sized to wrap to two lines cleanly rather than to fit on one at any cost */
+.w-shabbat-parasha-name{
+  margin-top:3px;
+  font-size:22px;font-weight:700;line-height:1.18;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.w-shabbat-side{
+  flex:1 1 auto;min-width:0;
+  display:flex;flex-direction:column;
+}
+/* the one bright surface on the screen — which is what makes the times the
+   card's headline rather than a footnote under the photo */
+.w-shabbat-times{
+  flex:1 1 auto;
+  display:flex;flex-direction:column;justify-content:center;
+  background:linear-gradient(180deg,#F6F5F1 0%,#E9E7DF 100%);
+  border-radius:12px;
+  padding:4px 18px;
+}
+.w-shabbat-t{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:16px 0;
+  border-top:1px solid rgba(20,22,27,.12);
+}
+.w-shabbat-t:first-child{border-top:none;}
+.w-shabbat-t-label{
+  display:flex;align-items:center;gap:11px;
+  font-size:17px;font-weight:400;color:var(--ink-dim);
+}
+.w-shabbat-t-label svg{width:22px;height:22px;flex:0 0 auto;}
+.w-shabbat-t-val{
+  font-size:32px;font-weight:700;line-height:1;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  direction:ltr;
+}
+.w-shabbat-foot{
+  flex:0 0 auto;
+  margin-top:14px;
+  text-align:center;
+  font-size:18px;font-weight:400;letter-spacing:.06em;
+  color:var(--gold-text);
+}
 
-/* ---------- VideoWidget (stub) ---------- */
-.w-video{padding:0;overflow:hidden;aspect-ratio:16/9;}
-.w-video-frame{width:100%;height:100%;border:0;display:block;}
+/* ---------- NoticesWidget ---------- */
+.w-notices-list{position:relative;flex:1 1 auto;min-height:0;}
+.w-notices-page{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;gap:12px;
+  opacity:0;
+  transition:opacity 1000ms ease;
+}
+.w-notices-page.is-active{opacity:1;}
+/* each notice is its own inset panel in the mockup, with a gold glyph leading
+   the title — the glyph is what lets a resident sort the four at a glance */
+.w-notice{
+  flex:1 1 0;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--frame-soft);
+  border-radius:13px;
+  padding:14px 16px;
+}
+.w-notice.is-priority{
+  border-color:rgba(201,188,156,.34);
+  background:rgba(201,188,156,.06);
+}
+.w-notice-head{display:flex;align-items:center;gap:11px;}
+.w-notice-icon{flex:0 0 auto;width:22px;height:22px;color:var(--gold-text);}
+.w-notice-title{font-size:19px;font-weight:700;line-height:1.2;}
+.w-notice-detail{
+  margin-top:7px;
+  font-size:15px;font-weight:300;line-height:1.42;
+  color:var(--dim);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.w-notice-date{
+  margin-top:8px;
+  display:flex;align-items:center;gap:9px;
+  font-size:13px;font-weight:400;
+  color:var(--dimmer);
+  letter-spacing:.04em;
+}
+.w-notice-date::before{
+  content:'';width:16px;height:1px;background:var(--gold-line);flex:0 0 auto;
+}
 
+/* ---------- TickerWidget (brief §9) ----------
+   Full-bleed bar across the very bottom edge — not a floating card. */
+.w-ticker{
+  position:relative;
+  height:88px;
+  display:flex;align-items:center;gap:22px;
+  padding:0 40px;
+  background:linear-gradient(180deg, rgba(10,11,14,.94) 0%, rgba(6,7,9,.98) 100%);
+  border-top:1px solid var(--gold-line);
+  overflow:hidden;
+}
+.w-ticker-logo{flex:0 0 auto;height:34px;width:auto;}
+.w-ticker-kicker{
+  flex:0 0 auto;
+  font-size:17px;font-weight:400;letter-spacing:.10em;
+  color:var(--gold-text);
+  white-space:nowrap;
+}
+.w-ticker-sep{flex:0 0 auto;width:1px;height:40px;background:var(--gold-line);}
+.w-ticker-flow{
+  flex:1 1 auto;min-width:0;
+  overflow:hidden;white-space:nowrap;
+  /* RTL marquee gap fix: the two-copies + translateX(-50%) technique grows a
+     gap in RTL. Forcing LTR on the flow element only (the Hebrew runs inside
+     still shape RTL via bidi) keeps it seamless. See README. */
+  direction:ltr;
+  mask-image:linear-gradient(90deg,transparent,#000 3%,#000 94%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 94%,transparent);
+}
+/* headlines and separators are siblings of the inline-flex track, not nested
+   spans: a separator sitting after a Hebrew run inside a direction:ltr line
+   gets reordered by bidi and lands on the wrong side. As flex items they are
+   placed by the flex algorithm, which ignores bidi. */
+.w-ticker-track{
+  display:inline-flex;align-items:center;gap:30px;
+  animation:ticker 66s linear infinite;
+  font-size:24px;font-weight:300;
+  color:var(--white);
+}
+.w-ticker-track span{flex:0 0 auto;}
+.w-ticker-track i{flex:0 0 auto;width:1px;height:26px;background:var(--gold-line);}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+/* the client's own topographic strip closes the bar, standing in for the gold
+   skyline in the mockup — their asset rather than an invented one */
+.w-ticker-orn{
+  position:absolute;left:0;bottom:0;z-index:0;
+  height:88px;width:420px;
+  object-fit:cover;object-position:left bottom;
+  opacity:.20;
+  pointer-events:none;
+  mask-image:linear-gradient(90deg,#000,transparent);
+  -webkit-mask-image:linear-gradient(90deg,#000,transparent);
+}
+
+/* ---------- animation system ----------
+   Brief §10: slow and elegant. Two mechanisms only — a staggered reveal on
+   load and a very slow Ken Burns on every hero image. Everything that changes
+   afterwards is a crossfade driven from front-page.php. */
+@keyframes reveal{
+  from{opacity:0;transform:translateY(26px);}
+  to  {opacity:1;transform:translateY(0);}
+}
+.reveal{opacity:0;animation:reveal 900ms cubic-bezier(.22,.68,.28,1) forwards;}
+/* the header assembles in reading order: mark and greeting, then the clock */
+.zone-top .hdr-lead{animation-delay:150ms;}
+.zone-top .w-clock{animation-delay:400ms;}
+/* right to left, the order a reader's eye takes them */
+.zone-grid > .card{animation-delay:560ms;}
+.zone-stack > .card:nth-child(1){animation-delay:740ms;}
+.zone-stack > .card:nth-child(2){animation-delay:900ms;}
+.zone-ticker .reveal{animation-delay:1280ms;}
+
+@keyframes kenburns{from{transform:scale(1);}to{transform:scale(1.07);}}
+.kb{animation:kenburns 26s ease-in-out infinite alternate;}
+
+/* ---------- stale-data badge + refresh fade (brief §17-18) ----------
+   Deliberately small and quiet: it exists so a resident glancing at a frozen
+   screen has one honest hint, not so it competes with the content. */
+.stale-badge{
+  position:absolute;left:22px;bottom:102px;z-index:5;
+  font-size:13px;font-weight:300;letter-spacing:.06em;
+  color:var(--dimmer);
+  background:rgba(10,11,14,.72);
+  border:1px solid var(--frame-soft);
+  border-radius:999px;
+  padding:6px 14px;
+  opacity:0;
+  transition:opacity 600ms ease;
+  pointer-events:none;
+}
+.stale-badge.is-on{opacity:1;}
+body.is-refreshing .fit{opacity:0;transition:opacity 700ms ease;}
+
+/* A lobby screen has no reader who can opt out, but honour the OS flag anyway —
+   it also makes the design reviewable in a still screenshot. */
 @media (prefers-reduced-motion: reduce){
-  .bg-photo,.w-news-track,.w-ann-label-dot{animation:none;}
-  .w-ann-item,.w-sports-item,.w-ann-dot{transition:none;}
+  .kb,.w-ticker-track{animation:none;}
+  .reveal{animation-duration:1ms;}
+  .w-feed-hero-item,.w-notices-page{transition:none;}
 }

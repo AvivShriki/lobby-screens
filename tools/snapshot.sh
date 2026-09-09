@@ -34,7 +34,15 @@ import re, sys
 path, base = sys.argv[1], sys.argv[2].rstrip('/')
 s = open(path, encoding='utf-8').read()
 theme = re.escape(base) + r'/wp-content/themes/lobby-screens-theme/'
-s = re.sub(theme + r'style\.css(\?[^"\']*)?', 'style.css', s)
+# Cache busting. WordPress emits ?ver=<hand-written number>; replace it with a
+# hash of the file's actual bytes. Stripping the query outright (what this did
+# first) meant a republished snapshot kept serving whatever style.css a visitor
+# already had cached — the page looked unchanged after a real deploy, which is
+# exactly how the v7.2 font fix appeared not to have shipped.
+import hashlib, os
+css = os.path.join(os.path.dirname(path), 'style.css')
+ver = hashlib.sha256(open(css, 'rb').read()).hexdigest()[:10] if os.path.exists(css) else '0'
+s = re.sub(theme + r'style\.css(\?[^"\']*)?', 'style.css?v=' + ver, s)
 s = re.sub(theme, '', s)
 # dns-prefetch for the dev host is meaningless once this is on Pages
 s = re.sub(r"\s*<link rel='dns-prefetch' href='//[^']*' />", '', s)

@@ -1,2 +1,6 @@
 .DS_Store
 assets/videoplayback.mp4
+# source copies of the background clip. The one the theme actually serves is
+# wordpress/lobby-screens-theme/assets/images/lobby-bg.mp4; these are byte-identical
+# originals kept locally, and tracking them would check out 8.4MB twice.
+assets/ללא שם.mp4

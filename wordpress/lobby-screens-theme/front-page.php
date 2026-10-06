@@ -126,14 +126,16 @@ $theme_uri = get_stylesheet_directory_uri();
 </svg>
 
 <div class="fit" id="fitCanvas">
-  <!-- ambient background. muted+playsinline are required for autoplay to be
-       allowed at all; the still frame stays as poster so the screen is never
-       blank while the file buffers, and as the fallback if a player refuses
-       to decode the video. -->
-  <video class="bg-video" autoplay muted loop playsinline preload="auto"
-    poster="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg-tower.jpg' ); ?>">
-    <source src="<?php echo esc_url( $theme_uri . '/assets/images/lobby-bg.mp4' ); ?>" type="video/mp4">
-  </video>
+  <!-- ambient background, built from the client's own brand material
+       instead of stock footage: their charcoal, their champagne gold, and
+       the topographic contour field lifted from their printed signage.
+       Nothing here is licensed from a third party, nothing gets upscaled
+       badly, and the luminance is fully under our control — which is what
+       finally lets the cards be properly transparent (see style.css). -->
+  <div class="bg-base"></div>
+  <img class="bg-contours bg-contours-a" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-contours.png' ); ?>" alt="">
+  <img class="bg-contours bg-contours-b" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-contours.png' ); ?>" alt="">
+  <img class="bg-watermark" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-mark.png' ); ?>" alt="">
   <div class="bg-scrim"></div>
 
   <div class="frame" dir="rtl" lang="he">
@@ -198,30 +200,6 @@ function fitScreen(){
 }
 window.addEventListener('resize',fitScreen);
 fitScreen();
-
-/* ---- background video keep-alive ----
-   An unattended lobby screen has nobody to click "play": browsers can refuse
-   the initial autoplay, and a long uptime can leave the element stalled after
-   a tab throttle or a decode hiccup. Retry on the events that typically
-   unblock it, plus a slow watchdog that restarts playback if the clock stops
-   advancing. */
-(function(){
-  var v=document.querySelector('.bg-video');
-  if(!v) return;
-  var kick=function(){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); };
-  ['loadeddata','canplay','pause','stalled','suspend'].forEach(function(e){
-    v.addEventListener(e,kick);
-  });
-  document.addEventListener('visibilitychange',function(){
-    if(!document.hidden) kick();
-  });
-  kick();
-  var last=-1;
-  setInterval(function(){
-    if(v.paused || v.currentTime===last) kick();
-    last=v.currentTime;
-  },5000);
-})();
 
 /* ---- ClockWidget ---- the only value rendered client-side */
 function tick(){

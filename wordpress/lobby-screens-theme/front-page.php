@@ -201,6 +201,59 @@ function fitScreen(){
 window.addEventListener('resize',fitScreen);
 fitScreen();
 
+/* ---- Shabbat countdown ----
+   Hebcal hands us offset-aware timestamps, so Date parses them against the
+   screen's own clock and the arithmetic stays correct wherever the screen sits.
+   Three states, because a countdown that runs past zero is worse than none:
+     before candle lighting  -> time remaining
+     between candles+havdalah -> the greeting ("שבת שלום ומבורך")
+     after havdalah           -> hold, the 15-minute reload brings next week
+   Updates on the minute; seconds would draw the eye for no reason at this
+   distance, and the brief asks for calm movement only. */
+(function(){
+  var el=document.querySelector('.w-shabbat-count');
+  if(!el) return;
+  var candle=new Date(el.dataset.candle);
+  var havdalah=el.dataset.havdalah ? new Date(el.dataset.havdalah) : null;
+  if(isNaN(candle)) return;
+  var labelEl=el.querySelector('.w-shabbat-count-label');
+  var valEl=el.querySelector('.w-shabbat-count-val');
+
+  function plural(n,one,many){ return n===1 ? one : n+' '+many; }
+  /* Hebrew joins the last pair with vav. It takes a hyphen before a numeral
+     ("יומיים ו-8 שעות") but not before a word ("שעה ודקה") — joining with a
+     fixed " ו-" produced "שעה ו-דקה". */
+  function joinHe(parts){
+    if(parts.length<2) return parts[0]||'';
+    var tail=parts[parts.length-1];
+    var vav=/^\d/.test(tail) ? ' ו-' : ' ו';
+    return parts.slice(0,-1).join(', ')+vav+tail;
+  }
+
+  function render(){
+    var now=new Date();
+    if(havdalah && now>=candle && now<havdalah){
+      el.classList.add('is-in');
+      labelEl.textContent='';
+      valEl.textContent=el.dataset.greeting;
+      return;
+    }
+    if(now>=candle){ el.classList.add('is-done'); return; }
+
+    el.classList.remove('is-in','is-done');
+    var mins=Math.floor((candle-now)/60000);
+    var d=Math.floor(mins/1440), h=Math.floor((mins%1440)/60), m=mins%60;
+    var parts=[];
+    if(d) parts.push(plural(d,'יום','ימים'));
+    if(h) parts.push(plural(h,'שעה','שעות'));
+    if(!d && m) parts.push(plural(m,'דקה','דקות'));
+    labelEl.textContent='הדלקת הנרות בעוד';
+    valEl.textContent=joinHe(parts) || 'רגעים ספורים';
+  }
+  render();
+  setInterval(render,30000);
+})();
+
 /* ---- ClockWidget ---- the only value rendered client-side */
 function tick(){
   var d=new Date();

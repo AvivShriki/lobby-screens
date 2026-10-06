@@ -293,7 +293,10 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	}
 	$city = $cities[ $city_key ];
 
-	$cache_key = 'lobby_shabbat_v7_' . $city_key;
+	// v8 adds the ISO timestamps and mevarchim to the stored shape — a cached
+	// v7 array would be missing them and the countdown would silently not run,
+	// so the key moves with the shape.
+	$cache_key = 'lobby_shabbat_v8_' . $city_key;
 	$cached    = get_transient( $cache_key );
 	if ( false !== $cached ) {
 		return $cached;
@@ -318,15 +321,26 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	$holiday   = '';   // any holiday in the window, e.g. "ערב ראש השנה"
 	$yomtov    = '';   // the actual chag — preferred, since Erev comes first
 	$is_yomtov = false;
+	// Hebcal gives a full offset-aware timestamp ("2026-10-09T17:56:00+03:00")
+	// and the card only ever used the last five characters of the title. Keeping
+	// the original lets the panel count down to candle lighting in the browser
+	// without the screen having to guess the date or the timezone.
+	$candle_iso   = '';
+	$havdalah_iso = '';
+	$mevarchim    = '';
 
 	foreach ( $items as $item ) {
 		$ts = isset( $item['date'] ) ? strtotime( $item['date'] ) : 0;
 
 		if ( 'candles' === $item['category'] && '' === $candle ) {
-			$candle    = substr( $item['title'], -5 );
-			$candle_ts = $ts;
+			$candle     = substr( $item['title'], -5 );
+			$candle_ts  = $ts;
+			$candle_iso = $item['date'] ?? '';
 		} elseif ( 'havdalah' === $item['category'] && '' === $havdalah && $ts >= $candle_ts ) {
-			$havdalah = substr( $item['title'], -5 );
+			$havdalah     = substr( $item['title'], -5 );
+			$havdalah_iso = $item['date'] ?? '';
+		} elseif ( 'mevarchim' === $item['category'] && '' === $mevarchim ) {
+			$mevarchim = $item['hebrew'] ?? '';
 		} elseif ( 'parashat' === $item['category'] && '' === $parasha ) {
 			$parasha = $item['hebrew'] ?? '';
 		} elseif ( 'holiday' === $item['category'] ) {
@@ -353,6 +367,9 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	$result = array(
 		'label'          => $city['label'],
 		'primary'        => array( 'candle' => $candle, 'havdalah' => $havdalah ),
+		'candle_iso'     => $candle_iso,
+		'havdalah_iso'   => $havdalah_iso,
+		'mevarchim'      => $mevarchim,
 		'occasion'       => $occasion,
 		'occasion_label' => $parasha ? 'פרשת השבוע' : 'המועד הקרוב',
 		'end_label'      => $is_yomtov ? 'צאת החג' : 'צאת השבת',

@@ -574,7 +574,7 @@ img{display:block;}
 }
 .w-shabbat-t{
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:16px 0;
+  padding:12px 0;
   border-top:1px solid rgba(20,22,27,.12);
 }
 .w-shabbat-t:first-child{border-top:none;}
@@ -589,12 +589,53 @@ img{display:block;}
   font-variant-numeric:tabular-nums;
   direction:ltr;
 }
+/* v8 — the countdown. It sits above the times as a gold band so the card leads
+   with the thing that is actually changing, and so a resident walking past gets
+   the answer ("how long do I have?") without reading two clock values and doing
+   the subtraction themselves. */
+.w-shabbat-count{
+  flex:0 0 auto;
+  display:flex;align-items:baseline;justify-content:center;gap:9px;
+  margin-bottom:8px;
+  padding:7px 14px;
+  border-radius:11px;
+  background:linear-gradient(180deg, rgba(157,147,121,.22), rgba(157,147,121,.10));
+  border:1px solid rgba(201,188,156,.30);
+  white-space:nowrap;
+}
+.w-shabbat-count-label{
+  font-size:15px;font-weight:400;
+  color:var(--dim);
+}
+.w-shabbat-count-val{
+  font-size:22px;font-weight:600;
+  color:var(--gold-text);
+}
+/* once Shabbat is in there is nothing to count: the band carries the greeting
+   instead, centred and on its own */
+.w-shabbat-count.is-in{justify-content:center;}
+.w-shabbat-count.is-in .w-shabbat-count-val{font-size:20px;letter-spacing:.04em;}
+/* past havdalah, before the reload pulls next week — say nothing rather than
+   show a stale or negative number */
+.w-shabbat-count.is-done{display:none;}
+
 .w-shabbat-foot{
   flex:0 0 auto;
-  margin-top:14px;
+  margin-top:9px;
   text-align:center;
-  font-size:18px;font-weight:400;letter-spacing:.06em;
+  font-size:17px;font-weight:400;letter-spacing:.05em;
   color:var(--gold-text);
+}
+/* inline, not a second line: the card is a fixed 300px row and the countdown
+   band already spent the spare height */
+.w-shabbat-mevarchim{
+  font-size:14px;letter-spacing:.03em;
+  color:var(--dimmer);
+}
+.w-shabbat-mevarchim::before{
+  content:'·';
+  margin:0 7px;
+  color:var(--gold-line);
 }
 
 /* ---------- NoticesWidget ---------- */

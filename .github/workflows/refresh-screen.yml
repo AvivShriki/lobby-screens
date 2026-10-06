@@ -1,0 +1,98 @@
+name: Refresh lobby screen
+
+# Why this exists
+# ---------------
+# docs/ is a static rendering of the WordPress page. Until now it was produced
+# by hand, so the public demo showed whatever the feeds happened to say the last
+# time somebody ran the snapshot — Ynet and ONE headlines could sit there for
+# days. This workflow boots the real theme in Playground on a schedule, renders
+# the same page, and publishes it, so the demo is current around the clock with
+# nobody's laptop involved.
+#
+# Why rebuild rather than fetch in the browser: Ynet's RSS sends no CORS header,
+# so a static page cannot read it client-side (Hebcal, Open-Meteo and ONE do
+# allow it — Ynet is the one that forces a server-side render). Rebuilding also
+# keeps the WordPress theme as the single source of truth instead of growing a
+# second renderer in JavaScript.
+#
+# Publishing goes through the Pages artifact rather than committing docs/ back
+# to main: a commit every 15 minutes would bury the project's real history.
+
+on:
+  schedule:
+    # every 15 minutes. GitHub delays scheduled runs under load, so treat this
+    # as "about every 15-25 minutes" — still far fresher than a manual snapshot.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'wordpress/lobby-screens-theme/**'
+      - '.github/workflows/refresh-screen.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running publish finish rather than cancelling it: a half-deployed screen
+# is worse than one that is a few minutes behind.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Boot WordPress Playground
+        working-directory: wordpress
+        run: |
+          npx --yes @wp-playground/cli@latest start \
+            --path=./lobby-screens-theme \
+            --skip-browser --quiet --port=9400 &
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9400/ --max-time 3 || true)
+            if [ "$code" = "200" ] || [ "$code" = "302" ]; then
+              echo "Playground up after ${i} tries (HTTP $code)"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Playground did not come up in time" >&2
+          exit 1
+
+      - name: Render the snapshot
+        run: ./tools/snapshot.sh http://127.0.0.1:9400
+
+      - name: Fail if the feeds came back empty
+        # A snapshot that rendered but lost its content would quietly replace a
+        # good screen with an empty one. Cheaper to stop here and keep serving
+        # the previous deploy.
+        run: |
+          for needle in zone-ticker card bg-contours; do
+            grep -q "$needle" docs/index.html || { echo "missing: $needle" >&2; exit 1; }
+          done
+          bytes=$(wc -c < docs/index.html)
+          echo "index.html: ${bytes} bytes"
+          [ "$bytes" -gt 20000 ] || { echo "index.html suspiciously small" >&2; exit 1; }
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

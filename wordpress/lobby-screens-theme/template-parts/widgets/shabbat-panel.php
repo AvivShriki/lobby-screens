@@ -55,6 +55,20 @@ $icon_moon = '<svg viewBox="0 0 24 24" fill="none" stroke="#8C7F5F" stroke-width
     </div>
 
     <div class="w-shabbat-side">
+      <?php if ( ! empty( $shabbat['candle_iso'] ) ) : ?>
+        <?php /* The countdown is the one number on this card that changes while
+                somebody is standing in front of the screen. It is rendered with
+                a server-side fallback inside it, so if JS never runs the card
+                still reads sensibly instead of showing an empty box. */ ?>
+        <div class="w-shabbat-count"
+             data-candle="<?php echo esc_attr( $shabbat['candle_iso'] ); ?>"
+             data-havdalah="<?php echo esc_attr( $shabbat['havdalah_iso'] ); ?>"
+             data-greeting="<?php echo esc_attr( $shabbat['greeting'] ); ?>">
+          <span class="w-shabbat-count-label">הדלקת הנרות בעוד</span>
+          <span class="w-shabbat-count-val">—</span>
+        </div>
+      <?php endif; ?>
+
       <div class="w-shabbat-times">
         <div class="w-shabbat-t">
           <span class="w-shabbat-t-label"><?php echo $icon_candle; // phpcs:ignore ?>הדלקת נרות</span>
@@ -67,7 +81,13 @@ $icon_moon = '<svg viewBox="0 0 24 24" fill="none" stroke="#8C7F5F" stroke-width
           </div>
         <?php endif; ?>
       </div>
-      <div class="w-shabbat-foot"><?php echo esc_html( $shabbat['greeting'] ); ?></div>
+
+      <div class="w-shabbat-foot">
+        <?php echo esc_html( $shabbat['greeting'] ); ?>
+        <?php if ( ! empty( $shabbat['mevarchim'] ) ) : ?>
+          <span class="w-shabbat-mevarchim"><?php echo esc_html( $shabbat['mevarchim'] ); ?></span>
+        <?php endif; ?>
+      </div>
     </div>
 
   </div>

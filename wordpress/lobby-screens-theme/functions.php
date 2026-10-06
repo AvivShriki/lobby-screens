@@ -6,7 +6,10 @@
  */
 
 function lobby_screens_setup() {
-	add_theme_support( 'title-tag' );
+	// Deliberately NOT title-tag: with it on, wp_head() emits a second <title>
+	// alongside the one front-page.php writes, and the duplicate carries the
+	// Playground install name ("My WordPress Website") into the published
+	// markup. This theme renders exactly one page and owns its own title.
 	add_theme_support( 'post-thumbnails' );
 }
 add_action( 'after_setup_theme', 'lobby_screens_setup' );

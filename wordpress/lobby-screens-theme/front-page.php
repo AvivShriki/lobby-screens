@@ -87,7 +87,11 @@ $theme_uri = get_stylesheet_directory_uri();
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php bloginfo( 'name' ); ?></title>
+<?php /* Not bloginfo('name'): a fresh Playground install is called "My WordPress
+         Website", and that string was reaching the published snapshot as the
+         browser-tab title. The building's own identity is the right title and
+         it already lives in $lobby. */ ?>
+<title><?php echo esc_html( $lobby['company'] . ' · ' . $lobby['building'] ); ?></title>
 <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>

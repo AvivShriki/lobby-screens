@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My WordPress Website</title>
+<title>עוצמה · מסך לובי — נחל חבר 16-18</title>
 <title>My WordPress Website</title>
 <meta name='robots' content='max-image-preview:large' />
 <style id="wp-img-auto-sizes-contain-inline-css">
@@ -26,7 +26,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 /*# sourceURL=global-styles-inline-css */
 </style>
 
-<link rel='stylesheet' id='lobby-screens-style-css' href='style.css?v=edac9e05c3' media='all' />
+<link rel='stylesheet' id='lobby-screens-style-css' href='style.css' media='all' />
 <meta name="generator" content="WordPress 7.0.3" />
 </head>
 <body class="home blog logged-in wp-theme-lobby-screens-theme">
@@ -65,14 +65,16 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </svg>
 
 <div class="fit" id="fitCanvas">
-  <!-- ambient background. muted+playsinline are required for autoplay to be
-       allowed at all; the still frame stays as poster so the screen is never
-       blank while the file buffers, and as the fallback if a player refuses
-       to decode the video. -->
-  <video class="bg-video" autoplay muted loop playsinline preload="auto"
-    poster="assets/images/lobby-bg-tower.jpg">
-    <source src="assets/images/lobby-bg.mp4" type="video/mp4">
-  </video>
+  <!-- ambient background, built from the client's own brand material
+       instead of stock footage: their charcoal, their champagne gold, and
+       the topographic contour field lifted from their printed signage.
+       Nothing here is licensed from a third party, nothing gets upscaled
+       badly, and the luminance is fully under our control — which is what
+       finally lets the cards be properly transparent (see style.css). -->
+  <div class="bg-base"></div>
+  <img class="bg-contours bg-contours-a" src="assets/images/otzma-contours.png" alt="">
+  <img class="bg-contours bg-contours-b" src="assets/images/otzma-contours.png" alt="">
+  <img class="bg-watermark" src="assets/images/otzma-mark.png" alt="">
   <div class="bg-scrim"></div>
 
   <div class="frame" dir="rtl" lang="he">
@@ -93,10 +95,10 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
       </div>
       <div class="w-clock reveal">
   <div class="w-clock-time" id="clockTime">--:--</div>
-  <div class="w-clock-date">יום רביעי · 9 בספטמבר 2026</div>
+  <div class="w-clock-date">יום שלישי · 6 באוקטובר 2026</div>
       <div class="w-clock-weather">
-      <svg><use href="#wxSun"></use></svg>
-      <span class="w-clock-temp">33°</span>
+      <svg><use href="#wxCloud"></use></svg>
+      <span class="w-clock-temp">23°</span>
       <span class="w-clock-city">באר שבע</span>
     </div>
   </div>
@@ -175,21 +177,21 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
           <article class="w-feed-hero-item is-active">
         <div class="w-feed-media">
                       <span class="w-feed-tag">ספורט</span>
-                                <img class="kb" src="https://photo.one.co.il/Image/GG/7,1/1849451.webp" alt="" loading="lazy">
+                                <img class="kb" src="https://photo.one.co.il/Image/GG/7,1/1891207.webp" alt="" loading="lazy">
                   </div>
         <div class="w-feed-copy">
-          <h2 class="w-feed-title">אמריקה, תאמיני: החלום על אלוף אחרי 23 שנה חי</h2>
-                      <p class="w-feed-standfirst">לילה ענק בניו יורק הפך את אליפות ארה״ב הפתוחה לסיפור אמריקאי: שלטון הדיח את אלקראס, ובמדינה אפשר להאמין שאחרי 23 שנות בצורת הגביע יישאר בבית</p>
+          <h2 class="w-feed-title">שארפ על המרפק שספג: שמח שהשיניים שלי בפה</h2>
+                      <p class="w-feed-standfirst">הישראלי קיבל הכי הרבה דקות בסקרמנטו בהפסד 127:103 ללייקרס וסיים עם 7 נקודות: &quot;אני פשוט עדיין צריך להתרגל למשחק ב-NBA&quot;. וגם: המחמאות ממאמנו</p>
                   </div>
       </article>
           <article class="w-feed-hero-item">
         <div class="w-feed-media">
                       <span class="w-feed-tag">ספורט</span>
-                                <img class="kb" src="https://photo.one.co.il/Image/GG/7,1/1678415.webp" alt="" loading="lazy">
+                                <img class="kb" src="https://photo.one.co.il/Image/GG/7,1/1891208.webp" alt="" loading="lazy">
                   </div>
         <div class="w-feed-copy">
-          <h2 class="w-feed-title">&quot;התקופה בישראל גרמה לי ללכת לטיפול נפשי&quot;</h2>
-                      <p class="w-feed-standfirst">פטריק קלימלה, אקס הפועל ב&quot;ש וחלוצה של סיאול בהווה, התראיין וסיפר על המלחמה שהובילה אותו לעזוב וההתמודדות הנפשית: &quot;התחלתי לאבד את היציבות&quot;</p>
+          <h2 class="w-feed-title">אוטמנדי נפרד מהנבחרת: חלק עצום מחיי נגמר</h2>
+                      <p class="w-feed-standfirst">הבלם הארגנטינאי ערך את אימון הפרידה שלו מהאלביסלסטה ושיתף: &quot;לייצג את המדינה שלי היה כבוד מהגדולים ביותר בחיי. תודה על הכול&quot;. וגם: המסר למסי</p>
                   </div>
       </article>
       </div>
@@ -197,20 +199,20 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
   <div class="w-feed-list">
           <article class="w-feed-item">
                   <div class="w-feed-thumb">
-            <img src="https://photo.one.co.il/Image/GG/7,1/1886972.webp" alt="" loading="lazy">
+            <img src="https://photo.one.co.il/Image/GG/7,1/1891063.webp" alt="" loading="lazy">
           </div>
                 <div class="w-feed-item-body">
-                      <div class="w-feed-time">07:36</div>
-                    <div class="w-feed-item-title">עם מערכות חדשות: הכנות השופטים לעונה הבאה</div>
+                      <div class="w-feed-time">05:21</div>
+                    <div class="w-feed-item-title">ב-Winner קבעו: היחס לניצחון י-ם על לובליאנה</div>
         </div>
       </article>
           <article class="w-feed-item">
                   <div class="w-feed-thumb">
-            <img src="https://photo.one.co.il/Image/GG/7,1/1861609.webp" alt="" loading="lazy">
+            <img src="https://photo.one.co.il/Image/GG/7,1/1836651.webp" alt="" loading="lazy">
           </div>
                 <div class="w-feed-item-body">
-                      <div class="w-feed-time">07:34</div>
-                    <div class="w-feed-item-title">הכוכב בחוץ: אלקראס הודח מאליפות ארה&quot;ב הפתוחה</div>
+                      <div class="w-feed-time">04:57</div>
+                    <div class="w-feed-item-title">ה-NBA בוחנת: כדור חכם ושעונים לשופטים</div>
         </div>
       </article>
       </div>
@@ -232,8 +234,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     <div class="w-shabbat-media">
       <img class="kb" src="assets/images/candles-pixabay.jpg" alt="נרות שבת">
               <div class="w-shabbat-parasha">
-          <div class="w-shabbat-parasha-label">המועד הקרוב</div>
-          <div class="w-shabbat-parasha-name">ראש השנה 5787</div>
+          <div class="w-shabbat-parasha-label">פרשת השבוע</div>
+          <div class="w-shabbat-parasha-name">בראשית</div>
         </div>
           </div>
 
@@ -241,14 +243,14 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
       <div class="w-shabbat-times">
         <div class="w-shabbat-t">
           <span class="w-shabbat-t-label"><svg viewBox="0 0 24 24" fill="none" stroke="#8C7F5F" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 2c1.6 1.9 2.4 3.3 2.4 4.4a2.4 2.4 0 0 1-4.8 0C9.6 5.3 10.4 3.9 12 2Z" fill="#C9A227" stroke="none"/><path d="M12 9.5v11M8.5 20.5h7"/></svg>הדלקת נרות</span>
-          <span class="w-shabbat-t-val">18:31</span>
+          <span class="w-shabbat-t-val">17:56</span>
         </div>
                   <div class="w-shabbat-t">
-            <span class="w-shabbat-t-label"><svg viewBox="0 0 24 24" fill="none" stroke="#8C7F5F" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.2 8.2 0 0 1 9.5 4 8.4 8.4 0 1 0 20 14.5Z"/></svg>צאת החג</span>
-            <span class="w-shabbat-t-val">19:26</span>
+            <span class="w-shabbat-t-label"><svg viewBox="0 0 24 24" fill="none" stroke="#8C7F5F" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.2 8.2 0 0 1 9.5 4 8.4 8.4 0 1 0 20 14.5Z"/></svg>צאת השבת</span>
+            <span class="w-shabbat-t-val">18:51</span>
           </div>
               </div>
-      <div class="w-shabbat-foot">חג שמח ומבורך</div>
+      <div class="w-shabbat-foot">שבת שלום ומבורך</div>
     </div>
 
   </div>
@@ -266,7 +268,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
   <div class="w-ticker-sep"></div>
 
   <div class="w-ticker-flow">
-    <div class="w-ticker-track"><span>&quot;מונע מתסכול אישי&quot;: בגוש השינוי לוחצים על גנץ לפרוש, הוא מתעקש לרוץ עד הסוף</span><i></i><span>המנהיג היקר בעולם יקבל העלאה של מיליון דולר: &quot;ככה מונעים שחיתות&quot;</span><i></i><span>נתניהו הודיע שיתבע וטוען: אין רישום שיחה ביומן או תיעוד כניסה של נציג האמירויות</span><i></i><span>צה&quot;ל: חמאס מוציא כלי נשק מהמחסנים</span><i></i><span>&quot;שליח איפא&quot;ק&quot; ניצח בפריימריז, מחליפתו האשימה את יריבתה בתמיכה בנתניהו</span><i></i><span>טראמפ לא התנגד לסנקציות של בריטניה: &quot;חולקים את החששות&quot; | דיווח</span><i></i><span>הגורם שמאשר: ישראל קיבלה התרעה מהאמירויות; כך נוהל קו הסתרים החשאי</span><i></i><span>ביידן עדכן על הסרטן שהתפשט לעצמותיו: &quot;הטיפול בהקרנות פעל כמתוכנן&quot;</span><i></i><span>&quot;מונע מתסכול אישי&quot;: בגוש השינוי לוחצים על גנץ לפרוש, הוא מתעקש לרוץ עד הסוף</span><i></i><span>המנהיג היקר בעולם יקבל העלאה של מיליון דולר: &quot;ככה מונעים שחיתות&quot;</span><i></i><span>נתניהו הודיע שיתבע וטוען: אין רישום שיחה ביומן או תיעוד כניסה של נציג האמירויות</span><i></i><span>צה&quot;ל: חמאס מוציא כלי נשק מהמחסנים</span><i></i><span>&quot;שליח איפא&quot;ק&quot; ניצח בפריימריז, מחליפתו האשימה את יריבתה בתמיכה בנתניהו</span><i></i><span>טראמפ לא התנגד לסנקציות של בריטניה: &quot;חולקים את החששות&quot; | דיווח</span><i></i><span>הגורם שמאשר: ישראל קיבלה התרעה מהאמירויות; כך נוהל קו הסתרים החשאי</span><i></i><span>ביידן עדכן על הסרטן שהתפשט לעצמותיו: &quot;הטיפול בהקרנות פעל כמתוכנן&quot;</span><i></i></div>
+    <div class="w-ticker-track"><span>שעון חורף 2026: מתי מזיזים את השעון? | כל מה שצריך לדעת</span><i></i><span>ניסיון חיסול בירושלים: עבריין נפצע קשה בפיצוץ מטען ברכב</span><i></i><span>נחשפה המזימה האיראנית בבסיס המפציצים; טראמפ: שייקחו את LA, המחיר זניח</span><i></i><span>&quot;אומרים לי: &#039;חמיד, אי אפשר לחיות ככה. פאטמה מתה, אתה צריך לבנות חיים חדשים, להתחתן&#039;. אני אומר להם: קל לדבר. אתם יכולים לדבר עד מחר&quot;</span><i></i><span>הודו התאחדה סביב הטייס הגיבור: &quot;בנה האמיץ של מומבאי&quot;</span><i></i><span>&quot;חסרים לוחמים גם כשהמערך כבר בקצה. המילואימניקים ישלמו מחירים כבדים&quot;</span><i></i><span>הדלק מתייקר והמדינה מסבסדת: כמה עולה לנו כלכלת הבחירות של סמוטריץ&#039;?</span><i></i><span>הבכיר במשרד התחבורה שקיבל תשלום מפליי דובאי, והתעקשות טראמפ: &quot;לדעתי איראן אחראית&quot;</span><i></i><span>שעון חורף 2026: מתי מזיזים את השעון? | כל מה שצריך לדעת</span><i></i><span>ניסיון חיסול בירושלים: עבריין נפצע קשה בפיצוץ מטען ברכב</span><i></i><span>נחשפה המזימה האיראנית בבסיס המפציצים; טראמפ: שייקחו את LA, המחיר זניח</span><i></i><span>&quot;אומרים לי: &#039;חמיד, אי אפשר לחיות ככה. פאטמה מתה, אתה צריך לבנות חיים חדשים, להתחתן&#039;. אני אומר להם: קל לדבר. אתם יכולים לדבר עד מחר&quot;</span><i></i><span>הודו התאחדה סביב הטייס הגיבור: &quot;בנה האמיץ של מומבאי&quot;</span><i></i><span>&quot;חסרים לוחמים גם כשהמערך כבר בקצה. המילואימניקים ישלמו מחירים כבדים&quot;</span><i></i><span>הדלק מתייקר והמדינה מסבסדת: כמה עולה לנו כלכלת הבחירות של סמוטריץ&#039;?</span><i></i><span>הבכיר במשרד התחבורה שקיבל תשלום מפליי דובאי, והתעקשות טראמפ: &quot;לדעתי איראן אחראית&quot;</span><i></i></div>
   </div>
 
   <img class="w-ticker-orn" src="assets/images/otzma-ornament.png" alt="" aria-hidden="true">
@@ -292,30 +294,6 @@ function fitScreen(){
 }
 window.addEventListener('resize',fitScreen);
 fitScreen();
-
-/* ---- background video keep-alive ----
-   An unattended lobby screen has nobody to click "play": browsers can refuse
-   the initial autoplay, and a long uptime can leave the element stalled after
-   a tab throttle or a decode hiccup. Retry on the events that typically
-   unblock it, plus a slow watchdog that restarts playback if the clock stops
-   advancing. */
-(function(){
-  var v=document.querySelector('.bg-video');
-  if(!v) return;
-  var kick=function(){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); };
-  ['loadeddata','canplay','pause','stalled','suspend'].forEach(function(e){
-    v.addEventListener(e,kick);
-  });
-  document.addEventListener('visibilitychange',function(){
-    if(!document.hidden) kick();
-  });
-  kick();
-  var last=-1;
-  setInterval(function(){
-    if(v.paused || v.currentTime===last) kick();
-    last=v.currentTime;
-  },5000);
-})();
 
 /* ---- ClockWidget ---- the only value rendered client-side */
 function tick(){

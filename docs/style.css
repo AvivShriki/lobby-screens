@@ -120,10 +120,12 @@ widget's CSS (see template-parts/widgets/).
   --night:#0A0B0E;
   /* v7.1: the mockup's cards are near-solid black panels, not glass. A little
      translucency is kept so the background still reads as depth behind them. */
-  /* v7.2: the field behind the cards is a bright clip now, not a blacked-out
-     one, so the panels take a little more body. Measured below. */
-  --card-top:rgba(17,19,25,0.94);
-  --card-bot:rgba(10,11,15,0.965);
+  /* v8: the panels were pushed to near-opaque only because a bright daylight
+     clip sat behind them. With the brand background under control they open
+     up to ~0.80/0.86, so the contour field and the gold glow read through the
+     cards instead of being blocked by them. Re-measured below. */
+  --card-top:rgba(19,21,27,0.80);
+  --card-bot:rgba(11,12,16,0.86);
   --line:rgba(255,255,255,0.09);
   --frame:rgba(201,188,156,0.26);      /* the thin gold rule around a card */
   --frame-soft:rgba(255,255,255,0.14);
@@ -195,40 +197,87 @@ img{display:block;}
 }
 
 /* ---------- ambient background ----------
-   The mockup stages the photo as a bright band behind the header that falls
-   away to black under the cards. The scrim below does exactly that: almost
-   nothing at the top, solid by a third of the way down.
-   scale(1.10) clips the videographer's watermark off the bottom (v6 finding —
-   the threshold is 1.071); the blur makes the 640x360 source read as depth of
-   field rather than as a low-resolution file. */
-.bg-video{
+   v8: the stock clip is gone. The background is now built from the client's
+   own material — their charcoal, their champagne gold, and the topographic
+   contour field taken off their printed signage — so it reads as an extension
+   of the brand rather than as footage borrowed from somewhere.
+
+   Three practical problems this also retires, all of them real and all of them
+   recorded in the README: the clip was a third party's work with their
+   watermark burned in (a licensing exposure for a paying client), it was a
+   640x360 source stretched roughly 3x onto a 1080p screen, and its daylight
+   brightness is what forced the cards to be near-opaque in the first place.
+   Luminance is fully under our control now, so the cards open up (below). */
+.bg-base{
   position:absolute;inset:0;z-index:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  transform-origin:center top;
-  transform:scale(1.10);
-  /* v7.2: with the middle of the screen deliberately empty, the clip is
-     something a resident actually looks at. Grading is close to neutral and
-     the blur is down to 2px — enough to keep the 640x360 source from reading
-     as pixellated, not enough to erase it. Affordable because no body text
-     sits on the footage: the cards are near-opaque, and the header carries its
-     own edge scrim (below). */
-  filter:brightness(0.92) saturate(1.06) blur(2px);
+  background:
+    /* two soft champagne glows, placed to light the open centre column and to
+       lift the far corner behind the stack */
+    radial-gradient(1000px 700px at 50% 42%, rgba(157,147,121,.22), transparent 70%),
+    radial-gradient(760px 560px at 12% 88%, rgba(157,147,121,.09), transparent 66%),
+    /* the brand charcoal, warm at the top and deepening toward the base */
+    linear-gradient(168deg, #242621 0%, #1B1C1A 46%, #0E0F12 100%);
 }
+/* the client's contour field. Two copies at different scales drifting against
+   each other turn a 2400x103 strip into a slow, non-repeating texture; mirrored
+   so neither copy reads as the same band twice. */
+.bg-contours{
+  position:absolute;z-index:1;
+  width:260%;height:auto;
+  pointer-events:none;
+  will-change:transform;
+  /* scaled well past the viewport so only the broad, open part of the curve
+     is in frame — at smaller scales the lines read as scratches rather than
+     as topography */
+}
+.bg-contours-a{
+  top:26%;left:-78%;
+  opacity:.13;
+  transform:scale(3.4);
+  animation:driftA 150s ease-in-out infinite alternate;
+}
+.bg-contours-b{
+  bottom:4%;left:-60%;
+  opacity:.08;
+  transform:scaleY(-1) scale(2.8);
+  animation:driftB 190s ease-in-out infinite alternate;
+}
+@keyframes driftA{
+  from{transform:scale(3.4) translateX(0);}
+  to{transform:scale(3.4) translateX(-1.6%);}
+}
+@keyframes driftB{
+  from{transform:scaleY(-1) scale(2.8) translateX(0);}
+  to{transform:scaleY(-1) scale(2.8) translateX(1.8%);}
+}
+/* the logo's tower mark, large and faint, sitting in the open centre column.
+   With the clip gone this is what gives that space a subject — and it is the
+   most direct answer to "match the logo" available to us. */
+.bg-watermark{
+  position:absolute;z-index:1;
+  top:50%;left:50%;
+  transform:translate(-50%,-54%);
+  height:780px;width:auto;
+  opacity:.13;
+  pointer-events:none;
+}
+/* a plain vignette to seat the ticker and the header; no blackout needed now
+   that nothing bright sits underneath */
 .bg-scrim{
   position:absolute;inset:0;z-index:1;
-  /* v7.2: no longer a blackout. Only a vignette — enough weight at the very
-     top and along the bottom to hold the clock and to seat the ticker, and
-     essentially clear through the middle where the open column is. */
   background:
-    radial-gradient(128% 108% at 50% 44%, transparent 0%, transparent 42%, rgba(8,9,12,.52) 100%),
+    radial-gradient(130% 110% at 50% 44%, transparent 0%, transparent 46%, rgba(6,7,10,.46) 100%),
     linear-gradient(180deg,
-      rgba(8,9,12,.40) 0%,
-      rgba(8,9,12,.10) 10%,
-      rgba(8,9,12,0) 26%,
-      rgba(8,9,12,0) 68%,
-      rgba(8,9,12,.34) 88%,
-      rgba(8,9,12,.62) 100%);
+      rgba(6,7,10,.34) 0%,
+      rgba(6,7,10,.06) 12%,
+      rgba(6,7,10,0) 30%,
+      rgba(6,7,10,0) 70%,
+      rgba(6,7,10,.26) 88%,
+      rgba(6,7,10,.52) 100%);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .bg-contours{animation:none;}
 }
 
 /* ---------- frame / zones ---------- */
@@ -274,10 +323,15 @@ img{display:block;}
    open column is the wide 1fr in the centre, and the stack goes to the far
    side. The centre is not a gap between cards; it is the widest single element
    on the screen, and the clip plays in it. */
+/* v8: the open centre was 762px because a video played in it. With the clip
+   gone it only carries the brand mark, so the content panels take the width
+   back and the centre settles at ~622px — still the widest single element on
+   the screen and still the breathing space the brief asks for, without
+   reading as a hole where something used to be. */
 .zone-grid{
   flex:1 1 auto;min-height:0;
   display:grid;
-  grid-template-columns:430px minmax(0,1fr) 560px;
+  grid-template-columns:470px minmax(0,1fr) 600px;
   gap:30px;
   padding:0 54px;
   margin:22px 0;

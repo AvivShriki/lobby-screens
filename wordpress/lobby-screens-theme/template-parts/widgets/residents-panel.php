@@ -53,19 +53,40 @@ $glyphs = array(
   <div class="w-notices-stage">
 
     <div class="w-notices-panel">
-      <?php /* the mockup's gold sweep across the lower corner — pure decoration,
-              drawn rather than imported so it scales with the panel */ ?>
-      <svg class="w-notices-flourish" viewBox="0 0 800 420" preserveAspectRatio="none" aria-hidden="true">
+      <?php /* The gold sweep across the lower corner — the thing Aviv pointed
+              at in his reference. Drawn rather than imported so it tracks the
+              panel at any size, and built in three passes because one stroke
+              cannot look like light: a wide blurred pass for the bloom, a
+              bright thin pass for the filament itself, then two hairlines
+              trailing behind it. The viewBox is close to the panel's own
+              aspect so preserveAspectRatio="none" barely distorts the strokes.
+
+              Gradient stops rather than one colour, for the same reason the
+              frame is a gradient: the sweep has to arrive, catch, and leave. */ ?>
+      <svg class="w-notices-flourish" viewBox="0 0 900 520" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="noticeSweep" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stop-color="rgba(201,188,156,0)"/>
-            <stop offset="42%" stop-color="rgba(201,188,156,.55)"/>
-            <stop offset="100%" stop-color="rgba(201,188,156,0)"/>
+            <stop offset="0%"   stop-color="rgba(201,162,39,0)"/>
+            <stop offset="18%"  stop-color="rgba(201,162,39,.55)"/>
+            <stop offset="44%"  stop-color="rgba(248,238,206,1)"/>
+            <stop offset="68%"  stop-color="rgba(214,176,74,.72)"/>
+            <stop offset="100%" stop-color="rgba(201,162,39,0)"/>
           </linearGradient>
+          <linearGradient id="noticeSweepSoft" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0%"   stop-color="rgba(201,162,39,0)"/>
+            <stop offset="40%"  stop-color="rgba(230,196,114,.40)"/>
+            <stop offset="100%" stop-color="rgba(201,162,39,0)"/>
+          </linearGradient>
+          <filter id="noticeBloom" x="-10%" y="-40%" width="120%" height="200%">
+            <feGaussianBlur stdDeviation="9"/>
+          </filter>
         </defs>
-        <path d="M-20 430 C 150 330, 420 300, 820 322" fill="none" stroke="url(#noticeSweep)" stroke-width="1.4"/>
-        <path d="M-20 414 C 170 300, 440 268, 820 286" fill="none" stroke="url(#noticeSweep)" stroke-width="1"/>
-        <path d="M-20 398 C 190 272, 460 238, 820 252" fill="none" stroke="url(#noticeSweep)" stroke-width=".7"/>
+        <g fill="none" stroke-linecap="round">
+          <path d="M-40 556 C 190 480, 520 446, 940 458" stroke="url(#noticeSweepSoft)" stroke-width="13" filter="url(#noticeBloom)"/>
+          <path d="M-40 556 C 190 480, 520 446, 940 458" stroke="url(#noticeSweep)" stroke-width="2.6"/>
+          <path d="M-40 538 C 210 456, 540 420, 940 430" stroke="url(#noticeSweep)" stroke-width="1.2" opacity=".70"/>
+          <path d="M-40 520 C 230 432, 560 394, 940 402" stroke="url(#noticeSweep)" stroke-width=".8" opacity=".45"/>
+        </g>
       </svg>
 
       <div class="w-notices-deck" data-rotator="<?php echo $multiple ? 10000 : 0; ?>" data-rotator-dots="noticesDots">

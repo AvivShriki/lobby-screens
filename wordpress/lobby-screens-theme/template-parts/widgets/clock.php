@@ -17,6 +17,6 @@
            same five cells, so nothing moves when JS fills them a moment later.
            Dashes rather than the server's time on purpose — if JS never runs,
            a frozen wrong clock is worse than an obviously blank one. */ ?>
-  <div class="w-clock-time" id="clockTime"><span class="num-d">–</span><span class="num-d">–</span><span class="num-sep">:</span><span class="num-d">–</span><span class="num-d">–</span></div>
+  <div class="w-clock-time num" id="clockTime"><span class="num-d">–</span><span class="num-d">–</span><span class="num-sep">:</span><span class="num-d">–</span><span class="num-d">–</span></div>
   <div class="w-clock-date"><?php echo esc_html( lobby_screens_hebrew_date() ); ?></div>
 </div>

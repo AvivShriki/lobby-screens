@@ -29,9 +29,9 @@ fi
 
 # rewrite theme URLs to the flat layout docs/ uses, and drop cache-busting
 # query strings so the files resolve as plain paths on Pages
-python3 - "$DOCS/index.html.tmp" "$BASE" <<'PY'
+python3 - "$DOCS/index.html.tmp" "$BASE" "$THEME" <<'PY'
 import re, sys
-path, base = sys.argv[1], sys.argv[2].rstrip('/')
+path, base, theme_dir = sys.argv[1], sys.argv[2].rstrip('/'), sys.argv[3]
 s = open(path, encoding='utf-8').read()
 theme = re.escape(base) + r'/wp-content/themes/lobby-screens-theme/'
 # Cache busting. WordPress emits ?ver=<hand-written number>; replace it with a
@@ -40,7 +40,14 @@ theme = re.escape(base) + r'/wp-content/themes/lobby-screens-theme/'
 # already had cached — the page looked unchanged after a real deploy, which is
 # exactly how the v7.2 font fix appeared not to have shipped.
 import hashlib, os
-css = os.path.join(os.path.dirname(path), 'style.css')
+# Hash the THEME's style.css, not docs/style.css. docs/style.css is still the
+# PREVIOUS build's copy at this point — the cp happens after this script — so
+# hashing it stamped every build with the hash of the stylesheet it was
+# replacing. The query string therefore only changed one build late, and a
+# returning visitor kept the cached old CSS against the new HTML until the next
+# run. Found 9.10.2026 while shipping the v8.1 header rail, which is exactly the
+# kind of pure-CSS change that bug hides.
+css = os.path.join(theme_dir, 'style.css')
 ver = hashlib.sha256(open(css, 'rb').read()).hexdigest()[:10] if os.path.exists(css) else '0'
 s = re.sub(theme + r'style\.css(\?[^"\']*)?', 'style.css?v=' + ver, s)
 s = re.sub(theme, '', s)

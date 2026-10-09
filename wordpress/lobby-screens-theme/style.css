@@ -1,7 +1,7 @@
 /*
 Theme Name: Lobby Screens
 Description: TV display for residential building lobbies (35-45"). Static presentation, no user interaction — server-rendered live data (Ynet, ONE, weather, Shabbat times) refreshed on each reload.
-Version: 7.2
+Version: 8.1
 
 v7 — "Otzma Signage". Aviv rewrote the brief: the screen is an explicit
 four-card dashboard (Ynet · ONE · Shabbat · resident notices) over a
@@ -26,6 +26,18 @@ source twice — and the three that remain move to two side columns with the
 middle left open. The background clip is the reason for the change, so the
 grading was reopened to match: it is now a foreground element in its own strip
 rather than texture under four panels.
+
+v8 replaced the background clip with material built from the client's own brand
+(charcoal, champagne gold, their printed contour field), which let the cards
+open up to real translucency.
+
+v8.1 fixes what v8 left behind in the header. The header was two groups pinned
+to the two edges with ~990px of dead space between them — correct in v7.2, when
+a clip played behind it and the gap was the window onto the clip, and simply a
+hole once the clip was gone. It is now a rail: five cells across the full width
+on two shared baselines, separated by one hairline component. The building's own
+name joins the rail; it had been on screen nowhere at all. The header scrim went
+with it, re-measured rather than assumed.
 
 What carries over: Heebo only with thin-vs-bold contrast, gold as a measured
 accent, and the fixed 1920x1080 canvas scaled to fit any TV (.fit).
@@ -151,28 +163,33 @@ widget's CSS (see template-parts/widgets/).
 
   --radius:20px;
   --pad:20px 22px 22px;
+
+  /* header rail (v8.1). Every cell on the rail is one cell-height tall and
+     splits into the same two bands, so the big line of each cell shares a
+     baseline with every other and the small lines share a second one. Tokens
+     rather than the same four numbers copied into five widget blocks. */
+  --hdr-cell-h:120px;
+  --hdr-lede-h:78px;
+  --hdr-sub-h:32px;
+  --hdr-band-gap:10px;
 }
 
-/* CONTRAST, re-measured for v7.2 (9.9.2026) by sampling 9 frames of the real
-   background clip, taking the 98th-percentile-brightest pixels behind each
-   region and compositing the CSS layers in maths rather than eyeballing a
-   screenshot. Small-text bar is 4.5:1; large display text is 3:1.
+/* CONTRAST — card and ticker figures measured for v7.2 (9.9.2026) by
+   compositing the CSS layers in maths rather than eyeballing a screenshot.
+   Small-text bar is 4.5:1; large display text is 3:1.
      card body   --white     15.1 : 1
      card body   --dim        9.6 : 1
      notice date --dimmer     6.2 : 1
      card label  --gold-text 10.1 : 1
      Shabbat panel --ink on #F2F0EA   14.1 : 1
      ticker text                      17.3 : 1
-   The header is the only text with no panel under it, measured per band after
-   .zone-top::before:
-     clock, left      8.78 white / 6.09 dim
-     greeting, mid    9.10 white / 6.28 dim / 6.06 gold
-     logo, right     15.56 white
-   Opening the clip to .92 for v7.2 pushed the greeting band's 22px line down
-   to 4.21 — under the bar — until the header scrim's stop positions were
-   re-fitted around it. That line is the binding constraint here, not the
-   headline above it.
-   Redo this if the background clip, the grading or the scrims change. */
+   These were taken against the background clip, which is gone as of v8; the
+   clip was the BRIGHT case, so the brand background can only improve them.
+
+   The header is the only text with no panel under it and is the one place worth
+   re-deriving: it was re-measured for v8.1 against the brand background, with
+   the v7.2 header scrim removed. Figures and method are in the .zone-top block
+   below. Redo that measurement if the background layers change. */
 
 *{box-sizing:border-box;margin:0;}
 html,body{height:100%;overflow:hidden;}
@@ -288,35 +305,45 @@ img{display:block;}
 }
 /* RTL: the first child lands on the right, which is where the mockup puts the
    logo. No row-reverse — the DOM order is the visual order. */
-/* The header is the only place text sits straight on the footage. Rather than
-   darken the whole clip for it — which is what made the first pass look flat —
-   the header carries its own scrim, heavy at the two edges where the clock and
-   the logo sit and clear across the middle where the photo should show. */
+/* ---------- the header rail (v8.1) ----------
+   The header used to be two groups pinned to the two edges with ~990px of
+   nothing between them. That hole was deliberate in v7.2 — a clip played behind
+   the header and the gap was the window onto it — but v8 removed the clip, so
+   the window became a hole. The header's atoms are now five cells spread across
+   the full width, separated by one hairline component.
+
+   The shared bands are the whole trick: five blocks sitting on one baseline
+   read as a single rail, five blocks centred individually read as five
+   floating islands. See --hdr-* above.
+
+   CONTRAST, re-measured for v8.1: the old .zone-top::before is gone. It
+   darkened the two edges of a bright daylight clip and kept the middle clear,
+   and both halves of that are now wrong — the background is brand-built and
+   dark, and text occupies the middle. Compositing the current background layers
+   in maths and sampling 35 points across the band, with NO header scrim at all:
+     --white      worst  9.72 : 1
+     --dim        worst  6.65 : 1
+     --gold-text  worst  6.48 : 1
+     --dimmer     worst  4.66 : 1
+   all above AA (4.5:1 small text, 3:1 large). The worst point is dead centre at
+   the bottom of the band, where the brand watermark sits. Adding a scrim buys
+   about +0.8 and costs the clean background, so there is none. Re-measure if the
+   background layers change. */
 .zone-top{
   position:relative;
   flex:0 0 176px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:40px;
+  gap:28px;                 /* a floor, so a long building name cannot collide */
   padding:0 54px;
   margin-top:24px;
 }
-.zone-top::before{
-  content:'';
-  position:absolute;top:-24px;bottom:-22px;left:0;right:0;
-  z-index:-1;
-  /* stop positions are measured, not eyeballed: the greeting band sits around
-     x 55-78%, and a clear window that ran that far let its 22px line fall to
-     3.96:1. These bring it back to 4.96 while keeping the widest possible
-     opening over the photo. */
-  background:linear-gradient(90deg,
-    rgba(8,9,12,.88) 0%,
-    rgba(8,9,12,.60) 16%,
-    rgba(8,9,12,.12) 30%,
-    rgba(8,9,12,.10) 44%,
-    rgba(8,9,12,.46) 54%,
-    rgba(8,9,12,.74) 66%,
-    rgba(8,9,12,.86) 80%,
-    rgba(8,9,12,.92) 100%);
+/* one hairline closing the rail, inset to the same 54px as the cards below so
+   the header reads as a band and not as content that trails off */
+.zone-top::after{
+  content:'';position:absolute;
+  left:54px;right:54px;bottom:-11px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-line) 10%,var(--gold-line) 90%,transparent);
+  opacity:.5;
 }
 /* v7.2 — two columns with an open middle. RTL puts the first track on the
    right, so the lead column (resident notices) sits on the reading side, the
@@ -479,17 +506,54 @@ img{display:block;}
   overflow:hidden;
 }
 
-/* ---------- header, right group: brand + welcome ---------- */
-.hdr-lead{display:flex;align-items:center;gap:30px;}
-/* The client's logo exists only as a vertical lockup — mark over wordmark over
-   tagline, no horizontal variant in their source files. The header is built
-   tall enough to carry it whole rather than cutting it down to fit. */
-.w-brand img{height:152px;width:auto;}
-.hdr-divider{
-  width:1px;height:104px;
-  background:linear-gradient(180deg,transparent,var(--gold-line) 22%,var(--gold-line) 78%,transparent);
+/* ---------- header rail: the cells ----------
+   One system, five cells. A cell is a fixed height and its widget is a column
+   of two bands; because every cell declares the same heights from the same
+   tokens, the big lines all land on one baseline and the small lines on a
+   second. That is what the rail is. */
+.hdr-cell{height:var(--hdr-cell-h);display:flex;align-items:center;}
+.hdr-cell > *{display:flex;flex-direction:column;}
+/* A cell whose data never arrived takes itself AND its separator out of the
+   rail, rather than leaving a hairline floating next to a gap (brief §18).
+   This is why each hairline follows its cell instead of preceding it, and why
+   the cell divs carry no whitespace inside them. */
+.hdr-cell:empty,
+.hdr-cell:empty + .hdr-rule{display:none;}
+
+/* band 1 — the one big line of each cell, sitting on the shared baseline */
+.w-welcome-title,
+.w-building-name,
+.w-wx-now-main,
+.w-clock-time{
+  height:var(--hdr-lede-h);
+  display:flex;align-items:flex-end;
 }
-.w-welcome{text-align:right;}
+/* band 2 — the quiet line under it */
+.w-welcome-sub,
+.w-building-city,
+.w-wx-now-cond,
+.w-clock-date{
+  height:var(--hdr-sub-h);
+  margin-top:var(--hdr-band-gap);
+  display:flex;align-items:center;
+  font-size:19px;font-weight:300;
+}
+/* the separator — defined once, used four times */
+.hdr-rule{
+  flex:0 0 1px;
+  width:1px;height:112px;
+  background:linear-gradient(180deg,transparent,var(--gold-line) 20%,var(--gold-line) 80%,transparent);
+}
+
+/* ---------- BrandWidget (rail cell 1, far right) ----------
+   The client's logo exists only as a vertical lockup — mark over wordmark over
+   tagline, no horizontal variant in their source files. The rail is built tall
+   enough to carry it whole rather than cutting it down to fit, so this is the
+   one cell that opts out of the two-band grid. */
+.hdr-brand{height:auto;}
+.w-brand img{height:152px;width:auto;}
+
+/* ---------- WelcomeWidget (rail cell 2) ---------- */
 .w-welcome-title{
   font-size:44px;font-weight:600;
   letter-spacing:.16em;
@@ -497,37 +561,58 @@ img{display:block;}
   line-height:1.1;
 }
 .w-welcome-sub{
-  margin-top:12px;
-  display:flex;align-items:center;gap:16px;
-  font-size:22px;font-weight:300;letter-spacing:.30em;
+  gap:16px;
+  letter-spacing:.26em;
   color:var(--white);
 }
 .w-welcome-sub::before,
 .w-welcome-sub::after{
-  content:'';height:1px;width:64px;
+  content:'';height:1px;width:52px;flex:0 0 52px;
   background:linear-gradient(90deg,transparent,var(--gold-line),transparent);
 }
 
-/* ---------- ClockWidget (header, left) ---------- */
-.w-clock{text-align:left;}
+/* ---------- BuildingWidget (rail cell 3, the middle) ----------
+   Deliberately the second-loudest thing on the rail: louder than the date and
+   the temperature, because it answers "where am I", quieter than the gold
+   greeting, which is the client's own hero line. */
+.w-building-name{
+  font-size:38px;font-weight:400;
+  letter-spacing:.05em;
+  color:var(--white);
+  font-variant-numeric:tabular-nums;
+  line-height:1.05;
+}
+.w-building-city{
+  gap:9px;
+  letter-spacing:.14em;
+  color:var(--dim);
+}
+.w-building-city svg{width:20px;height:20px;flex:0 0 20px;}
+
+/* ---------- WeatherNowWidget (rail cell 4) ---------- */
+.w-wx-now-main{gap:14px;}
+/* the icon is optically heavier than the numeral, so it sits a touch above the
+   baseline rather than on it */
+.w-wx-now-icon{width:46px;height:46px;margin-bottom:7px;}
+.w-wx-now-temp{
+  font-size:46px;font-weight:300;line-height:.95;
+  font-variant-numeric:tabular-nums;
+}
+.w-wx-now-cond{letter-spacing:.14em;color:var(--dim);}
+
+/* ---------- ClockWidget (rail cell 5, far left) ---------- */
+/* The last cell aligns to the screen's outer edge, mirroring the logo on the
+   right, so the rail has a clean margin at both ends. In RTL that edge is
+   flex-end — except on the time itself, which is direction:ltr so the digits
+   render as one LTR run, which flips the meaning of the keyword. */
+.w-clock-date{justify-content:flex-end;color:var(--dim);letter-spacing:.04em;}
 .w-clock-time{
   direction:ltr;
+  justify-content:flex-start;
   font-size:78px;font-weight:300;line-height:.92;
   letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
-.w-clock-date{
-  margin-top:12px;
-  font-size:18px;font-weight:300;
-  color:var(--dim);
-}
-.w-clock-weather{
-  margin-top:14px;
-  display:flex;align-items:center;gap:10px;
-}
-.w-clock-weather svg{width:30px;height:30px;}
-.w-clock-temp{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;}
-.w-clock-city{font-size:17px;font-weight:300;color:var(--dim);}
 
 /* ---------- ShabbatWidget ---------- */
 /* v7.2: short wide card — photo and times side by side. The occasion stays
@@ -745,9 +830,13 @@ img{display:block;}
   to  {opacity:1;transform:translateY(0);}
 }
 .reveal{opacity:0;animation:reveal 900ms cubic-bezier(.22,.68,.28,1) forwards;}
-/* the header assembles in reading order: mark and greeting, then the clock */
-.zone-top .hdr-lead{animation-delay:150ms;}
-.zone-top .w-clock{animation-delay:400ms;}
+/* the rail assembles right to left, cell by cell, the order a reader's eye
+   takes them — not all five at once, which looked like a page load */
+.hdr-brand{animation-delay:120ms;}
+.hdr-greet{animation-delay:200ms;}
+.hdr-place{animation-delay:280ms;}
+.hdr-wx{animation-delay:360ms;}
+.hdr-time{animation-delay:440ms;}
 /* right to left, the order a reader's eye takes them */
 .zone-grid > .card{animation-delay:560ms;}
 .zone-stack > .card:nth-child(1){animation-delay:740ms;}

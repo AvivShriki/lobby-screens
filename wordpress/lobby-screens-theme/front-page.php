@@ -144,26 +144,50 @@ $theme_uri = get_stylesheet_directory_uri();
 
   <div class="frame" dir="rtl" lang="he">
 
+    <!-- v8.1 — the header rail.
+         Until now this was two groups pinned to the two edges: logo + greeting
+         on the right, clock on the left, and roughly 990px of nothing between
+         them. That emptiness was deliberate in v7.2 — a video played behind the
+         header and the gap was the window you saw it through. v8 removed the
+         clip, and what had been a window became a hole.
+
+         So the header's own content is redistributed as five cells across the
+         full width, separated by one hairline component and sharing two
+         horizontal bands (see .hdr-cell in style.css). Two of the cells are not
+         new information: the Hebrew date and the temperature were already here,
+         stacked and cramped under the clock. The building cell is the single
+         addition, and it comes straight out of $lobby — the building's own name
+         was on screen nowhere at all, only in <title>.
+
+         RTL: the first child lands on the right, so the logo still holds the
+         reading side and the clock still holds the far side, exactly as the
+         client mockup stages them. -->
     <header class="zone-top">
-      <!-- RTL: the first child lands on the right, where the mockup puts the
-           logo and the greeting; the clock takes the far left. -->
-      <div class="hdr-lead reveal">
-        <?php
-        get_template_part( 'template-parts/widgets/brand' );
-        ?>
-        <div class="hdr-divider"></div>
-        <?php
-        get_template_part( 'template-parts/widgets/welcome', null, array(
-          'title' => $lobby['welcome'],
-          'sub'   => $lobby['motto'],
-        ) );
-        ?>
-      </div>
-      <?php
-      get_template_part( 'template-parts/widgets/clock-weather', null, array(
-        'city' => $lobby['city'],
-      ) );
-      ?>
+
+      <div class="hdr-cell hdr-brand reveal"><?php get_template_part( 'template-parts/widgets/brand' ); ?></div>
+
+      <div class="hdr-rule" aria-hidden="true"></div>
+
+      <div class="hdr-cell hdr-greet reveal"><?php get_template_part( 'template-parts/widgets/welcome', null, array(
+        'title' => $lobby['welcome'],
+        'sub'   => $lobby['motto'],
+      ) ); ?></div>
+
+      <div class="hdr-rule" aria-hidden="true"></div>
+
+      <div class="hdr-cell hdr-place reveal"><?php get_template_part( 'template-parts/widgets/building', null, array(
+        'building' => $lobby['building'],
+        'city'     => $lobby['city'],
+      ) ); ?></div>
+
+      <div class="hdr-rule" aria-hidden="true"></div>
+
+      <div class="hdr-cell hdr-wx reveal"><?php get_template_part( 'template-parts/widgets/weather-now' ); ?></div>
+
+      <div class="hdr-rule" aria-hidden="true"></div>
+
+      <div class="hdr-cell hdr-time reveal"><?php get_template_part( 'template-parts/widgets/clock' ); ?></div>
+
     </header>
 
     <main class="zone-grid">

@@ -1,5 +1,15 @@
 <?php
 /**
+ * ClockWeatherWidget — SUPERSEDED in v8.1, kept for reference only.
+ *
+ * It bundled time + Hebrew date + temperature + city into one corner of the
+ * header. The v8.1 rail spreads the header across the full width, so that
+ * bundle is now three cells: clock.php (time + date), weather-now.php
+ * (temperature + condition) and building.php (name + city). Nothing composes
+ * this file any more and its .w-clock-weather / -temp / -city styles were
+ * removed from style.css with it.
+ *
+ * Original note:
  * ClockWeatherWidget — header right (brief §3): live time, Hebrew date, and
  * the current temperature for this building's city.
  *

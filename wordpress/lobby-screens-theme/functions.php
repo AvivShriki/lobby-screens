@@ -410,7 +410,11 @@ function lobby_screens_hebrew_date() {
 	$months = array( 'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר' );
 	$day    = $days[ (int) current_time( 'w' ) ];
 	$month  = $months[ (int) current_time( 'n' ) - 1 ];
-	return sprintf( 'יום %s · %s ב%s %s', $day, current_time( 'j' ), $month, current_time( 'Y' ) );
+	// No year. v8.1.1 took the header's type up by about a third for lobby
+	// distance, and at that size the year was the single longest thing on the
+	// rail — four characters nobody standing in a lobby has ever needed. The
+	// day name is what a resident actually reads off this line.
+	return sprintf( 'יום %s · %s ב%s', $day, current_time( 'j' ), $month );
 }
 
 /**

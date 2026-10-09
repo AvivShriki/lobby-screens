@@ -35,9 +35,13 @@ v8.1 fixes what v8 left behind in the header. The header was two groups pinned
 to the two edges with ~990px of dead space between them — correct in v7.2, when
 a clip played behind it and the gap was the window onto the clip, and simply a
 hole once the clip was gone. It is now a rail: five cells across the full width
-on two shared baselines, separated by one hairline component. The building's own
-name joins the rail; it had been on screen nowhere at all. The header scrim went
-with it, re-measured rather than assumed.
+on two shared baselines, separated by one hairline component. The header scrim
+went with it, re-measured rather than assumed.
+
+v8.1.1 — Aviv cut the building-name cell and asked for everything left on the
+rail to be bigger. Those are one change, not two: four cells instead of five
+free ~260px, which is what pays for the type. The second band goes 19→28px,
+which is the one that mattered — at lobby distance 19px was decoration.
 
 What carries over: Heebo only with thin-vs-bold contrast, gold as a measured
 accent, and the fixed 1920x1080 canvas scaled to fit any TV (.fit).
@@ -167,11 +171,19 @@ widget's CSS (see template-parts/widgets/).
   /* header rail (v8.1). Every cell on the rail is one cell-height tall and
      splits into the same two bands, so the big line of each cell shares a
      baseline with every other and the small lines share a second one. Tokens
-     rather than the same four numbers copied into five widget blocks. */
-  --hdr-cell-h:120px;
-  --hdr-lede-h:78px;
-  --hdr-sub-h:32px;
-  --hdr-band-gap:10px;
+     rather than the same four numbers copied into four widget blocks.
+
+     v8.1.1 — the whole scale goes up for lobby distance. This is a screen read
+     standing up, from several metres, by someone who will not walk closer: the
+     rule of thumb is roughly one inch of cap height per three metres of
+     viewing distance, and on a 40" 1080p panel (~55 design-px to the inch) the
+     old 19px second lines came to a quarter-inch. They were legible at a desk
+     and decorative in a lobby. The second band is the big change (19→28px);
+     the first goes up more modestly because 78px already cleared the bar. */
+  --hdr-cell-h:150px;
+  --hdr-lede-h:96px;
+  --hdr-sub-h:42px;
+  --hdr-band-gap:12px;
 }
 
 /* CONTRAST — card and ticker figures measured for v7.2 (9.9.2026) by
@@ -328,12 +340,20 @@ img{display:block;}
    all above AA (4.5:1 small text, 3:1 large). The worst point is dead centre at
    the bottom of the band, where the brand watermark sits. Adding a scrim buys
    about +0.8 and costs the clean background, so there is none. Re-measure if the
-   background layers change. */
+   background layers change.
+
+   v8.1.1 does not change a single colour, so those figures stand — but the size
+   change moves the goalposts in our favour: at 28px the second band is now
+   "large text" by WCAG (>=18.5pt), so its bar drops from 4.5:1 to 3:1 and the
+   dimmest line on the rail clears it by more than double. */
 .zone-top{
   position:relative;
-  flex:0 0 176px;
+  /* 196 rather than 176: the taller cells need it. The 20px comes out of the
+     grid's 1fr row below (the ONE card), which had the slack — measured, not
+     assumed; the Shabbat row underneath it is fixed at 300px and untouched. */
+  flex:0 0 196px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:28px;                 /* a floor, so a long building name cannot collide */
+  gap:28px;                 /* a floor, so nothing can collide on a long line */
   padding:0 54px;
   margin-top:24px;
 }
@@ -343,7 +363,8 @@ img{display:block;}
   content:'';position:absolute;
   left:54px;right:54px;bottom:-11px;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold-line) 10%,var(--gold-line) 90%,transparent);
-  opacity:.5;
+  opacity:.62;   /* nudged with the type: a line that reads at a desk can
+                    disappear at five metres, same as the 19px text did */
 }
 /* v7.2 — two columns with an open middle. RTL puts the first track on the
    right, so the lead column (resident notices) sits on the reading side, the
@@ -522,7 +543,6 @@ img{display:block;}
 
 /* band 1 — the one big line of each cell, sitting on the shared baseline */
 .w-welcome-title,
-.w-building-name,
 .w-wx-now-main,
 .w-clock-time{
   height:var(--hdr-lede-h);
@@ -530,18 +550,17 @@ img{display:block;}
 }
 /* band 2 — the quiet line under it */
 .w-welcome-sub,
-.w-building-city,
 .w-wx-now-cond,
 .w-clock-date{
   height:var(--hdr-sub-h);
   margin-top:var(--hdr-band-gap);
   display:flex;align-items:center;
-  font-size:19px;font-weight:300;
+  font-size:28px;font-weight:300;
 }
 /* the separator — defined once, used four times */
 .hdr-rule{
   flex:0 0 1px;
-  width:1px;height:112px;
+  width:1px;height:138px;
   background:linear-gradient(180deg,transparent,var(--gold-line) 20%,var(--gold-line) 80%,transparent);
 }
 
@@ -551,65 +570,54 @@ img{display:block;}
    enough to carry it whole rather than cutting it down to fit, so this is the
    one cell that opts out of the two-band grid. */
 .hdr-brand{height:auto;}
-.w-brand img{height:152px;width:auto;}
+.w-brand img{height:172px;width:auto;}
 
 /* ---------- WelcomeWidget (rail cell 2) ---------- */
 .w-welcome-title{
-  font-size:44px;font-weight:600;
-  letter-spacing:.16em;
+  font-size:58px;font-weight:600;
+  letter-spacing:.14em;
   color:var(--gold-text);
-  line-height:1.1;
+  line-height:1.05;
 }
 .w-welcome-sub{
-  gap:16px;
-  letter-spacing:.26em;
+  gap:18px;
+  letter-spacing:.20em;
   color:var(--white);
 }
 .w-welcome-sub::before,
 .w-welcome-sub::after{
-  content:'';height:1px;width:52px;flex:0 0 52px;
+  content:'';height:1px;width:58px;flex:0 0 58px;
   background:linear-gradient(90deg,transparent,var(--gold-line),transparent);
 }
 
-/* ---------- BuildingWidget (rail cell 3, the middle) ----------
-   Deliberately the second-loudest thing on the rail: louder than the date and
-   the temperature, because it answers "where am I", quieter than the gold
-   greeting, which is the client's own hero line. */
-.w-building-name{
-  font-size:38px;font-weight:400;
-  letter-spacing:.05em;
-  color:var(--white);
-  font-variant-numeric:tabular-nums;
-  line-height:1.05;
-}
-.w-building-city{
-  gap:9px;
-  letter-spacing:.14em;
-  color:var(--dim);
-}
-.w-building-city svg{width:20px;height:20px;flex:0 0 20px;}
-
-/* ---------- WeatherNowWidget (rail cell 4) ---------- */
-.w-wx-now-main{gap:14px;}
+/* ---------- WeatherNowWidget ---------- */
+.w-wx-now-main{gap:18px;}
 /* the icon is optically heavier than the numeral, so it sits a touch above the
    baseline rather than on it */
-.w-wx-now-icon{width:46px;height:46px;margin-bottom:7px;}
+.w-wx-now-icon{width:62px;height:62px;margin-bottom:9px;}
 .w-wx-now-temp{
-  font-size:46px;font-weight:300;line-height:.95;
+  font-size:62px;font-weight:300;line-height:.95;
   font-variant-numeric:tabular-nums;
 }
-.w-wx-now-cond{letter-spacing:.14em;color:var(--dim);}
+/* city · condition. The middot is drawn rather than typed so the two halves
+   stay separate elements — the city is server data, the condition is ours. */
+.w-wx-now-cond{gap:12px;letter-spacing:.10em;color:var(--dim);}
+.w-wx-now-city + span::before{
+  content:'';display:inline-block;vertical-align:.28em;
+  width:4px;height:4px;margin-inline-end:12px;border-radius:50%;
+  background:var(--gold);
+}
 
 /* ---------- ClockWidget (rail cell 5, far left) ---------- */
 /* The last cell aligns to the screen's outer edge, mirroring the logo on the
    right, so the rail has a clean margin at both ends. In RTL that edge is
    flex-end — except on the time itself, which is direction:ltr so the digits
    render as one LTR run, which flips the meaning of the keyword. */
-.w-clock-date{justify-content:flex-end;color:var(--dim);letter-spacing:.04em;}
+.w-clock-date{justify-content:flex-end;color:var(--dim);letter-spacing:.05em;}
 .w-clock-time{
   direction:ltr;
   justify-content:flex-start;
-  font-size:78px;font-weight:300;line-height:.92;
+  font-size:96px;font-weight:300;line-height:.92;
   letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
@@ -833,10 +841,9 @@ img{display:block;}
 /* the rail assembles right to left, cell by cell, the order a reader's eye
    takes them — not all five at once, which looked like a page load */
 .hdr-brand{animation-delay:120ms;}
-.hdr-greet{animation-delay:200ms;}
-.hdr-place{animation-delay:280ms;}
-.hdr-wx{animation-delay:360ms;}
-.hdr-time{animation-delay:440ms;}
+.hdr-greet{animation-delay:220ms;}
+.hdr-wx{animation-delay:320ms;}
+.hdr-time{animation-delay:420ms;}
 /* right to left, the order a reader's eye takes them */
 .zone-grid > .card{animation-delay:560ms;}
 .zone-stack > .card:nth-child(1){animation-delay:740ms;}

@@ -151,13 +151,16 @@ $theme_uri = get_stylesheet_directory_uri();
          header and the gap was the window you saw it through. v8 removed the
          clip, and what had been a window became a hole.
 
-         So the header's own content is redistributed as five cells across the
-         full width, separated by one hairline component and sharing two
-         horizontal bands (see .hdr-cell in style.css). Two of the cells are not
-         new information: the Hebrew date and the temperature were already here,
-         stacked and cramped under the clock. The building cell is the single
-         addition, and it comes straight out of $lobby — the building's own name
-         was on screen nowhere at all, only in <title>.
+         So the header's own content is redistributed across the full width as
+         cells sharing two horizontal bands (see .hdr-cell in style.css).
+
+         v8.1.1 — Aviv cut the building-name cell and asked for everything left
+         to be bigger. Both halves of that are one decision: four cells instead
+         of five frees ~260px of width, which is what pays for the type going up
+         roughly a third. The screen is read standing in a lobby, from metres
+         away, with nobody to lean in — the 19px second lines were decoration at
+         that distance. The city moved onto the weather line, since it left the
+         screen with the building cell and the temperature needs it.
 
          RTL: the first child lands on the right, so the logo still holds the
          reading side and the clock still holds the far side, exactly as the
@@ -175,18 +178,14 @@ $theme_uri = get_stylesheet_directory_uri();
 
       <div class="hdr-rule" aria-hidden="true"></div>
 
-      <div class="hdr-cell hdr-place reveal"><?php get_template_part( 'template-parts/widgets/building', null, array(
-        'building' => $lobby['building'],
-        'city'     => $lobby['city'],
-      ) ); ?></div>
-
-      <div class="hdr-rule" aria-hidden="true"></div>
-
       <?php $geo = lobby_screens_weather_coords(); ?>
       <div class="hdr-cell hdr-wx reveal"
            data-lat="<?php echo esc_attr( $geo['lat'] ); ?>"
            data-lon="<?php echo esc_attr( $geo['lon'] ); ?>"
-           data-tz="<?php echo esc_attr( $geo['tz'] ); ?>"><?php get_template_part( 'template-parts/widgets/weather-now' ); ?></div>
+           data-tz="<?php echo esc_attr( $geo['tz'] ); ?>"
+           data-city="<?php echo esc_attr( $lobby['city'] ); ?>"><?php get_template_part( 'template-parts/widgets/weather-now', null, array(
+        'city' => $lobby['city'],
+      ) ); ?></div>
 
       <div class="hdr-rule" aria-hidden="true"></div>
 
@@ -260,6 +259,9 @@ $theme_uri = get_stylesheet_directory_uri();
       var words = {sun:'בהיר', cloud:'מעונן', rain:'גשום'};
       var temp  = Math.round(Number(now.temperature));
       if (!isFinite(temp)) return;
+      /* the span goes in empty and its text is set below, so the only values
+         interpolated into markup here are ones this file wrote itself */
+      var city = cell.dataset.city ? '<span class="w-wx-now-city"></span>' : '';
       cell.innerHTML =
         '<div class="w-wx-now">'
       +   '<div class="w-wx-now-main">'
@@ -267,8 +269,11 @@ $theme_uri = get_stylesheet_directory_uri();
       +       kind.charAt(0).toUpperCase() + kind.slice(1) + '"></use></svg>'
       +     '<span class="w-wx-now-temp">' + temp + '\u00B0</span>'
       +   '</div>'
-      +   '<div class="w-wx-now-cond">' + words[kind] + '</div>'
+      +   '<div class="w-wx-now-cond">' + city + '<span>' + words[kind] + '</span></div>'
       + '</div>';
+      if (cell.dataset.city) {
+        cell.querySelector('.w-wx-now-city').textContent = cell.dataset.city;
+      }
     })
     .catch(function(){ /* leave the cell collapsed */ });
 })();

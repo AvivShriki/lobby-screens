@@ -10,7 +10,13 @@
  *
  * The condition word is not new data — it names the icon we already draw. That
  * also means the state is never carried by a shape or a colour alone.
+ *
+ * v8.1.1: the city joins it. It used to sit beside the temperature, moved to
+ * the building cell when the rail was built, and would have left the screen
+ * altogether when that cell was cut — leaving a temperature that belongs to
+ * nowhere in particular.
  */
+$city    = $args['city'] ?? '';
 $weather = lobby_screens_get_current_weather();
 if ( ! $weather ) {
 	// brief §18: no cell at all beats an error message or a stale-looking
@@ -28,5 +34,8 @@ $conditions = array(
     <svg class="w-wx-now-icon"><use href="#wx<?php echo esc_attr( ucfirst( $weather['kind'] ) ); ?>"></use></svg>
     <span class="w-wx-now-temp"><?php echo esc_html( $weather['temp'] ); ?>°</span>
   </div>
-  <div class="w-wx-now-cond"><?php echo esc_html( $conditions[ $weather['kind'] ] ?? '' ); ?></div>
+  <div class="w-wx-now-cond">
+    <?php if ( '' !== $city ) : ?><span class="w-wx-now-city"><?php echo esc_html( $city ); ?></span><?php endif; ?>
+    <span><?php echo esc_html( $conditions[ $weather['kind'] ] ?? '' ); ?></span>
+  </div>
 </div>

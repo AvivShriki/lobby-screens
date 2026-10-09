@@ -983,24 +983,33 @@ img{display:block;}
 .w-notices-dots span.is-active{background:var(--gold-text);}
 
 /* ---------- TickerWidget (brief §9) ----------
-   Full-bleed bar across the very bottom edge — not a floating card. */
+   Full-bleed bar across the very bottom edge — not a floating card.
+
+   v8.2.4 — scaled up and the band raised a little (Aviv: more prominent).
+   Everything in it moves together, 88->118 tall with the type and the lockup
+   at the same ratio, so it reads as one band that grew rather than a bar with
+   bigger text crammed into it. The 30px comes out of the grid row above, which
+   is measured below rather than assumed to have the slack. */
 .w-ticker{
   position:relative;
-  height:88px;
-  display:flex;align-items:center;gap:22px;
-  padding:0 40px;
+  height:118px;
+  display:flex;align-items:center;gap:28px;
+  padding:0 48px;
   background:linear-gradient(180deg, rgba(10,11,14,.94) 0%, rgba(6,7,9,.98) 100%);
-  border-top:1px solid var(--gold-line);
+  /* the rule is the band's top edge against a dark screen — it carries more of
+     the "this is a thing" than the height does, so it gains with it */
+  border-top:1px solid rgba(201,162,39,.72);
+  box-shadow:0 -14px 34px -22px rgba(201,162,39,.40);
   overflow:hidden;
 }
-.w-ticker-logo{flex:0 0 auto;height:34px;width:auto;}
+.w-ticker-logo{flex:0 0 auto;height:46px;width:auto;}
 .w-ticker-kicker{
   flex:0 0 auto;
-  font-size:17px;font-weight:400;letter-spacing:.10em;
+  font-size:24px;font-weight:400;letter-spacing:.10em;
   color:var(--gold-text);
   white-space:nowrap;
 }
-.w-ticker-sep{flex:0 0 auto;width:1px;height:40px;background:var(--gold-line);}
+.w-ticker-sep{flex:0 0 auto;width:1px;height:56px;background:var(--gold-line);}
 .w-ticker-flow{
   flex:1 1 auto;min-width:0;
   overflow:hidden;white-space:nowrap;
@@ -1016,19 +1025,26 @@ img{display:block;}
    gets reordered by bidi and lands on the wrong side. As flex items they are
    placed by the flex algorithm, which ignores bidi. */
 .w-ticker-track{
-  display:inline-flex;align-items:center;gap:30px;
-  animation:ticker 66s linear infinite;
-  font-size:24px;font-weight:300;
+  display:inline-flex;align-items:center;gap:40px;
+  /* The duration is NOT a style choice — it is the old 66s scaled by how much
+     longer the track got, so the headlines still cross the screen at exactly
+     the same speed. Leaving it at 66s would have sped the marquee up by 41%
+     purely because the text grew, which is the opposite of readable.
+     Measured, not estimated: the track went 11944 -> 16837 design-px, a ratio
+     of 1.41, so 66 x 1.41 = 93s. Both come to 90.5 px/sec. Re-measure this if
+     the type size or the gaps change again. */
+  animation:ticker 93s linear infinite;
+  font-size:34px;font-weight:300;
   color:var(--white);
 }
 .w-ticker-track span{flex:0 0 auto;}
-.w-ticker-track i{flex:0 0 auto;width:1px;height:26px;background:var(--gold-line);}
+.w-ticker-track i{flex:0 0 auto;width:1px;height:34px;background:var(--gold-line);}
 @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 /* the client's own topographic strip closes the bar, standing in for the gold
    skyline in the mockup — their asset rather than an invented one */
 .w-ticker-orn{
   position:absolute;left:0;bottom:0;z-index:0;
-  height:88px;width:420px;
+  height:118px;width:520px;
   object-fit:cover;object-position:left bottom;
   opacity:.20;
   pointer-events:none;

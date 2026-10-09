@@ -182,7 +182,11 @@ $theme_uri = get_stylesheet_directory_uri();
 
       <div class="hdr-rule" aria-hidden="true"></div>
 
-      <div class="hdr-cell hdr-wx reveal"><?php get_template_part( 'template-parts/widgets/weather-now' ); ?></div>
+      <?php $geo = lobby_screens_weather_coords(); ?>
+      <div class="hdr-cell hdr-wx reveal"
+           data-lat="<?php echo esc_attr( $geo['lat'] ); ?>"
+           data-lon="<?php echo esc_attr( $geo['lon'] ); ?>"
+           data-tz="<?php echo esc_attr( $geo['tz'] ); ?>"><?php get_template_part( 'template-parts/widgets/weather-now' ); ?></div>
 
       <div class="hdr-rule" aria-hidden="true"></div>
 
@@ -217,6 +221,58 @@ $theme_uri = get_stylesheet_directory_uri();
 </div><!-- /.fit -->
 
 <script>
+/* ---- weather fallback ----
+   The temperature is server-rendered (lobby_screens_get_current_weather), and
+   that is the path a real WordPress install takes — this block then does
+   nothing, because the cell is already full.
+
+   The public demo is a different animal: it is rebuilt by a GitHub Actions
+   runner, and Open-Meteo is the one source that does not answer from there.
+   Ynet, ONE and Hebcal all render from CI over the same transport and the same
+   8s timeout, so it is specific to that host; a rate limit on GitHub's shared
+   egress IPs is the likeliest explanation, but it is NOT proven. Rather than
+   guess at the cause, the page tops the cell up itself — Open-Meteo is one of
+   the three sources that sends CORS (measured against the Pages origin), so
+   this is the one feed that can be fetched client-side at all. It also keeps
+   the temperature current between the 15-minute rebuilds.
+
+   If this fails too, the cell stays empty and removes itself along with its
+   separator (.hdr-cell:empty) — no error text on a lobby wall, brief §18. */
+(function(){
+  var cell = document.querySelector('.hdr-wx');
+  if (!cell || cell.children.length) return;   /* the server already filled it */
+
+  var url = 'https://api.open-meteo.com/v1/forecast'
+          + '?latitude='  + encodeURIComponent(cell.dataset.lat)
+          + '&longitude=' + encodeURIComponent(cell.dataset.lon)
+          + '&current_weather=true'
+          + '&timezone='  + encodeURIComponent(cell.dataset.tz);
+
+  fetch(url, {cache:'no-store'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      var now = d && d.current_weather;
+      if (!now) return;
+      /* mirrors lobby_screens_weather_icon_kind() — keep the two in step */
+      var code = Number(now.weathercode), kind = 'cloud';
+      if (code === 0 || code === 1) { kind = 'sun'; }
+      else if ([61,63,65,80,81,82,95].indexOf(code) !== -1) { kind = 'rain'; }
+      var words = {sun:'בהיר', cloud:'מעונן', rain:'גשום'};
+      var temp  = Math.round(Number(now.temperature));
+      if (!isFinite(temp)) return;
+      cell.innerHTML =
+        '<div class="w-wx-now">'
+      +   '<div class="w-wx-now-main">'
+      +     '<svg class="w-wx-now-icon"><use href="#wx'
+      +       kind.charAt(0).toUpperCase() + kind.slice(1) + '"></use></svg>'
+      +     '<span class="w-wx-now-temp">' + temp + '\u00B0</span>'
+      +   '</div>'
+      +   '<div class="w-wx-now-cond">' + words[kind] + '</div>'
+      + '</div>';
+    })
+    .catch(function(){ /* leave the cell collapsed */ });
+})();
+
 /* ---- fit-to-screen ----
    Scale the fixed 1920x1080 canvas to the window so the whole frame is
    visible on any monitor or TV (letterboxed when the aspect differs).

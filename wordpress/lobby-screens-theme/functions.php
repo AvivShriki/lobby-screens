@@ -200,6 +200,19 @@ function lobby_screens_get_one_stories( $limit = 4 ) {
 }
 
 /**
+ * The building's coordinates for Open-Meteo. They were written out twice
+ * below, and the page's client-side weather fallback needs them too
+ * (front-page.php), so they live in one place.
+ */
+function lobby_screens_weather_coords() {
+	return array(
+		'lat' => 31.25,
+		'lon' => 34.79,
+		'tz'  => 'Asia/Jerusalem',
+	);
+}
+
+/**
  * Open-Meteo — free, no API key required. 7-day forecast for Beer Sheva.
  */
 function lobby_screens_get_weekly_weather() {
@@ -209,12 +222,13 @@ function lobby_screens_get_weekly_weather() {
 		return $cached;
 	}
 
+	$geo = lobby_screens_weather_coords();
 	$url = add_query_arg(
 		array(
-			'latitude'       => 31.25,
-			'longitude'      => 34.79,
+			'latitude'       => $geo['lat'],
+			'longitude'      => $geo['lon'],
 			'daily'          => 'weathercode,temperature_2m_max,temperature_2m_min',
-			'timezone'       => 'Asia/Jerusalem',
+			'timezone'       => $geo['tz'],
 			'forecast_days'  => 7,
 		),
 		'https://api.open-meteo.com/v1/forecast'
@@ -494,12 +508,13 @@ function lobby_screens_get_current_weather() {
 		return $cached;
 	}
 
+	$geo = lobby_screens_weather_coords();
 	$url = add_query_arg(
 		array(
-			'latitude'       => 31.25,
-			'longitude'      => 34.79,
+			'latitude'        => $geo['lat'],
+			'longitude'       => $geo['lon'],
 			'current_weather' => 'true',
-			'timezone'       => 'Asia/Jerusalem',
+			'timezone'        => $geo['tz'],
 		),
 		'https://api.open-meteo.com/v1/forecast'
 	);

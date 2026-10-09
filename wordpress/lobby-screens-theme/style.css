@@ -132,6 +132,29 @@ widget's CSS (see template-parts/widgets/).
   unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* The clock's own face. Fraunces is a high-contrast display serif — hairline
+   thins against heavy stems, ball terminals, a flat-topped 1 — and it is the
+   one thing on the screen allowed to be a serif. Aviv asked for the clock to be
+   clearer and a little out of the ordinary; this is both, and it was already in
+   the repo from v6, so it costs no new licence and no network.
+
+   ONE FILE, ONE WEIGHT. There is a single subset here (digits and the colon,
+   3.7KB) and asking for any other weight would make the browser synthesise a
+   fake bold — the exact trap the Heebo note below describes. Declared at 400
+   and used only at 400.
+
+   It has NO tabular figures: '1' is .38em wide against '0' at .62em. On an
+   always-on clock that is a visible jump every minute, so the digits are set in
+   fixed cells instead of trusting font-variant-numeric — see .w-clock-time. */
+@font-face{
+  font-family:'Fraunces';
+  font-style:normal;
+  font-weight:400;
+  font-display:swap;
+  src:url('assets/fonts/fraunces-clock-font.woff2') format('woff2');
+  unicode-range:U+0030-0039, U+003A;
+}
+
 :root{
   --night:#0A0B0E;
   /* v7.1: the mockup's cards are near-solid black panels, not glass. A little
@@ -372,14 +395,19 @@ img{display:block;}
    side. The centre is not a gap between cards; it is the widest single element
    on the screen, and the clip plays in it. */
 /* v8: the open centre was 762px because a video played in it. With the clip
-   gone it only carries the brand mark, so the content panels take the width
-   back and the centre settles at ~622px — still the widest single element on
-   the screen and still the breathing space the brief asks for, without
-   reading as a hole where something used to be. */
+   gone it only carries the brand mark, so the content panels took the width
+   back.
+
+   v8.2 takes the rest of it. Aviv's mockup makes the notices card the subject
+   of the screen, and the tracks are measured off it rather than guessed: in the
+   mockup the left column is 36% of the width, the notices card 49%, the gap
+   between them 9%. At 1920 that is 690 / 946 with a 176px channel, which is
+   what the 1fr plus two 30px gaps comes to. The centre is still open and the
+   brand mark still shows through it — it is a channel now rather than a court. */
 .zone-grid{
   flex:1 1 auto;min-height:0;
   display:grid;
-  grid-template-columns:470px minmax(0,1fr) 600px;
+  grid-template-columns:946px minmax(0,1fr) 690px;
   gap:30px;
   padding:0 54px;
   margin:22px 0;
@@ -617,9 +645,25 @@ img{display:block;}
 .w-clock-time{
   direction:ltr;
   justify-content:flex-start;
-  font-size:96px;font-weight:300;line-height:.92;
-  letter-spacing:-.01em;
-  font-variant-numeric:tabular-nums;
+  font-family:'Fraunces',var(--sans);
+  font-size:104px;font-weight:400;line-height:.92;
+}
+/* Fixed cells, not font-variant-numeric: this face has no tabular figures, and
+   .62em is its widest digit. Every digit now occupies the same box whatever it
+   is, so the clock is motionless between minutes — font-variant-numeric would
+   simply have done nothing here. */
+.w-clock-digit{
+  flex:0 0 auto;
+  width:.62em;
+  text-align:center;
+}
+/* the colon is the one coloured mark on the rail: it reads as a clock the way
+   a second hand does, without anything on the screen having to move */
+.w-clock-colon{
+  flex:0 0 auto;
+  width:.30em;
+  text-align:center;
+  color:var(--gold-text);
 }
 
 /* ---------- ShabbatWidget ---------- */
@@ -731,49 +775,151 @@ img{display:block;}
   color:var(--gold-line);
 }
 
-/* ---------- NoticesWidget ---------- */
-.w-notices-list{position:relative;flex:1 1 auto;min-height:0;}
-.w-notices-page{
+/* ---------- NoticesWidget (v8.2, built to mockups/v8-2-notices.png) ----------
+   The widest card on the screen, showing one notice at a time. Geometry is
+   measured off the mockup rather than eyeballed: panel inset, type sizes and
+   the dot row all come from it at the 1.2106 scale between its 1586px artboard
+   and our 1920px canvas. */
+.w-notices{padding:30px 28px 26px;}
+/* The mockup gives this card a visibly brighter frame than the ONE and Shabbat
+   cards beside it. That is not an inconsistency to iron out — it is how the
+   mockup says which card is the subject. */
+.w-notices{
+  border-color:rgba(201,188,156,.42);
+  border-radius:28px;
+}
+
+/* --- header row --- */
+.w-notices-head{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:16px;
+  height:54px;margin-bottom:40px;padding:0 14px;
+}
+.w-notices-head-icon{flex:0 0 auto;width:38px;height:38px;color:var(--gold-text);}
+.w-notices-head-title{
+  flex:0 0 auto;
+  font-size:42px;font-weight:700;line-height:1;
+  color:var(--gold-text);
+  letter-spacing:.01em;
+}
+.w-notices-head-rule{
+  flex:1 1 auto;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(157,147,121,.42) 22%,rgba(157,147,121,.42));
+}
+/* "עדכונים מהבניין" — a standing label, not a live status, so it gets the
+   quietest colour on the card and a gold pip rather than anything blinking */
+.w-notices-head-status{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:12px;
+  font-size:20px;font-weight:300;letter-spacing:.06em;
+  color:var(--dimmer);
+}
+.w-notices-head-status::after{
+  content:'';flex:0 0 auto;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold-text);
+}
+
+/* --- stage: panel flanked by the mockup's chevrons --- */
+.w-notices-stage{
+  flex:1 1 auto;min-height:0;
+  display:flex;align-items:center;gap:10px;
+}
+.w-notices-arrow{
+  flex:0 0 46px;
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(201,188,156,.34);
+  color:var(--gold);
+}
+.w-notices-arrow svg{width:17px;height:17px;}
+
+.w-notices-panel{
+  position:relative;
+  flex:1 1 auto;min-width:0;align-self:stretch;
+  overflow:hidden;
+  border:1px solid rgba(201,188,156,.26);
+  border-radius:26px;
+  background:linear-gradient(162deg, rgba(40,42,47,.70) 0%, rgba(18,19,24,.88) 62%, rgba(13,14,18,.92) 100%);
+}
+/* the light catching the panel's top edge in the mockup */
+.w-notices-panel::before{
+  content:'';position:absolute;z-index:1;
+  top:0;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(224,208,170,.72),transparent);
+}
+.w-notices-flourish{
+  position:absolute;z-index:0;
+  left:0;bottom:0;width:78%;height:38%;
+  pointer-events:none;
+  opacity:.75;
+}
+
+/* --- the notices themselves, crossfading inside the panel --- */
+.w-notices-deck{position:absolute;z-index:2;inset:0;}
+.w-notice{
   position:absolute;inset:0;
-  display:flex;flex-direction:column;gap:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 58px;
+  text-align:center;
   opacity:0;
   transition:opacity 1000ms ease;
 }
-.w-notices-page.is-active{opacity:1;}
-/* each notice is its own inset panel in the mockup, with a gold glyph leading
-   the title — the glyph is what lets a resident sort the four at a glance */
-.w-notice{
-  flex:1 1 0;min-height:0;
-  display:flex;flex-direction:column;justify-content:center;
-  background:rgba(255,255,255,.035);
-  border:1px solid var(--frame-soft);
-  border-radius:13px;
-  padding:14px 16px;
+.w-notice.is-active{opacity:1;}
+.w-notice-icon{flex:0 0 auto;width:54px;height:54px;color:var(--gold-text);}
+.w-notice-title{
+  margin-top:26px;
+  font-size:56px;font-weight:800;line-height:1.14;
+  letter-spacing:-.005em;
 }
-.w-notice.is-priority{
-  border-color:rgba(201,188,156,.34);
-  background:rgba(201,188,156,.06);
+.w-notice-rule{
+  /* flex:0 0 auto matters: this is a column flex container, so the default
+     flex-shrink:1 applies to HEIGHT and quietly collapsed the 1px rule to
+     nothing as soon as the text ran long. */
+  flex:0 0 auto;
+  width:200px;height:1px;margin:26px 0;
+  background:linear-gradient(90deg,transparent,var(--gold-line),transparent);
 }
-.w-notice-head{display:flex;align-items:center;gap:11px;}
-.w-notice-icon{flex:0 0 auto;width:22px;height:22px;color:var(--gold-text);}
-.w-notice-title{font-size:19px;font-weight:800;line-height:1.2;}
 .w-notice-detail{
-  margin-top:7px;
-  font-size:15px;font-weight:300;line-height:1.42;
+  font-size:34px;font-weight:300;line-height:1.5;
   color:var(--dim);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  /* measured off the mockup: its body block is 425 of a 662px panel, which is
+     520px at our scale. Left to the panel's own width the text ran to three
+     lines where the mockup has two. */
+  max-width:520px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
   overflow:hidden;
 }
 .w-notice-date{
-  margin-top:8px;
-  display:flex;align-items:center;gap:9px;
-  font-size:13px;font-weight:400;
-  color:var(--dimmer);
-  letter-spacing:.04em;
+  /* direction:ltr so the calendar sits to the LEFT of the date as the mockup
+     has it, and so "12.10.2026" is laid out as the single LTR run it is */
+  direction:ltr;
+  flex:0 0 auto;
+  margin-top:32px;
+  display:flex;align-items:center;gap:14px;
+  font-size:30px;font-weight:400;letter-spacing:.02em;
 }
-.w-notice-date::before{
-  content:'';width:16px;height:1px;background:var(--gold-line);flex:0 0 auto;
+.w-notice-date svg{width:28px;height:28px;color:var(--gold-text);}
+/* a priority notice warms the panel rather than shouting — it is already the
+   only thing on the card while it is up */
+.w-notice.is-priority .w-notice-title{color:#FBF6E9;}
+
+/* --- position in the sequence --- */
+.w-notices-dots{
+  /* ltr: the mockup lights the LEFTMOST dot for the first notice. They are an
+     abstract position marker rather than text, so they follow the mockup
+     rather than the page's reading direction. */
+  direction:ltr;
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;gap:18px;
+  margin-top:26px;height:14px;
 }
+.w-notices-dots span{
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(244,243,239,.20);
+  transition:background 600ms ease;
+}
+.w-notices-dots span.is-active{background:var(--gold-text);}
 
 /* ---------- TickerWidget (brief §9) ----------
    Full-bleed bar across the very bottom edge — not a floating card. */
@@ -876,5 +1022,5 @@ body.is-refreshing .fit{opacity:0;transition:opacity 700ms ease;}
 @media (prefers-reduced-motion: reduce){
   .kb,.w-ticker-track{animation:none;}
   .reveal{animation-duration:1ms;}
-  .w-feed-hero-item,.w-notices-page{transition:none;}
+  .w-feed-hero-item,.w-notice,.w-notices-dots span{transition:none;}
 }

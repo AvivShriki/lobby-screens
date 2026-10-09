@@ -40,32 +40,34 @@ $lobby = array(
 	'motto'    => 'לבניין שלנו',
 
 	// PLACEHOLDER notices. Wording is the client's own example text from the
-	// brief; the dates were moved to the current week so the demo screen
-	// doesn't advertise stale ones. Still waiting on real content.
+	// brief; the dates are kept in the coming week so the demo screen doesn't
+	// advertise ones that have already passed — they had drifted a month behind
+	// and were refreshed on 9.10.2026, and each now falls on the weekday its own
+	// text names. Still waiting on real content.
 	'notices'  => array(
 		array(
 			'title'    => 'תחזוקת מעליות',
 			'detail'   => 'ביום שני הקרוב תתקיים בדיקה תקופתית במעליות הבניין.',
-			'date'     => '14.09.2026',
+			'date'     => '12.10.2026',
 			'icon'     => 'wrench',
 			'priority' => true,
 		),
 		array(
 			'title'  => 'הסדרי חניה',
-			'detail' => 'לתשומת לב הדיירים — החל מה-1 באוקטובר יחול שינוי בהסדרי החניה.',
-			'date'   => '11.09.2026',
+			'detail' => 'לתשומת לב הדיירים — החל מה-1 בנובמבר יחול שינוי בהסדרי החניה.',
+			'date'   => '20.10.2026',
 			'icon'   => 'car',
 		),
 		array(
 			'title'  => 'עבודות אינסטלציה',
 			'detail' => 'ביום חמישי תבוצע עבודת תחזוקה במערכת המים בבניין.',
-			'date'   => '10.09.2026',
+			'date'   => '15.10.2026',
 			'icon'   => 'water',
 		),
 		array(
 			'title'  => 'ערב דיירים',
 			'detail' => 'ביום שלישי בשעה 19:30 יתקיים ערב דיירים בלובי הבניין.',
-			'date'   => '08.09.2026',
+			'date'   => '13.10.2026',
 			'icon'   => 'people',
 		),
 	),
@@ -343,12 +345,34 @@ fitScreen();
   setInterval(render,30000);
 })();
 
-/* ---- ClockWidget ---- the only value rendered client-side */
+/* ---- ClockWidget ---- the only value rendered client-side.
+   The digits go into fixed-width cells rather than one text node, because the
+   clock face (Fraunces) has no tabular figures and a bare string would shuffle
+   sideways every minute. The cells are written once and only their text is
+   touched afterwards, so the common case — 59 ticks out of 60, when nothing
+   changed — does no DOM work at all. */
+var clockCells=null, clockLast='';
 function tick(){
+  var el=document.getElementById('clockTime');
+  if(!el) return;
   var d=new Date();
   var p=function(n){return String(n).padStart(2,'0');};
-  var el=document.getElementById('clockTime');
-  if(el) el.textContent=p(d.getHours())+':'+p(d.getMinutes());
+  var now=p(d.getHours())+':'+p(d.getMinutes());
+  if(now===clockLast) return;
+  clockLast=now;
+  if(!clockCells){
+    el.textContent='';
+    clockCells=[];
+    for(var i=0;i<now.length;i++){
+      var span=document.createElement('span');
+      span.className = now[i]===':' ? 'w-clock-colon' : 'w-clock-digit';
+      el.appendChild(span);
+      clockCells.push(span);
+    }
+  }
+  for(var j=0;j<now.length;j++){
+    if(clockCells[j].textContent!==now[j]) clockCells[j].textContent=now[j];
+  }
 }
 tick();setInterval(tick,1000);
 
@@ -356,17 +380,25 @@ tick();setInterval(tick,1000);
    One generic driver for every crossfading block on the screen. A container
    marked data-rotator="<hold ms>" cycles .is-active across its element
    children; a container with a single child never animates, which is why the
-   notices card sits still when a building has four notices or fewer. */
+   notices card sits still in a building with only one notice to show.
+
+   data-rotator-dots="<element id>" optionally mirrors the position onto a row
+   of dots. The alternative was a second timer next to this one, which is how
+   the dots and the panel end up disagreeing after a few hours. */
 (function(){
   document.querySelectorAll('[data-rotator]').forEach(function(box){
     var items=box.children;
     if(items.length<2) return;
     var hold=parseInt(box.getAttribute('data-rotator'),10)||12000;
+    var dotBox=document.getElementById(box.getAttribute('data-rotator-dots')||'');
+    var dots=dotBox?dotBox.children:null;
     var i=0;
     setInterval(function(){
       items[i].classList.remove('is-active');
+      if(dots&&dots[i]) dots[i].classList.remove('is-active');
       i=(i+1)%items.length;
       items[i].classList.add('is-active');
+      if(dots&&dots[i]) dots[i].classList.add('is-active');
     },hold);
   });
 })();

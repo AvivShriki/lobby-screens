@@ -76,9 +76,17 @@ $lobby = array(
 	// 'lead' is the full-height column on the reading side; 'stack' is the
 	// shorter column on the far side, top to bottom. The empty middle between
 	// them is the point of the layout, not a gap left over from it.
+	// v8.2.1 — Aviv struck the whole left column: the ONE card and the Shabbat
+	// card both come off. The screen is now the header rail, one announcements
+	// card, and the Ynet ticker.
+	//
+	// The widgets themselves are untouched and still in template-parts/widgets/
+	// (sports-panel.php, shabbat-panel.php, and the Shabbat countdown in
+	// functions.php with it). Putting either back is this one line, which is
+	// the whole point of composing the screen here — not a rebuild.
 	'zones'    => array(
 		'lead'  => array( 'residents-panel' ),
-		'stack' => array( 'sports-panel', 'shabbat-panel' ),
+		'stack' => array(),
 	),
 );
 
@@ -195,19 +203,27 @@ $theme_uri = get_stylesheet_directory_uri();
 
     </header>
 
-    <main class="zone-grid">
+    <?php
+    // With no stack configured the grid is one centred column rather than
+    // three tracks with two of them empty — an empty .zone-open and an empty
+    // .zone-stack would still claim their width and push the card off centre.
+    $has_stack = ! empty( $lobby['zones']['stack'] );
+    ?>
+    <main class="zone-grid<?php echo $has_stack ? '' : ' is-single'; ?>">
       <?php foreach ( $lobby['zones']['lead'] as $panel ) : ?>
         <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
       <?php endforeach; ?>
 
-      <!-- the open middle: nothing here on purpose, so the footage shows -->
-      <div class="zone-open" aria-hidden="true"></div>
+      <?php if ( $has_stack ) : ?>
+        <!-- the open middle: nothing here on purpose, so the background shows -->
+        <div class="zone-open" aria-hidden="true"></div>
 
-      <div class="zone-stack">
-        <?php foreach ( $lobby['zones']['stack'] as $panel ) : ?>
-          <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
-        <?php endforeach; ?>
-      </div>
+        <div class="zone-stack">
+          <?php foreach ( $lobby['zones']['stack'] as $panel ) : ?>
+            <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
     </main>
 
     <footer class="zone-ticker">
@@ -269,7 +285,13 @@ $theme_uri = get_stylesheet_directory_uri();
       +   '<div class="w-wx-now-main">'
       +     '<svg class="w-wx-now-icon"><use href="#wx'
       +       kind.charAt(0).toUpperCase() + kind.slice(1) + '"></use></svg>'
-      +     '<span class="w-wx-now-temp">' + temp + '\u00B0</span>'
+      +     '<span class="w-wx-now-temp num">'
+      +       String(temp).split('').map(function(ch){
+                return /[0-9]/.test(ch) ? '<span class="num-d">'+ch+'</span>'
+                                        : '<span class="num-x">'+ch+'</span>';
+              }).join('')
+      +       '<span class="num-x">\u00B0</span>'
+      +     '</span>'
       +   '</div>'
       +   '<div class="w-wx-now-cond">' + city + '<span>' + words[kind] + '</span></div>'
       + '</div>';
@@ -365,7 +387,7 @@ function tick(){
     clockCells=[];
     for(var i=0;i<now.length;i++){
       var span=document.createElement('span');
-      span.className = now[i]===':' ? 'w-clock-colon' : 'w-clock-digit';
+      span.className = now[i]===':' ? 'num-sep' : 'num-d';
       el.appendChild(span);
       clockCells.push(span);
     }

@@ -32,7 +32,10 @@ $conditions = array(
 <div class="w-wx-now">
   <div class="w-wx-now-main">
     <svg class="w-wx-now-icon"><use href="#wx<?php echo esc_attr( ucfirst( $weather['kind'] ) ); ?>"></use></svg>
-    <span class="w-wx-now-temp"><?php echo esc_html( $weather['temp'] ); ?>°</span>
+    <?php /* Same face and same size as the clock (Aviv, 9.10.2026), which
+             means the same fixed cells — a 30° that becomes 9° must not drag
+             the whole rail sideways. */ ?>
+    <span class="w-wx-now-temp num"><?php echo lobby_screens_numeral_cells( $weather['temp'] . '°' ); // phpcs:ignore ?></span>
   </div>
   <div class="w-wx-now-cond">
     <?php if ( '' !== $city ) : ?><span class="w-wx-now-city"><?php echo esc_html( $city ); ?></span><?php endif; ?>

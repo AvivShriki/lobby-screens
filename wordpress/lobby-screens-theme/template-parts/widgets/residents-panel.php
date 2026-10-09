@@ -14,10 +14,11 @@
  * shortly. The brief's "notices may rotate" finally earns its keep: before, the
  * card sat still whenever a building had four or fewer.
  *
- * The chevrons are DECORATION, not controls. There is no input device on a
- * lobby wall (brief §11) — they are in the mockup as the familiar sign that
- * this panel advances, and they are aria-hidden so a screen reader is not
- * offered a button that does not exist.
+ * v8.2.1 — Aviv struck the chevrons and the "עדכונים מהבניין" line off the
+ * mockup. The chevrons were the right call to lose: they are a control shape
+ * on a screen with nothing to control it with (brief §11), and the dots
+ * already say the panel advances. The header is now the bell and the title,
+ * nothing else.
  *
  * The glyph is still chosen per notice in $lobby, so the client's future admin
  * screen picks one from a list rather than us guessing from the text.
@@ -41,23 +42,15 @@ $glyphs = array(
 	'people'   => '<circle cx="9" cy="8.4" r="3"/><path d="M3.6 19.4a5.6 5.6 0 0 1 10.8 0"/><path d="M16.2 6a3 3 0 0 1 0 5.6M17.4 14.4a5.6 5.6 0 0 1 3 5"/>',
 	'bell'     => '<path d="M18 8.6a6 6 0 1 0-12 0c0 6-2.2 7.4-2.2 7.4h16.4S18 14.6 18 8.6Z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/>',
 );
-$chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="%s"/></svg>';
 ?>
 <section class="card w-notices reveal">
 
   <header class="w-notices-head">
     <svg class="w-notices-head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?php echo $glyphs['bell']; // phpcs:ignore ?></svg>
     <h2 class="w-notices-head-title">הודעות לדיירים</h2>
-    <span class="w-notices-head-rule" aria-hidden="true"></span>
-    <span class="w-notices-head-status">עדכונים מהבניין</span>
   </header>
 
   <div class="w-notices-stage">
-
-    <?php if ( $multiple ) : ?>
-      <?php /* RTL: this one lands on the right */ ?>
-      <span class="w-notices-arrow"><?php printf( $chevron, 'm14.5 5-6 7 6 7' ); // phpcs:ignore ?></span>
-    <?php endif; ?>
 
     <div class="w-notices-panel">
       <?php /* the mockup's gold sweep across the lower corner — pure decoration,
@@ -96,10 +89,6 @@ $chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
         <?php endforeach; ?>
       </div>
     </div>
-
-    <?php if ( $multiple ) : ?>
-      <span class="w-notices-arrow"><?php printf( $chevron, 'm9.5 5 6 7-6 7' ); // phpcs:ignore ?></span>
-    <?php endif; ?>
 
   </div>
 

@@ -412,6 +412,16 @@ img{display:block;}
   padding:0 54px;
   margin:22px 0;
 }
+/* v8.2.1 — one card, centred. With the left column gone the three-track grid
+   would leave the card pinned to the right with a third of the screen empty
+   beside it; a single centred track is the symmetric answer, and the margins
+   either side are equal by construction rather than by two numbers that have
+   to be kept in agreement. The card keeps the 946px the mockup gives it, so
+   its proportions are untouched — only its position moved. */
+.zone-grid.is-single{
+  grid-template-columns:946px;
+  justify-content:center;
+}
 .zone-open{min-width:0;}
 .zone-stack{
   display:grid;
@@ -576,6 +586,8 @@ img{display:block;}
   height:var(--hdr-lede-h);
   display:flex;align-items:flex-end;
 }
+/* the clock is the one .num that is not inside another flex row */
+.w-clock-time{font-family:'Fraunces',var(--sans);font-size:104px;font-weight:400;}
 /* band 2 — the quiet line under it */
 .w-welcome-sub,
 .w-wx-now-cond,
@@ -619,14 +631,12 @@ img{display:block;}
 }
 
 /* ---------- WeatherNowWidget ---------- */
-.w-wx-now-main{gap:18px;}
+.w-wx-now-main{gap:22px;}
 /* the icon is optically heavier than the numeral, so it sits a touch above the
-   baseline rather than on it */
-.w-wx-now-icon{width:62px;height:62px;margin-bottom:9px;}
-.w-wx-now-temp{
-  font-size:62px;font-weight:300;line-height:.95;
-  font-variant-numeric:tabular-nums;
-}
+   baseline rather than on it. Scaled with the reading: 84 against the clock's
+   104 is the same ratio the 62 held against the old 78. */
+.w-wx-now-icon{flex:0 0 auto;width:84px;height:84px;margin-bottom:10px;}
+.w-wx-now-temp{display:flex;align-items:flex-end;}
 /* city · condition. The middot is drawn rather than typed so the two halves
    stay separate elements — the city is server data, the condition is ours. */
 .w-wx-now-cond{gap:12px;letter-spacing:.10em;color:var(--dim);}
@@ -645,26 +655,33 @@ img{display:block;}
 .w-clock-time{
   direction:ltr;
   justify-content:flex-start;
+}
+
+/* ---------- display numerals ----------
+   One component, used by the clock and the temperature — Aviv asked for the
+   two to be the same size in the same face, so they are literally the same
+   thing rather than two blocks of CSS that agree today.
+
+   Fixed cells, not font-variant-numeric: this face has no tabular figures, and
+   .62em is its widest digit. Every digit occupies the same box whatever it is,
+   so a reading is motionless when it changes — font-variant-numeric would
+   simply have done nothing here. */
+.num{
+  /* a reading is an LTR run. Without this the cells are laid out by the page's
+     RTL flex direction and "30°" comes out as "°03" — which is exactly what it
+     did the first time. */
+  direction:ltr;
   font-family:'Fraunces',var(--sans);
   font-size:104px;font-weight:400;line-height:.92;
 }
-/* Fixed cells, not font-variant-numeric: this face has no tabular figures, and
-   .62em is its widest digit. Every digit now occupies the same box whatever it
-   is, so the clock is motionless between minutes — font-variant-numeric would
-   simply have done nothing here. */
-.w-clock-digit{
-  flex:0 0 auto;
-  width:.62em;
-  text-align:center;
-}
+.num-d{flex:0 0 auto;width:.62em;text-align:center;}
 /* the colon is the one coloured mark on the rail: it reads as a clock the way
    a second hand does, without anything on the screen having to move */
-.w-clock-colon{
-  flex:0 0 auto;
-  width:.30em;
-  text-align:center;
-  color:var(--gold-text);
-}
+.num-sep{flex:0 0 auto;width:.30em;text-align:center;color:var(--gold-text);}
+/* a degree sign or a minus — not a digit, so it keeps its own width. It also
+   falls outside the clock face's subset (digits and colon only) and renders in
+   Heebo, which is why it is sized down to sit as a mark rather than a glyph. */
+.num-x{flex:0 0 auto;font-family:var(--sans);font-size:.46em;align-self:flex-start;margin-top:.12em;}
 
 /* ---------- ShabbatWidget ---------- */
 /* v7.2: short wide card — photo and times side by side. The occasion stays
@@ -780,7 +797,7 @@ img{display:block;}
    measured off the mockup rather than eyeballed: panel inset, type sizes and
    the dot row all come from it at the 1.2106 scale between its 1586px artboard
    and our 1920px canvas. */
-.w-notices{padding:30px 28px 26px;}
+.w-notices{padding:30px;}
 /* The mockup gives this card a visibly brighter frame than the ONE and Shabbat
    cards beside it. That is not an inconsistency to iron out — it is how the
    mockup says which card is the subject. */
@@ -793,7 +810,7 @@ img{display:block;}
 .w-notices-head{
   flex:0 0 auto;
   display:flex;align-items:center;gap:16px;
-  height:54px;margin-bottom:40px;padding:0 14px;
+  height:54px;margin-bottom:40px;padding:0 10px;
 }
 .w-notices-head-icon{flex:0 0 auto;width:38px;height:38px;color:var(--gold-text);}
 .w-notices-head-title{
@@ -802,37 +819,16 @@ img{display:block;}
   color:var(--gold-text);
   letter-spacing:.01em;
 }
-.w-notices-head-rule{
-  flex:1 1 auto;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(157,147,121,.42) 22%,rgba(157,147,121,.42));
-}
-/* "עדכונים מהבניין" — a standing label, not a live status, so it gets the
-   quietest colour on the card and a gold pip rather than anything blinking */
-.w-notices-head-status{
-  flex:0 0 auto;
-  display:flex;align-items:center;gap:12px;
-  font-size:20px;font-weight:300;letter-spacing:.06em;
-  color:var(--dimmer);
-}
-.w-notices-head-status::after{
-  content:'';flex:0 0 auto;
-  width:7px;height:7px;border-radius:50%;
-  background:var(--gold-text);
-}
-
-/* --- stage: panel flanked by the mockup's chevrons --- */
+/* --- stage --- */
+/* v8.2.1: the mockup's chevrons are gone (Aviv). They were a control shape on
+   a screen with no way to press them, and the dots already say the panel
+   advances. With them out the panel simply fills the stage, and the card's
+   padding is the only inset left — uniform 30px, so the panel is centred by
+   construction rather than by two numbers that happen to match. */
 .w-notices-stage{
   flex:1 1 auto;min-height:0;
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:center;
 }
-.w-notices-arrow{
-  flex:0 0 46px;
-  width:46px;height:46px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid rgba(201,188,156,.34);
-  color:var(--gold);
-}
-.w-notices-arrow svg{width:17px;height:17px;}
 
 .w-notices-panel{
   position:relative;
@@ -912,7 +908,10 @@ img{display:block;}
   direction:ltr;
   flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;gap:18px;
-  margin-top:26px;height:14px;
+  /* 40 above the panel (the header's margin) and 40 below it, so the panel
+     sits in an even band. The dots live inside the lower 40 rather than
+     adding to it. */
+  margin-top:40px;height:14px;margin-bottom:-14px;
 }
 .w-notices-dots span{
   width:10px;height:10px;border-radius:50%;

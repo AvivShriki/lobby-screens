@@ -412,9 +412,9 @@ img{display:block;}
   padding:0 54px;
   margin:22px 0;
 }
-/* v8.2.2 — the single card sits on the LEFT half (Aviv).
+/* v8.2.3 — the single card sits on the RIGHT half (Aviv).
    906 = 1920/2 - 54: the canvas is half 1920 wide, less the grid's own 54px
-   margin, so the card's right edge lands on 960 — the exact centre line.
+   margin, so the card's inner edge lands on 960 — the exact centre line.
 
    In design-px, NOT calc(50vw - 54px), which is what this said for one
    version. Everything on this screen is a design-px on a fixed 1920 canvas
@@ -424,11 +424,13 @@ img{display:block;}
    640 — the "half the screen" rule quietly false on every screen but one.
    No viewport unit belongs inside this canvas.
 
-   justify-content:end is the logical keyword: in RTL the inline end is the
-   left, which is the side asked for. */
+   justify-content:start is the logical keyword, not `right`: in RTL the
+   inline start IS the right, so this keeps meaning "the reading side" if the
+   screen is ever composed for an LTR building. Which side it resolves to is
+   measured below, not assumed. */
 .zone-grid.is-single{
   grid-template-columns:906px;
-  justify-content:end;
+  justify-content:start;
 }
 .zone-open{min-width:0;}
 .zone-stack{

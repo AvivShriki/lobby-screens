@@ -86,7 +86,12 @@ $lobby = array(
 	// the whole point of composing the screen here — not a rebuild.
 	'zones'    => array(
 		'lead'  => array( 'residents-panel' ),
-		'stack' => array(),
+		// v8.3 — the Shabbat card is back, in the lower half of the left
+		// column. The upper half is deliberately left open: Aviv asked for
+		// room for a second frame of the same size above it, and a lone panel
+		// drops to the bottom slot on its own (see .zone-stack in style.css).
+		// Adding 'sports-panel' ahead of it fills that slot.
+		'stack' => array( 'shabbat-panel' ),
 	),
 );
 
@@ -204,20 +209,19 @@ $theme_uri = get_stylesheet_directory_uri();
     </header>
 
     <?php
-    // With no stack configured the grid is one centred column rather than
-    // three tracks with two of them empty — an empty .zone-open and an empty
-    // .zone-stack would still claim their width and push the card off centre.
+    // Two layouts, chosen by whether a stack is configured — not three tracks
+    // with empty ones claiming width. With a stack: notices right, stack left,
+    // a 30px channel between (.is-pair). Without: the notices card alone on
+    // its half (.is-single). The notices card is 906px either way and does not
+    // move between the two.
     $has_stack = ! empty( $lobby['zones']['stack'] );
     ?>
-    <main class="zone-grid<?php echo $has_stack ? '' : ' is-single'; ?>">
+    <main class="zone-grid <?php echo $has_stack ? 'is-pair' : 'is-single'; ?>">
       <?php foreach ( $lobby['zones']['lead'] as $panel ) : ?>
         <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>
       <?php endforeach; ?>
 
       <?php if ( $has_stack ) : ?>
-        <!-- the open middle: nothing here on purpose, so the background shows -->
-        <div class="zone-open" aria-hidden="true"></div>
-
         <div class="zone-stack">
           <?php foreach ( $lobby['zones']['stack'] as $panel ) : ?>
             <?php get_template_part( 'template-parts/widgets/' . $panel, null, $lobby ); ?>

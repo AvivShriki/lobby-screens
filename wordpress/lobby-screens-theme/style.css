@@ -432,13 +432,28 @@ img{display:block;}
   grid-template-columns:906px;
   justify-content:start;
 }
+/* v8.3 — notices on the right, the stack on the left, and the notices card
+   does NOT move: it keeps 960->1866 exactly as approved. 1812 of content less
+   its 906 less the 30px channel leaves 876 for the left column, so the numbers
+   are derived from the card that was already signed off rather than both
+   columns being renegotiated. */
+.zone-grid.is-pair{
+  grid-template-columns:906px 876px;
+}
 .zone-open{min-width:0;}
 .zone-stack{
   display:grid;
-  grid-template-rows:1fr 300px;
+  /* two equal slots — Aviv asked for room for a second frame the same size as
+     the Shabbat card above it, so the row heights are equal rather than the
+     1fr/300px split the old ONE+Shabbat pairing used. */
+  grid-template-rows:1fr 1fr;
   gap:24px;
   min-height:0;
 }
+/* A lone panel takes the LOWER slot and leaves the upper one visibly open,
+   which is what "room for another frame above it" means. With a second panel
+   configured both rows fill in order and this stops applying on its own. */
+.zone-stack > :only-child{grid-row:2;}
 .zone-ticker{flex:0 0 88px;}
 
 /* ---------- shared card ---------- */
@@ -695,113 +710,182 @@ img{display:block;}
    Heebo, which is why it is sized down to sit as a mark rather than a glyph. */
 .num-x{flex:0 0 auto;font-family:var(--sans);font-size:.46em;align-self:flex-start;margin-top:.12em;}
 
-/* ---------- ShabbatWidget ---------- */
-/* v7.2: short wide card — photo and times side by side. The occasion stays
-   overlaid on the photo so the light panel isn't the card's only content. */
-.w-shabbat-body{
-  flex:1 1 auto;min-height:0;
-  display:flex;gap:18px;
-}
-.w-shabbat-media{
+/* ---------- ShabbatWidget (v8.3, built to mockups/v8-3-shabbat.png) --------
+   Proportions are read off the reference rather than guessed. On its 1672px
+   artboard the card is 1535x713 and inside it: panel inset 3.7% of the width,
+   panel 61.6%, photo 34.7%; vertically the panel starts at 22.4% of the card,
+   its inner divider sits at 66.8% and it ends at 91.3%. Those percentages are
+   what this block encodes.
+
+   WHAT COULD NOT BE COPIED: the reference is 2.15:1 and this slot is 876x337,
+   which is 2.6:1 — half of a column that also has to leave room for a second
+   frame above it. The layout is the reference's; the TYPE is not scaled down
+   to match, because at this height proportional type would put the times at
+   about 42px and this is read from across a lobby. Bigger type in the
+   reference's layout is the right trade and the deliberate departure. */
+.w-shabbat{
   position:relative;
-  flex:0 0 228px;
-  border-radius:12px;overflow:hidden;
+  padding:22px 26px;
+  border:2px solid transparent;
+  border-radius:24px;
+  overflow:hidden;
+  /* the same metal as the notices card — one gold in the project, not two */
+  background:
+    linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%) padding-box,
+    conic-gradient(from 212deg at 50% 50%,
+      #6F5F39 0%,   #D8C08C 7%,   #FAF2D8 13%,  #A89059 21%,
+      #7C6B3E 29%,  #D4AC2E 38%,  #F8EECE 45%,  #9E8752 53%,
+      #6F5F39 60%,  #C9A227 69%,  #FAF2D8 77%,  #A89059 85%,
+      #8A7646 93%,  #6F5F39 100%) border-box;
+  box-shadow:
+    0 0 70px -10px rgba(201,162,39,.42),
+    0 0 22px -6px rgba(201,162,39,.24),
+    0 26px 60px -30px rgba(0,0,0,.9);
 }
-.w-shabbat-media img{width:100%;height:100%;object-fit:cover;}
-.w-shabbat-media::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg, rgba(8,9,12,.06) 0%, rgba(8,9,12,.70) 100%);
-}
-.w-shabbat-parasha{position:absolute;right:14px;bottom:13px;left:14px;z-index:2;}
-.w-shabbat-parasha-label{
-  font-size:13px;font-weight:400;letter-spacing:.12em;
-  color:var(--gold-text);
-}
-/* the occasion can be two words ("ראש השנה 5787") in a 228px column, so it is
-   sized to wrap to two lines cleanly rather than to fit on one at any cost */
-.w-shabbat-parasha-name{
-  margin-top:3px;
-  font-size:22px;font-weight:800;line-height:1.18;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+
+/* --- the photo, bleeding off the right edge --- */
+.w-shabbat-photo{
+  position:absolute;z-index:0;
+  top:0;bottom:0;right:0;width:35%;
   overflow:hidden;
 }
-.w-shabbat-side{
-  flex:1 1 auto;min-width:0;
-  display:flex;flex-direction:column;
+/* object-position favours the lower half: the flames and the reflection are
+   there, and the blurred book spines at the top are what the title needs
+   behind it */
+.w-shabbat-photo img{width:100%;height:100%;object-fit:cover;object-position:62% 66%;}
+/* Two jobs for one overlay: fade the photo into the card so it has no seam,
+   and darken its top where the title sits over it. The title is the only text
+   on this card with a photograph behind it. */
+.w-shabbat-photo::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(to left, rgba(10,11,14,0) 38%, rgba(10,11,14,.72) 76%, rgba(10,11,14,.96) 100%),
+    linear-gradient(to bottom, rgba(8,9,12,.80) 0%, rgba(8,9,12,.12) 34%, rgba(8,9,12,0) 60%),
+    linear-gradient(0deg, rgba(201,162,39,.10), rgba(201,162,39,.10));
 }
-/* the one bright surface on the screen — which is what makes the times the
-   card's headline rather than a footnote under the photo */
-.w-shabbat-times{
-  flex:1 1 auto;
-  display:flex;flex-direction:column;justify-content:center;
-  background:linear-gradient(180deg,#F6F5F1 0%,#E9E7DF 100%);
-  border-radius:12px;
-  padding:4px 18px;
+
+/* --- header: title over the photo, city on the far side --- */
+.w-shabbat-head{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:20px;
+  height:46px;
 }
-.w-shabbat-t{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:12px 0;
-  border-top:1px solid rgba(20,22,27,.12);
-}
-.w-shabbat-t:first-child{border-top:none;}
-.w-shabbat-t-label{
-  display:flex;align-items:center;gap:11px;
-  font-size:17px;font-weight:400;color:var(--ink-dim);
-}
-.w-shabbat-t-label svg{width:22px;height:22px;flex:0 0 auto;}
-.w-shabbat-t-val{
-  font-size:32px;font-weight:800;line-height:1;
-  color:var(--ink);
-  font-variant-numeric:tabular-nums;
-  direction:ltr;
-}
-/* v8 — the countdown. It sits above the times as a gold band so the card leads
-   with the thing that is actually changing, and so a resident walking past gets
-   the answer ("how long do I have?") without reading two clock values and doing
-   the subtraction themselves. */
-.w-shabbat-count{
+.w-shabbat-brand{
+  /* No `order` here. The first attempt set order:2 on the brand expecting it
+     to land on the right; in an RTL flex row items run right-to-left in
+     INCREASING order, so order:2 put the title on the left and the city on
+     the right — the mirror of the reference. DOM order already says it:
+     brand, rule, city. */
   flex:0 0 auto;
-  display:flex;align-items:baseline;justify-content:center;gap:9px;
-  margin-bottom:8px;
-  padding:7px 14px;
-  border-radius:11px;
-  background:linear-gradient(180deg, rgba(157,147,121,.22), rgba(157,147,121,.10));
-  border:1px solid rgba(201,188,156,.30);
-  white-space:nowrap;
+  display:flex;align-items:center;gap:14px;
+  padding-bottom:9px;
+  border-bottom:1px solid var(--gold-line);
+  color:var(--gold-text);
 }
-.w-shabbat-count-label{
-  font-size:15px;font-weight:400;
+.w-shabbat-candles{width:38px;height:38px;flex:0 0 auto;}
+.w-shabbat-title{font-size:36px;font-weight:700;letter-spacing:.01em;line-height:1;}
+.w-shabbat-headrule{
+  flex:1 1 auto;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(157,147,121,.45) 20%,rgba(157,147,121,.45));
+}
+.w-shabbat-city{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:10px;
+  font-size:21px;font-weight:300;letter-spacing:.06em;
   color:var(--dim);
 }
-.w-shabbat-count-val{
-  font-size:22px;font-weight:600;
-  color:var(--gold-text);
-}
-/* once Shabbat is in there is nothing to count: the band carries the greeting
-   instead, centred and on its own */
-.w-shabbat-count.is-in{justify-content:center;}
-.w-shabbat-count.is-in .w-shabbat-count-val{font-size:20px;letter-spacing:.04em;}
-/* past havdalah, before the reload pulls next week — say nothing rather than
-   show a stale or negative number */
-.w-shabbat-count.is-done{display:none;}
+.w-shabbat-city svg{width:21px;height:21px;color:var(--gold);}
 
-.w-shabbat-foot{
-  flex:0 0 auto;
-  margin-top:9px;
-  text-align:center;
-  font-size:17px;font-weight:400;letter-spacing:.05em;
-  color:var(--gold-text);
+/* --- the panel --- */
+.w-shabbat-panel{
+  position:relative;z-index:1;
+  margin-top:14px;
+  /* The panel stops short of the photo, as the reference stages it. Two
+     things make that work: align-self:flex-end, because the card is a COLUMN
+     flex container so the cross axis is horizontal and its end is the left in
+     RTL — a plain width:63% block sits at the inline start, which is the
+     right, directly on top of the photo; and flex:1 rather than a percentage
+     height, which would have resolved against a flex item's indefinite
+     height. */
+  width:63%;
+  align-self:flex-end;
+  flex:1 1 auto;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:14px 22px 16px;
+  overflow:hidden;
+  border:1px solid transparent;
+  border-radius:20px;
+  background:
+    linear-gradient(162deg, rgba(44,46,52,.70) 0%, rgba(20,21,26,.86) 60%, rgba(13,14,18,.90) 100%) padding-box,
+    conic-gradient(from 198deg at 50% 50%,
+      rgba(110,94,54,.80) 0%,   rgba(243,228,187,.78) 10%, rgba(154,134,83,.42) 22%,
+      rgba(201,162,39,.70) 36%, rgba(246,234,196,.82) 46%, rgba(154,134,83,.40) 58%,
+      rgba(201,162,39,.66) 72%, rgba(243,228,187,.76) 84%, rgba(110,94,54,.80) 100%) border-box;
 }
-/* inline, not a second line: the card is a fixed 300px row and the countdown
-   band already spent the spare height */
-.w-shabbat-mevarchim{
-  font-size:14px;letter-spacing:.03em;
+.w-shabbat-sweep{
+  position:absolute;z-index:0;
+  left:0;bottom:0;width:100%;height:100%;
+  pointer-events:none;
+}
+
+/* --- the two times --- */
+.w-shabbat-times{
+  position:relative;z-index:1;
+  display:flex;align-items:stretch;
+}
+.w-shabbat-t{
+  flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.w-shabbat-t-label{
+  display:flex;align-items:center;gap:9px;
+  font-size:21px;font-weight:300;letter-spacing:.04em;
+  color:var(--gold-text);
+  white-space:nowrap;
+}
+.w-shabbat-t-label svg{width:21px;height:21px;flex:0 0 auto;}
+.w-shabbat-t-val{
+  direction:ltr;
+  font-size:58px;font-weight:700;line-height:1.02;
+  letter-spacing:.01em;
+  font-variant-numeric:tabular-nums;
+  color:var(--white);
+}
+
+.w-shabbat-vrule{
+  flex:0 0 1px;align-self:center;
+  width:1px;height:76%;
+  background:linear-gradient(180deg,transparent,var(--gold-line) 18%,var(--gold-line) 82%,transparent);
+}
+.w-shabbat-hrule{
+  position:relative;z-index:1;
+  height:1px;margin:14px 0;
+  background:linear-gradient(90deg,transparent,rgba(157,147,121,.42) 12%,rgba(157,147,121,.42) 88%,transparent);
+}
+
+/* --- parasha and haftarah --- */
+.w-shabbat-meta{
+  position:relative;z-index:1;
+  display:flex;align-items:stretch;gap:0;
+}
+.w-shabbat-m{
+  flex:0 0 41%;min-width:0;       /* the reference splits this row 41/59 */
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.w-shabbat-m-wide{
+  flex:1 1 auto;
+  flex-direction:row;align-items:center;justify-content:center;gap:12px;
+}
+.w-shabbat-m-text{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;}
+.w-shabbat-book{flex:0 0 auto;width:30px;height:30px;color:var(--gold-text);}
+.w-shabbat-m-label{
+  font-size:18px;font-weight:300;letter-spacing:.08em;
   color:var(--dimmer);
 }
-.w-shabbat-mevarchim::before{
-  content:'·';
-  margin:0 7px;
-  color:var(--gold-line);
+.w-shabbat-m-val{
+  font-size:28px;font-weight:700;line-height:1.15;
+  color:var(--gold-text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 
 /* ---------- NoticesWidget (v8.2, built to mockups/v8-2-notices.png) ----------

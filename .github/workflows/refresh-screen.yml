@@ -75,13 +75,22 @@ jobs:
         # A snapshot that rendered but lost its content would quietly replace a
         # good screen with an empty one. Cheaper to stop here and keep serving
         # the previous deploy.
+        #
+        # Both designs are checked, not just the one that ships: the variant is
+        # rendered from the same run, and a build that quietly stopped
+        # producing it would leave compare.html pointing at a stale file.
         run: |
-          for needle in zone-ticker card bg-contours; do
-            grep -q "$needle" docs/index.html || { echo "missing: $needle" >&2; exit 1; }
+          for page in index contrast; do
+            for needle in zone-ticker card bg-contours; do
+              grep -q "$needle" "docs/$page.html" || { echo "missing in $page: $needle" >&2; exit 1; }
+            done
+            bytes=$(wc -c < "docs/$page.html")
+            echo "$page.html: ${bytes} bytes"
+            [ "$bytes" -gt 20000 ] || { echo "$page.html suspiciously small" >&2; exit 1; }
           done
-          bytes=$(wc -c < docs/index.html)
-          echo "index.html: ${bytes} bytes"
-          [ "$bytes" -gt 20000 ] || { echo "index.html suspiciously small" >&2; exit 1; }
+          grep -q 'data-theme="classic"'  docs/index.html    || { echo "index.html is not the classic design" >&2; exit 1; }
+          grep -q 'data-theme="contrast"' docs/contrast.html || { echo "contrast.html is not the variant" >&2; exit 1; }
+          [ -s docs/compare.html ] || { echo "compare.html missing" >&2; exit 1; }
 
       - uses: actions/upload-pages-artifact@v3
         with:

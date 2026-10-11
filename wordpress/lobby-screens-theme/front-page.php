@@ -32,6 +32,10 @@ $lobby = array(
 	'company'  => 'עוצמה · ניהול ואחזקת מבנים',
 	'building' => 'נחל חבר 16-18',
 	'city'     => 'באר שבע',
+	// 'classic' (the design signed off through v8.8) or 'contrast' (the
+	// separated-surfaces variant at the foot of style.css). One word here
+	// switches the whole screen and nothing else has to move.
+	'design'   => 'classic',
 	// Hebcal city key — see lobby_screens_shabbat_cities()
 	'shabbat_city' => 'beersheva',
 	// the mockup sets the greeting on two lines rather than using the brief's
@@ -97,7 +101,21 @@ $lobby = array(
 $theme_uri = get_stylesheet_directory_uri();
 ?>
 <!doctype html>
-<html <?php language_attributes(); ?>>
+<?php
+/* Design variant switch. $lobby['design'] is the building's own setting and
+ * 'classic' is the default, so the original design is what ships unless
+ * somebody asks for otherwise. ?theme= overrides it for PREVIEW only — it is
+ * read, never stored, and changes nothing but which stylesheet rules apply,
+ * which is how the two designs can be rendered side by side for comparison.
+ * Whitelisted rather than echoed, so the attribute can only ever be one of
+ * two known values. */
+$designs = array( 'classic', 'contrast' );
+$design  = $lobby['design'] ?? 'classic';
+if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
+	$design = $_GET['theme'];
+}
+?>
+<html <?php language_attributes(); ?> data-theme="<?php echo esc_attr( $design ); ?>">
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">

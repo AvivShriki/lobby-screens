@@ -564,7 +564,7 @@ img{display:block;}
 }
 .w-feed-tag{
   position:absolute;top:12px;left:12px;z-index:2;
-  font-size:12px;font-weight:600;letter-spacing:.06em;
+  font-size:16px;font-weight:600;letter-spacing:.06em;
   color:#fff;
   background:#D8232A;                 /* Ynet red, from their own roundel */
   border-radius:4px;
@@ -588,12 +588,13 @@ img{display:block;}
 
 /* wide variant: short card, so the hero image sits BESIDE its headline
    instead of above it. Same component, same data — only the axis changes. */
-.is-wide .card-label{height:32px;margin-bottom:8px;font-size:20px;}
+.is-wide .card-label{height:32px;margin-bottom:8px;font-size:22px;}
 .is-wide .card-label-mark img{height:25px;}
-/* 81, not 85: at 85 the list box measured exactly its own content height with
-   zero spare, and a card that fits only because the rounding went its way is
-   a card that clips on the next browser. */
-.is-wide .w-feed-hero{flex:0 0 81px;margin-bottom:8px;}
+/* 73, not 81: the audit pass raised the row timestamps 15->17 and the label
+   20->22, which costs about 8px across the two rows, and the list had 6 to
+   give. The hero gives it back rather than the second headline being clipped
+   — the same trade as every other time this card has been rebalanced. */
+.is-wide .w-feed-hero{flex:0 0 73px;margin-bottom:8px;}
 .is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
 /* v8.8 — the box takes its SHAPE from the source instead of a width I picked.
    ONE serves every image at 636x326 (1.95), and a 252x81 box is 3.11, so
@@ -620,7 +621,7 @@ img{display:block;}
    is deterministic; a clipped second headline is a bug waiting for a slow news
    day. */
 .is-wide .w-feed-item-title{font-size:21px;-webkit-line-clamp:1;}
-.is-wide .w-feed-time{font-size:15px;}
+.is-wide .w-feed-time{font-size:17px;}
 
 .w-feed-list{
   flex:1 1 auto;min-height:0;
@@ -917,7 +918,7 @@ img{display:block;}
 .f-body{
   left:50.45%;top:63.9%;
   width:560px;                   /* the reference's own measure, scaled */
-  font-size:30px;font-weight:300;line-height:1.42;
+  font-size:30px;font-weight:300;line-height:1.5;
   text-align:center;color:#E4E3E2;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
@@ -1064,3 +1065,111 @@ body.is-refreshing .fit{opacity:0;transition:opacity 700ms ease;}
   .reveal{animation-duration:1ms;}
   .w-feed-hero-item,.w-notice,.w-notices-dots span{transition:none;}
 }
+
+/* ============================================================================
+   DESIGN VARIANT — "contrast"
+   ============================================================================
+   A second design, switched on by data-theme="contrast" on <html>. Nothing
+   above this line changes, so the original is always one attribute away; the
+   default build still renders it.
+
+   WHAT THIS IS NOT. It is not a contrast fix for the text. The whole screen
+   was audited first and every text element measures between 7.78:1 and
+   18.85:1 against AA bars of 4.5 and 3 — the worst thing on it is ONE's blue
+   category badge at 7.78. There was nothing to rescue, and claiming otherwise
+   would have been easy and false.
+
+   WHAT IT IS. The real weakness the audit exposed is SEPARATION, which is a
+   different problem from contrast: the cards are translucent panels over a
+   textured ground, so a card's edge is soft and a card reads as a tint rather
+   than a surface. This variant makes each card an opaque surface on a quieter
+   ground, lifts the small type, and opens the body line-height — the things a
+   resident at five metres, or one who is eighty, actually feels.
+
+   WHAT IT CANNOT DO. Two of the three cards are Aviv's own artwork: their
+   frame, panel and gold are pixels in a jpg. The variant can change the live
+   text drawn over them and the ground behind them. It cannot repaint them,
+   and nothing here pretends to. */
+
+/* --- the ground steps back so the cards are the lit things on it --- */
+[data-theme="contrast"]{
+  /* Pushed harder than the first attempt. Side by side the two designs were
+     almost indistinguishable, which makes a comparison worthless — if a
+     variant is not obviously a choice it is not a variant. The panels are now
+     a clear step LIGHTER than the ground rather than a tint over it. */
+  --card-top:rgba(40,42,49,0.985);
+  --card-bot:rgba(28,30,36,0.99);
+  --frame:rgba(201,188,156,0.62);
+  --line:rgba(255,255,255,0.15);
+  --dim:rgba(244,243,239,0.90);
+  --dimmer:rgba(244,243,239,0.74);
+}
+[data-theme="contrast"] .bg-base{
+  background:
+    radial-gradient(1000px 700px at 50% 42%, rgba(157,147,121,.07), transparent 70%),
+    linear-gradient(168deg, #101114 0%, #0B0C0F 46%, #050607 100%);
+}
+[data-theme="contrast"] .bg-contours-a{opacity:.035;}
+[data-theme="contrast"] .bg-contours-b{opacity:.02;}
+[data-theme="contrast"] .bg-watermark{opacity:.045;}
+
+/* --- the ONE card becomes a surface with an edge, not a tint --- */
+[data-theme="contrast"] .w-feed{
+  background:
+    linear-gradient(180deg, rgba(42,44,51,.985) 0%, rgba(28,30,36,.99) 100%) padding-box,
+    conic-gradient(from 212deg at 50% 50%,
+      #6F5F39 0%,   #D8C08C 7%,   #FAF2D8 13%,  #A89059 21%,
+      #7C6B3E 29%,  #D4AC2E 38%,  #F8EECE 45%,  #9E8752 53%,
+      #6F5F39 60%,  #C9A227 69%,  #FAF2D8 77%,  #A89059 85%,
+      #8A7646 93%,  #6F5F39 100%) border-box;
+  box-shadow:
+    0 0 80px -8px rgba(201,162,39,.38),
+    0 0 24px -4px rgba(201,162,39,.22),
+    0 30px 70px -32px rgba(0,0,0,.95);
+}
+/* a rule under the label and heavier rules between rows: the card stops being
+   one undivided block of text */
+[data-theme="contrast"] .w-feed .card-label{
+  border-bottom:1px solid rgba(201,188,156,.34);
+}
+[data-theme="contrast"] .w-feed-item{border-top-color:rgba(255,255,255,.20);}
+[data-theme="contrast"] .w-feed-media{border:1px solid rgba(201,188,156,.26);}
+/* the thumbnails get an edge too, so a row is three distinct things rather
+   than a photo bleeding into the panel */
+[data-theme="contrast"] .w-feed-thumb{border:1px solid rgba(255,255,255,.14);}
+
+/* --- small type up, line-height open --- */
+/* the Shabbat card's live text is absolutely positioned, so size here costs
+   no layout at all — this is the card the audit found the smallest text in
+   (15px city, 16px labels) and the one the base cannot touch without breaking
+   the proportions measured off Aviv's mockup */
+[data-theme="contrast"] .f-city       {font-size:2.40cqw;}
+[data-theme="contrast"] .f-lbl-candle,
+[data-theme="contrast"] .f-lbl-hav    {font-size:2.55cqw;font-weight:400;}
+[data-theme="contrast"] .f-lbl-parasha{font-size:2.85cqw;}
+[data-theme="contrast"] .f-time-candle,
+[data-theme="contrast"] .f-time-hav   {font-size:7.20cqw;}
+[data-theme="contrast"] .f-val-parasha{font-size:5.60cqw;}
+
+/* ONE's rows move in single pixels, not leaps: this card has six pixels of
+   headroom and the second headline is the first thing a careless bump clips */
+[data-theme="contrast"] .is-wide .card-label{font-size:24px;}
+[data-theme="contrast"] .is-wide .w-feed-time{font-size:18px;}
+[data-theme="contrast"] .is-wide .w-feed-item-title{font-size:22px;line-height:1.3;}
+[data-theme="contrast"] .w-feed-tag{font-size:18px;}
+
+/* the notices card's body opens up — the one long paragraph on the screen */
+[data-theme="contrast"] .f-body{line-height:1.58;color:#EFEEED;}
+[data-theme="contrast"] .f-date{color:#E3D8C2;}
+
+/* --- the header rail and the ticker get their edges back --- */
+[data-theme="contrast"] .hdr-rule{
+  background:linear-gradient(180deg,transparent,rgba(201,188,156,.75) 20%,rgba(201,188,156,.75) 80%,transparent);
+}
+[data-theme="contrast"] .zone-top::after{opacity:.85;}
+[data-theme="contrast"] .w-ticker{
+  background:linear-gradient(180deg, rgba(16,17,21,.97) 0%, rgba(9,10,13,.99) 100%);
+  border-top-color:rgba(201,162,39,.88);
+}
+[data-theme="contrast"] .w-ticker-sep{background:rgba(201,188,156,.60);}
+[data-theme="contrast"] .w-ticker-track i{background:rgba(201,188,156,.50);}

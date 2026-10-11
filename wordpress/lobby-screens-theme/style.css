@@ -595,9 +595,13 @@ img{display:block;}
    a card that clips on the next browser. */
 .is-wide .w-feed-hero{flex:0 0 81px;margin-bottom:8px;}
 .is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
-/* wider rather than taller: height here costs a whole list row, width costs
-   nothing the headline needs — 2 lines still fit in what is left. */
-.is-wide .w-feed-media{flex:0 0 252px;height:100%;}
+/* v8.8 — the box takes its SHAPE from the source instead of a width I picked.
+   ONE serves every image at 636x326 (1.95), and a 252x81 box is 3.11, so
+   object-fit:cover was throwing away 37% of each picture's height — which is
+   the hero image Aviv saw getting cut. Deriving the width from the height at
+   the feed's own ratio crops nothing, and it stays right if the hero height
+   ever changes again. */
+.is-wide .w-feed-media{flex:0 0 auto;height:100%;aspect-ratio:636 / 326;}
 .is-wide .w-feed-copy{flex:1 1 auto;justify-content:center;}
 /* the lead headline is the one thing on this card a resident reads from across
    the lobby, so it takes the size the standfirst gives up */
@@ -609,7 +613,7 @@ img{display:block;}
 .is-wide .w-feed-standfirst{display:none;}
 .is-wide .w-feed-item{padding:6px 0;}
 .is-wide .w-feed-item:first-child{padding-top:0;}
-.is-wide .w-feed-thumb{flex:0 0 76px;height:46px;}
+.is-wide .w-feed-thumb{flex:0 0 auto;height:46px;aspect-ratio:636 / 326;}
 /* one line here, unlike the tall card's two. The list box is 121px and two
    rows come to 116 at one line each — at two lines a single long headline
    grows its row and pushes the next one out of the card. A clamped row height

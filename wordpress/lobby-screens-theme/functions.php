@@ -329,61 +329,6 @@ function lobby_screens_shabbat_cities() {
 	);
 }
 
-/**
- * Hebcal returns the haftarah reference in English ("Isaiah 54:1-55:5").
- * Only the Prophets supply haftarot, so this is the whole set that can ever
- * come back — about twenty names, not the full canon.
- *
- * The verse numbers stay as digits. Hebrew letter-numerals are the traditional
- * printing, but this is read from across a lobby and digits are unambiguous at
- * a glance; the book name is the part that has to be in Hebrew.
- */
-function lobby_screens_haftarah_he( $ref ) {
-	$ref = trim( (string) $ref );
-	if ( '' === $ref ) {
-		return '';
-	}
-	$books = array(
-		'Joshua'          => 'יהושע',
-		'Judges'          => 'שופטים',
-		'I Samuel'        => 'שמואל א',
-		'II Samuel'       => 'שמואל ב',
-		'I Kings'         => 'מלכים א',
-		'II Kings'        => 'מלכים ב',
-		'Isaiah'          => 'ישעיהו',
-		'Jeremiah'        => 'ירמיהו',
-		'Ezekiel'         => 'יחזקאל',
-		'Hosea'           => 'הושע',
-		'Joel'            => 'יואל',
-		'Amos'            => 'עמוס',
-		'Obadiah'         => 'עובדיה',
-		'Jonah'           => 'יונה',
-		'Micah'           => 'מיכה',
-		'Nahum'           => 'נחום',
-		'Habakkuk'        => 'חבקוק',
-		'Zephaniah'       => 'צפניה',
-		'Haggai'          => 'חגי',
-		'Zechariah'       => 'זכריה',
-		'Malachi'         => 'מלאכי',
-		'I Chronicles'    => 'דברי הימים א',
-		'II Chronicles'   => 'דברי הימים ב',
-	);
-	// longest first, so "II Samuel" is not matched by "I Samuel"
-	uksort( $books, function ( $a, $b ) {
-		return strlen( $b ) - strlen( $a );
-	} );
-	foreach ( $books as $en => $he ) {
-		if ( 0 === strpos( $ref, $en ) ) {
-			// ltrim: substr leaves the space that followed the book name, which
-			// would otherwise double up against the one added here
-			return trim( $he . ' ' . ltrim( substr( $ref, strlen( $en ) ) ) );
-		}
-	}
-	// an unmapped book is better dropped than printed in English on a Hebrew
-	// screen — the cell removes itself (see .w-shabbat-m:empty)
-	return '';
-}
-
 function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	$cities = lobby_screens_shabbat_cities();
 	if ( ! isset( $cities[ $city_key ] ) ) {
@@ -394,8 +339,10 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	// v8 adds the ISO timestamps and mevarchim to the stored shape — a cached
 	// v7 array would be missing them and the countdown would silently not run,
 	// so the key moves with the shape.
-	// v8.3 adds the haftarah to the stored shape; the key moves with the shape
-	// so a cached v8 array cannot leave the new cell permanently blank.
+	// The key moves whenever the stored shape does, so a cached array from an
+	// older version cannot leave a field quietly missing. v9 added the ISO
+	// timestamps; v8.5 dropped the haftarah again, which needs no bump because
+	// nothing reads a field that is simply absent.
 	$cache_key = 'lobby_shabbat_v9_' . $city_key;
 	$cached    = get_transient( $cache_key );
 	if ( false !== $cached ) {
@@ -428,7 +375,6 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 	$candle_iso   = '';
 	$havdalah_iso = '';
 	$mevarchim    = '';
-	$haftarah     = '';
 
 	foreach ( $items as $item ) {
 		$ts = isset( $item['date'] ) ? strtotime( $item['date'] ) : 0;
@@ -443,8 +389,7 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 		} elseif ( 'mevarchim' === $item['category'] && '' === $mevarchim ) {
 			$mevarchim = $item['hebrew'] ?? '';
 		} elseif ( 'parashat' === $item['category'] && '' === $parasha ) {
-			$parasha  = $item['hebrew'] ?? '';
-			$haftarah = lobby_screens_haftarah_he( $item['leyning']['haftarah'] ?? '' );
+			$parasha = $item['hebrew'] ?? '';
 		} elseif ( 'holiday' === $item['category'] ) {
 			// the feed lists "ערב ראש השנה" before "ראש השנה", and the eve is
 			// not the occasion a resident is looking for — keep both and let
@@ -472,7 +417,6 @@ function lobby_screens_get_shabbat_times( $city_key = 'beersheva' ) {
 		'candle_iso'     => $candle_iso,
 		'havdalah_iso'   => $havdalah_iso,
 		'mevarchim'      => $mevarchim,
-		'haftarah'       => $haftarah,
 		'occasion'       => $occasion,
 		'occasion_label' => $parasha ? 'פרשת השבוע' : 'המועד הקרוב',
 		'end_label'      => $is_yomtov ? 'צאת החג' : 'צאת השבת',

@@ -2,6 +2,12 @@
 /**
  * ShabbatPanel — brief §7.
  *
+ * v8.5 — the haftarah is gone (Aviv: the numbers mean nothing to him and the
+ * parasha name is enough), so the book icon and the divider that separated the
+ * two bottom cells are erased from the chrome too, and the parasha moves to the
+ * centre of that row at roughly double the size. An empty cell with an icon
+ * still sitting in it would have been worse than either.
+ *
  * v8.4 — Aviv asked for his design to be used as the design, with only the
  * values swapped. So that is literally what this is: the card is HIS image
  * (mockups/v8-3-shabbat.png) with the nine variable strings erased out of it,
@@ -52,11 +58,4 @@ $city = $args['city'] ?? ( $shabbat['label'] ?? '' );
   <span class="w-shabbat-f f-lbl-parasha"><?php echo esc_html( $shabbat['parasha'] ? 'פרשת' : 'המועד' ); ?></span>
   <span class="w-shabbat-f f-val-parasha"><?php echo esc_html( $occasion ); ?></span>
 
-  <?php /* the reference prints "פרשת השבוע" here as BOTH the label and the
-          value — a generator artifact. Rather than set the parasha name twice,
-          this is the haftarah: the same Hebcal response, the parasha's natural
-          companion, and the book icon beside it already fits. Empty on a week
-          with no haftarah, and the two spans simply render nothing. */ ?>
-  <span class="w-shabbat-f f-lbl-haftara"><?php echo $shabbat['haftarah'] ? 'הפטרה' : ''; ?></span>
-  <span class="w-shabbat-f f-val-haftara"><?php echo esc_html( $shabbat['haftarah'] ); ?></span>
 </section>

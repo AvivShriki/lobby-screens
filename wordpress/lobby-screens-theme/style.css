@@ -768,188 +768,99 @@ img{display:block;}
                direction:ltr;font-variant-numeric:tabular-nums;}
 .f-time-candle{left:49.51%;top:47.13%;}
 .f-time-hav   {left:19.61%;top:47.13%;}
-.f-lbl-parasha{left:47.13%;top:71.71%;font-size:12px;font-weight:300;letter-spacing:.06em;color:#ECCF96;}
-.f-val-parasha{left:47.16%;top:77.73%;font-size:19px;font-weight:700;color:#F9DFAE;}
-.f-lbl-haftara{left:22.93%;top:71.78%;font-size:13px;font-weight:300;letter-spacing:.06em;color:#ECCF96;}
-.f-val-haftara{left:22.93%;top:78.01%;font-size:20px;font-weight:700;color:#FAFAF9;}
+/* v8.5 — the haftarah came out (Aviv), and the book icon and the divider that
+   split this row came out of the chrome with it. The parasha therefore owns
+   the whole row: centred on the panel rather than on the old right-hand cell,
+   and at roughly double the size it had when it was sharing. */
 
-/* ---------- NoticesWidget (v8.2, built to mockups/v8-2-notices.png) ----------
-   The widest card on the screen, showing one notice at a time. Geometry is
-   measured off the mockup rather than eyeballed: panel inset, type sizes and
-   the dot row all come from it at the 1.2106 scale between its 1586px artboard
-   and our 1920px canvas. */
-/* ---- the gold ----
-   v8.2.2. Aviv wanted real gold on this card, not a tinted hairline. A flat
-   colour cannot read as metal: metal reads as metal because it is light and
-   dark at once, bright where it catches and deep where it turns away. So the
-   frame is a GRADIENT border, done with the padding-box/border-box pair —
-   the fill is painted to the padding box, the metal to the border box, and
-   the border itself is transparent so the second gradient shows through it.
-   That is also the only way to get a gradient border that follows a 28px
-   radius; an outer pseudo-element would square the corners off.
+.f-lbl-parasha{left:34.5%;top:71.2%;font-size:17px;font-weight:300;letter-spacing:.08em;color:#ECCF96;}
+.f-val-parasha{left:34.5%;top:78.4%;font-size:38px;font-weight:700;color:#F9DFAE;}
 
-   CONIC rather than linear. A linear gradient runs in one direction, so on a
-   rectangle it always leaves one long stretch — the far corner — sitting in
-   its darkest stop, which reads as a frame that has been shaded rather than
-   one that is lit. A conic sweeps around the shape, so every side catches a
-   highlight somewhere along it.
+/* ---------- NoticesWidget (v8.5) ----------
+   Same concept as the Shabbat card, which is what Aviv asked for: the card IS
+   his image (mockups/v8-2-notices.png) with the variable strings erased out of
+   it, and live text positioned back into the holes. Nothing about the look is
+   implemented here any more — frame, panel, highlight, sweep, bell, title,
+   hairline, pip, chevrons and the rule under the title are all his pixels.
 
-   The glow is a separate, much softer shadow in the same hue, so the frame
-   sits in its own light rather than being drawn on top of the background. */
+   Geometry below is measured from that file: its card is 782x587, and every
+   position is the centre of the string it replaces, as a percentage, so the
+   values grow about the same points the originals did.
+
+   ERASING THE GLYPH NEEDED A DIFFERENT FILL from the rest. It sits directly
+   under the panel's top highlight, and a vertical interpolation dragged that
+   bright line all the way down the patch — a gold smear through the middle of
+   the card. It is filled horizontally instead, with no padding on its top
+   edge, so the highlight is never sampled.
+
+   TYPE from the same measurements, scaled by card height (587 -> 680):
+     title 75px box -> 12.78% -> 62px      body 26-31px -> ~30px
+     date  27px     ->  4.60% -> 30px      glyph 64px   -> 74px */
 .w-notices{
-  padding:30px;
-  border:3px solid transparent;
-  border-radius:28px;
-  background:
-    linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%) padding-box,
-    conic-gradient(from 212deg at 50% 50%,
-      #6F5F39 0%,   #D8C08C 7%,   #FAF2D8 13%,  #A89059 21%,
-      #7C6B3E 29%,  #D4AC2E 38%,  #F8EECE 45%,  #9E8752 53%,
-      #6F5F39 60%,  #C9A227 69%,  #FAF2D8 77%,  #A89059 85%,
-      #8A7646 93%,  #6F5F39 100%) border-box;
-  box-shadow:
-    0 0 80px -8px rgba(201,162,39,.50),
-    0 0 26px -4px rgba(201,162,39,.30),
-    0 26px 60px -30px rgba(0,0,0,.9);
-}
-
-/* --- header row --- */
-.w-notices-head{
-  flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;gap:16px;
-  height:54px;margin-bottom:40px;padding:0 10px;
-}
-.w-notices-head-icon{flex:0 0 auto;width:38px;height:38px;color:var(--gold-text);}
-.w-notices-head-title{
-  flex:0 0 auto;
-  font-size:42px;font-weight:700;line-height:1;
-  color:var(--gold-text);
-  letter-spacing:.01em;
-}
-/* --- stage --- */
-/* v8.2.1: the mockup's chevrons are gone (Aviv). They were a control shape on
-   a screen with no way to press them, and the dots already say the panel
-   advances. With them out the panel simply fills the stage, and the card's
-   padding is the only inset left — uniform 30px, so the panel is centred by
-   construction rather than by two numbers that happen to match. */
-.w-notices-stage{
-  flex:1 1 auto;min-height:0;
-  display:flex;align-items:center;
-}
-
-/* the panel gets the same metal, turned down — it sits inside the frame, so
-   matching its brightness would flatten the two into one shape */
-.w-notices-panel{
   position:relative;
-  flex:1 1 auto;min-width:0;align-self:stretch;
-  overflow:hidden;
-  border:1px solid transparent;
-  border-radius:26px;
-  background:
-    linear-gradient(162deg, rgba(44,46,52,.76) 0%, rgba(20,21,26,.90) 60%, rgba(13,14,18,.94) 100%) padding-box,
-    conic-gradient(from 198deg at 50% 50%,
-      rgba(110,94,54,.80) 0%,   rgba(243,228,187,.78) 10%, rgba(154,134,83,.42) 22%,
-      rgba(201,162,39,.70) 36%, rgba(246,234,196,.82) 46%, rgba(154,134,83,.40) 58%,
-      rgba(201,162,39,.66) 72%, rgba(243,228,187,.76) 84%, rgba(110,94,54,.80) 100%) border-box;
-  box-shadow:0 0 44px -14px rgba(201,162,39,.58);
+  width:906px;
+  aspect-ratio:782 / 587;
+  align-self:center;
+  padding:0;border:0;border-radius:0;background:none;box-shadow:none;
+  overflow:visible;
 }
-/* light catching the panel's top and bottom edges. One element, two layers:
-   the top is the hard highlight, the bottom the warmer bounce the sweep
-   throws back up at it. */
-.w-notices-panel::before{
-  content:'';position:absolute;z-index:3;inset:0;
-  pointer-events:none;
-  background-repeat:no-repeat;
-  background-image:
-    linear-gradient(90deg,transparent,rgba(248,238,206,.90),transparent),
-    linear-gradient(90deg,transparent,rgba(222,186,96,.58),transparent);
-  background-size:80% 1px, 92% 1px;
-  background-position:50% 0, 50% 100%;
-}
-/* warmth rising out of the corner the sweep comes from, so the arcs look lit
-   rather than drawn on */
-.w-notices-panel::after{
-  content:'';position:absolute;z-index:0;inset:0;
-  pointer-events:none;
-  background:radial-gradient(58% 64% at 16% 112%, rgba(201,162,39,.20), transparent 70%);
-}
-.w-notices-flourish{
-  position:absolute;z-index:1;
-  inset:0;width:100%;height:100%;
-  pointer-events:none;
-}
+.w-notices-art{width:100%;height:100%;display:block;}
 
-/* --- the notices themselves, crossfading inside the panel --- */
-.w-notices-deck{position:absolute;z-index:2;inset:0;}
+.w-notices-deck{position:absolute;inset:0;}
 .w-notice{
   position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  /* the extra bottom padding is what lifts the centred content clear of the
-     gold sweep. Measured: the date sat at 85% of the panel and the sweep runs
-     through the bottom fifth, so they were drawn on top of each other. */
-  padding:0 58px 76px;
-  text-align:center;
   opacity:0;
   transition:opacity 1000ms ease;
 }
 .w-notice.is-active{opacity:1;}
-.w-notice-icon{flex:0 0 auto;width:54px;height:54px;color:var(--gold-text);}
-.w-notice-title{
-  margin-top:26px;
-  font-size:56px;font-weight:800;line-height:1.14;
-  letter-spacing:-.005em;
-}
-.w-notice-rule{
-  /* flex:0 0 auto matters: this is a column flex container, so the default
-     flex-shrink:1 applies to HEIGHT and quietly collapsed the 1px rule to
-     nothing as soon as the text ran long. */
-  flex:0 0 auto;
-  width:200px;height:1px;margin:26px 0;
-  background:linear-gradient(90deg,transparent,var(--gold-line),transparent);
-}
-.w-notice-detail{
-  font-size:34px;font-weight:300;line-height:1.5;
-  color:var(--dim);
-  /* measured off the mockup: its body block is 425 of a 662px panel, which is
-     520px at our scale. Left to the panel's own width the text ran to three
-     lines where the mockup has two. */
-  max-width:520px;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
-  overflow:hidden;
-}
-.w-notice-date{
-  /* direction:ltr so the calendar sits to the LEFT of the date as the mockup
-     has it, and so "12.10.2026" is laid out as the single LTR run it is */
-  direction:ltr;
-  flex:0 0 auto;
-  margin-top:32px;
-  display:flex;align-items:center;gap:14px;
-  font-size:30px;font-weight:400;letter-spacing:.02em;
-}
-.w-notice-date svg{width:28px;height:28px;color:var(--gold-text);}
-/* a priority notice warms the panel rather than shouting — it is already the
-   only thing on the card while it is up */
-.w-notice.is-priority .w-notice-title{color:#FBF6E9;}
 
-/* --- position in the sequence --- */
+.w-notice-f{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  line-height:1.25;
+  margin:0;
+  pointer-events:none;
+}
+.f-icon{
+  left:48.08%;top:27.60%;
+  width:74px;height:74px;
+  color:#C8A771;
+}
+.f-title{
+  left:50.06%;top:41.31%;
+  font-size:62px;font-weight:800;letter-spacing:-.005em;
+  color:#F5F3EC;white-space:nowrap;
+}
+.f-body{
+  left:50.45%;top:63.9%;
+  width:560px;                   /* the reference's own measure, scaled */
+  font-size:30px;font-weight:300;line-height:1.42;
+  text-align:center;color:#E4E3E2;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.f-date{
+  left:49.04%;top:78.45%;
+  direction:ltr;                 /* icon left of the numerals, as in the image */
+  display:flex;align-items:center;gap:12px;
+  font-size:30px;font-weight:400;letter-spacing:.01em;
+  color:#D3C8B4;white-space:nowrap;
+}
+.f-date svg{width:28px;height:28px;flex:0 0 auto;}
+
+/* redrawn rather than baked: the image has five and a building has as many as
+   it has. Sizes and colours are the image's own. */
 .w-notices-dots{
-  /* ltr: the mockup lights the LEFTMOST dot for the first notice. They are an
-     abstract position marker rather than text, so they follow the mockup
-     rather than the page's reading direction. */
+  position:absolute;left:48.21%;top:93.78%;
+  transform:translate(-50%,-50%);
   direction:ltr;
-  flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;gap:18px;
-  /* 40 above the panel (the header's margin) and 40 below it, so the panel
-     sits in an even band. The dots live inside the lower 40 rather than
-     adding to it. */
-  margin-top:40px;height:14px;margin-bottom:-14px;
+  display:flex;align-items:center;gap:14px;
 }
 .w-notices-dots span{
-  width:10px;height:10px;border-radius:50%;
-  background:rgba(244,243,239,.20);
+  width:9px;height:9px;border-radius:50%;
+  background:#555554;
   transition:background 600ms ease;
 }
-.w-notices-dots span.is-active{background:var(--gold-text);}
+.w-notices-dots span.is-active{background:#FFD064;}
 
 /* ---------- TickerWidget (brief §9) ----------
    Full-bleed bar across the very bottom edge — not a floating card.

@@ -438,7 +438,11 @@ img{display:block;}
    are derived from the card that was already signed off rather than both
    columns being renegotiated. */
 .zone-grid.is-pair{
-  grid-template-columns:906px 876px;
+  /* 725 is the Shabbat card's width, which is its image's aspect at the 337px
+     row height — see --shab-w. space-between keeps the notices card on its
+     approved 960->1866 and lets the channel take the remainder. */
+  grid-template-columns:906px 725px;
+  justify-content:space-between;
 }
 .zone-open{min-width:0;}
 .zone-stack{
@@ -710,202 +714,64 @@ img{display:block;}
    Heebo, which is why it is sized down to sit as a mark rather than a glyph. */
 .num-x{flex:0 0 auto;font-family:var(--sans);font-size:.46em;align-self:flex-start;margin-top:.12em;}
 
-/* ---------- ShabbatWidget (v8.3, built to mockups/v8-3-shabbat.png) --------
-   Proportions are read off the reference rather than guessed. On its 1672px
-   artboard the card is 1535x713 and inside it: panel inset 3.7% of the width,
-   panel 61.6%, photo 34.7%; vertically the panel starts at 22.4% of the card,
-   its inner divider sits at 66.8% and it ends at 91.3%. Those percentages are
-   what this block encodes.
+/* ---------- ShabbatWidget (v8.4) ----------
+   The card IS Aviv's image. assets/images/shabbat-card.jpg is his reference
+   with the nine variable strings erased out of it; everything visible — frame,
+   gold sweep, photo, panel, all five icons, both hairlines, the title — is his
+   pixels, and this block only positions live text back into the holes.
 
-   TYPE, measured rather than estimated. Cap heights were read off the
-   reference's own pixels and scaled by its card height (714) to ours (337):
-     time   77px cap = 10.78% -> 36px cap here -> 50px
-     title  44px cap =  6.16% -> 21px cap      -> 30px
-     label  32px cap =  4.48% -> 15px cap      -> 21px  (already matched)
-     parasha value 27px cap   -> 13px cap      -> 18px
-     city   19px cap =  2.66% ->  9px cap      -> 13px
-   The first three are used as measured. The last two are held at 20px and
-   15px instead of 18 and 13 — a two-pixel floor, because the reference is a
-   1672px hero graphic and this is a half-column on a lobby TV, and below
-   about 15px nobody standing in a lobby reads anything. Everything else here
-   follows the reference exactly. */
+   That is the whole point: there is no second implementation of the design to
+   drift away from the first one.
+
+   ONE NUMBER CONTROLS THE SIZE. --shab-w is the card's width and the height
+   follows from the image's own 1535:714. At 725 the card fits beside a second
+   frame of equal height in this column (337 each), which is the layout Aviv
+   asked for, and the type lands at the reference's own proportions: see the
+   cap-height table below. Widening it to 876 would make the card 407 tall and
+   leave 267 for the frame above instead of an equal 337.
+
+   TYPE. Cap heights were measured in the source and divided by its card height
+   (714), then multiplied by ours. Heebo's cap is about .72 of its em:
+     time    77px cap -> 10.78% -> 50px font
+     label   21px cap ->  2.94% -> 14px
+     city    20px cap ->  2.80% -> 13px
+     bottom label 18-19px      -> 12-13px
+     bottom value 28-30px      -> 19-20px
+   Colours are sampled from the source too, which is how the bottom row turned
+   out to be gold on the right and white on the left rather than one or the
+   other. */
 .w-shabbat{
+  --shab-w:725px;
   position:relative;
-  /* 30px sides so the panel's left inset lands on the reference's 3.7% of the
-     card width (32px here); the header carries another 14px of its own to
-     reach the reference's 5.0%. */
-  padding:20px 30px 27px;
-  border:2px solid transparent;
-  border-radius:24px;
-  overflow:hidden;
-  /* the same metal as the notices card — one gold in the project, not two */
-  background:
-    linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%) padding-box,
-    conic-gradient(from 212deg at 50% 50%,
-      #6F5F39 0%,   #D8C08C 7%,   #FAF2D8 13%,  #A89059 21%,
-      #7C6B3E 29%,  #D4AC2E 38%,  #F8EECE 45%,  #9E8752 53%,
-      #6F5F39 60%,  #C9A227 69%,  #FAF2D8 77%,  #A89059 85%,
-      #8A7646 93%,  #6F5F39 100%) border-box;
-  box-shadow:
-    0 0 70px -10px rgba(201,162,39,.42),
-    0 0 22px -6px rgba(201,162,39,.24),
-    0 26px 60px -30px rgba(0,0,0,.9);
+  width:var(--shab-w);
+  aspect-ratio:1535 / 714;
+  align-self:end;                 /* sits on the floor of its grid row */
+  padding:0;border:0;border-radius:0;background:none;box-shadow:none;
+  overflow:visible;
 }
+.w-shabbat-art{width:100%;height:100%;display:block;}
 
-/* --- the photo, bleeding off the right edge --- */
-.w-shabbat-photo{
-  position:absolute;z-index:0;
-  /* 304 and 540 below are the reference's 34.7% and 61.6% OF THE CARD, given
-     in px on purpose: a percentage here resolves against the padding box, not
-     the card, and 61.6% quietly came out as 57.1% of the card the first time
-     round. The track is a fixed 876 design-px, so the arithmetic is stable. */
-  top:0;bottom:0;right:0;width:304px;
-  overflow:hidden;
-}
-/* Anchored to the TOP, so the dark band above the flames is never the part
-   that gets cropped — that band is what the title sits on. The source is
-   508x602 against a 304x337 slot, so cover trims about 23px, and it comes off
-   the bottom where it costs only a sliver of the table reflection. */
-.w-shabbat-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 0%;}
-/* Two jobs for one overlay: fade the photo into the card so it has no seam,
-   and darken its top where the title sits over it. The title is the only text
-   on this card with a photograph behind it. */
-.w-shabbat-photo::after{
-  content:'';position:absolute;inset:0;
-  background:
-    linear-gradient(to left, rgba(10,11,14,0) 38%, rgba(10,11,14,.72) 76%, rgba(10,11,14,.96) 100%),
-    linear-gradient(to bottom, rgba(8,9,12,.80) 0%, rgba(8,9,12,.12) 34%, rgba(8,9,12,0) 60%),
-    linear-gradient(0deg, rgba(201,162,39,.10), rgba(201,162,39,.10));
-}
-
-/* --- header: title over the photo, city on the far side --- */
-.w-shabbat-head{
-  position:relative;z-index:2;
-  display:flex;align-items:center;gap:18px;
-  height:38px;padding:0 14px;
-}
-.w-shabbat-brand{
-  /* No `order` here. The first attempt set order:2 on the brand expecting it
-     to land on the right; in an RTL flex row items run right-to-left in
-     INCREASING order, so order:2 put the title on the left and the city on
-     the right — the mirror of the reference. DOM order already says it:
-     brand, rule, city. */
-  flex:0 0 auto;
-  display:flex;align-items:center;gap:14px;
-  padding-bottom:9px;
-  border-bottom:1px solid var(--gold-line);
-  color:var(--gold-text);
-}
-.w-shabbat-candles{width:32px;height:32px;flex:0 0 auto;}
-.w-shabbat-title{font-size:30px;font-weight:700;letter-spacing:.01em;line-height:1;}
-.w-shabbat-headrule{
-  flex:1 1 auto;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(157,147,121,.45) 20%,rgba(157,147,121,.45));
-}
-.w-shabbat-city{
-  flex:0 0 auto;
-  display:flex;align-items:center;gap:10px;
-  font-size:15px;font-weight:300;letter-spacing:.06em;
-  color:var(--dim);
-}
-.w-shabbat-city svg{width:16px;height:16px;color:var(--gold);}
-
-/* --- the panel --- */
-.w-shabbat-panel{
-  position:relative;z-index:1;
-  margin-top:15px;
-  /* The panel stops short of the photo, as the reference stages it. Two
-     things make that work: align-self:flex-end, because the card is a COLUMN
-     flex container so the cross axis is horizontal and its end is the left in
-     RTL — a plain width:63% block sits at the inline start, which is the
-     right, directly on top of the photo; and flex:1 rather than a percentage
-     height, which would have resolved against a flex item's indefinite
-     height. */
-  width:540px;
-  align-self:flex-end;
-  flex:1 1 auto;min-height:0;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:14px 22px 16px;
-  overflow:hidden;
-  border:1px solid transparent;
-  border-radius:20px;
-  background:
-    linear-gradient(162deg, rgba(44,46,52,.70) 0%, rgba(20,21,26,.86) 60%, rgba(13,14,18,.90) 100%) padding-box,
-    conic-gradient(from 198deg at 50% 50%,
-      rgba(110,94,54,.80) 0%,   rgba(243,228,187,.78) 10%, rgba(154,134,83,.42) 22%,
-      rgba(201,162,39,.70) 36%, rgba(246,234,196,.82) 46%, rgba(154,134,83,.40) 58%,
-      rgba(201,162,39,.66) 72%, rgba(243,228,187,.76) 84%, rgba(110,94,54,.80) 100%) border-box;
-}
-.w-shabbat-sweep{
-  position:absolute;z-index:0;
-  left:0;bottom:0;width:100%;height:100%;
+/* every live string: positioned by its measured centre, so a longer or shorter
+   value grows about that point exactly as the source's did */
+.w-shabbat-f{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  white-space:nowrap;
+  line-height:1;
   pointer-events:none;
 }
-
-/* --- the two times --- */
-.w-shabbat-times{
-  position:relative;z-index:1;
-  display:flex;align-items:stretch;
-}
-.w-shabbat-t{
-  flex:1 1 0;min-width:0;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-}
-.w-shabbat-t-label{
-  display:flex;align-items:center;gap:9px;
-  font-size:21px;font-weight:300;letter-spacing:.04em;
-  color:var(--gold-text);
-  white-space:nowrap;
-}
-.w-shabbat-t-label svg{width:21px;height:21px;flex:0 0 auto;}
-.w-shabbat-t-val{
-  direction:ltr;
-  font-size:50px;font-weight:700;line-height:1.02;
-  letter-spacing:.01em;
-  font-variant-numeric:tabular-nums;
-  color:var(--white);
-}
-
-.w-shabbat-vrule{
-  flex:0 0 1px;align-self:center;
-  width:1px;height:76%;
-  background:linear-gradient(180deg,transparent,var(--gold-line) 18%,var(--gold-line) 82%,transparent);
-}
-.w-shabbat-hrule{
-  position:relative;z-index:1;
-  /* asymmetric on purpose: the panel is centre-justified, so shifting weight
-     from below the rule to above it slides the rule down without moving the
-     block. The reference puts it at 66.8% of the card height, and splits the
-     space around the rule 102/26 out of its 491px panel — 48/13 at this
-     panel's 233px. */
-  height:1px;margin:46px 0 13px;
-  background:linear-gradient(90deg,transparent,rgba(157,147,121,.42) 12%,rgba(157,147,121,.42) 88%,transparent);
-}
-
-/* --- parasha and haftarah --- */
-.w-shabbat-meta{
-  position:relative;z-index:1;
-  display:flex;align-items:stretch;gap:0;
-}
-.w-shabbat-m{
-  flex:0 0 41%;min-width:0;       /* the reference splits this row 41/59 */
-  display:flex;flex-direction:column;align-items:center;gap:1px;
-}
-.w-shabbat-m-wide{
-  flex:1 1 auto;
-  flex-direction:row;align-items:center;justify-content:center;gap:12px;
-}
-.w-shabbat-m-text{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;}
-.w-shabbat-book{flex:0 0 auto;width:24px;height:24px;color:var(--gold-text);}
-.w-shabbat-m-label{
-  font-size:15px;font-weight:300;letter-spacing:.08em;
-  color:var(--dimmer);
-}
-.w-shabbat-m-val{
-  font-size:20px;font-weight:700;line-height:1.15;
-  color:var(--gold-text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
-}
+.f-city       {left:14.07%;top:13.17%;font-size:13px;font-weight:300;letter-spacing:.04em;color:#EFEEEE;}
+.f-lbl-candle {left:48.11%;top:34.45%;font-size:14px;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-lbl-hav    {left:20.13%;top:34.36%;font-size:14px;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-time-candle,
+.f-time-hav   {font-size:50px;font-weight:700;letter-spacing:.005em;color:#FBFAF7;
+               direction:ltr;font-variant-numeric:tabular-nums;}
+.f-time-candle{left:49.51%;top:47.13%;}
+.f-time-hav   {left:19.61%;top:47.13%;}
+.f-lbl-parasha{left:47.13%;top:71.71%;font-size:12px;font-weight:300;letter-spacing:.06em;color:#ECCF96;}
+.f-val-parasha{left:47.16%;top:77.73%;font-size:19px;font-weight:700;color:#F9DFAE;}
+.f-lbl-haftara{left:22.93%;top:71.78%;font-size:13px;font-weight:300;letter-spacing:.06em;color:#ECCF96;}
+.f-val-haftara{left:22.93%;top:78.01%;font-size:20px;font-weight:700;color:#FAFAF9;}
 
 /* ---------- NoticesWidget (v8.2, built to mockups/v8-2-notices.png) ----------
    The widest card on the screen, showing one notice at a time. Geometry is

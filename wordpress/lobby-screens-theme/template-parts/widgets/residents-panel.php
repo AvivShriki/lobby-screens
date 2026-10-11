@@ -7,9 +7,15 @@
  * and live spans positioned back into the holes. He asked for the two cards to
  * be built the same way so they read as a pair, and this is that.
  *
+ * v8.6 — Aviv struck the chevrons for good (a control shape on a screen with
+ * nothing to press it with), struck the rule beside "עדכונים מהבניין", and
+ * asked for the card title centred. All three are changes to the CHROME, so
+ * all three were erased out of the image: the chevrons and the rule for good,
+ * the title and its bell so they can be redrawn in the middle.
+ *
  * Baked, because it never changes: the frame and its glow, the inner panel and
- * its top highlight, the gold sweep, the bell, "הודעות לדיירים", the hairline,
- * the pip and "עדכונים מהבניין", both chevrons, and the rule under the title.
+ * its top highlight, the gold sweep, the pip and "עדכונים מהבניין", and the
+ * rule under the notice title.
  *
  * Live, because it does: the notice glyph, the title, the body, the date, and
  * the position dots. The dots had to come out of the image — there are five in
@@ -41,6 +47,14 @@ $glyphs = array(
 ?>
 <section class="card w-notices reveal">
   <img class="w-notices-art" src="<?php echo esc_url( $theme_uri . '/assets/images/notices-card.jpg' ); ?>" alt="">
+
+  <?php /* v8.6 — the title and its bell come out of the chrome and are drawn
+          live, because Aviv asked for them centred and they were baked to the
+          right. Everything else in the header is still his pixels. */ ?>
+  <h2 class="w-notices-head">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?php echo $glyphs['bell']; // phpcs:ignore ?></svg>
+    <span>הודעות לדיירים</span>
+  </h2>
 
   <div class="w-notices-deck" data-rotator="<?php echo $multiple ? 10000 : 0; ?>" data-rotator-dots="noticesDots">
     <?php foreach ( $notices as $n => $notice ) : ?>

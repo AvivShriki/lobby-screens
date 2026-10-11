@@ -498,6 +498,33 @@ img{display:block;}
 }
 .card-label-chev{flex:0 0 auto;width:15px;height:15px;color:var(--gold);}
 
+/* ---------- the ONE card's frame (v8.6) ----------
+   The other two cards are Aviv's own images. There is no reference for a
+   sports card, so this frame is BUILT to match them rather than cut out of
+   one: the same conic metal, the same radius, the same bloom. It is the only
+   card on screen whose chrome is CSS, and if a reference turns up it swaps to
+   the image treatment the same way the other two did. */
+.w-feed{
+  /* The slot is 337px and the card has to hold a label row, a hero and two
+     list rows. Measured on the first pass: 130px of rows in a 77px box, so the
+     second headline was simply cut off. The budget below is what fits —
+     label 34+10, hero 128+10, two rows at 58, padding 16+14, border 4 = 332. */
+  padding:16px 24px 14px;
+  border:2px solid transparent;
+  border-radius:24px;
+  background:
+    linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%) padding-box,
+    conic-gradient(from 212deg at 50% 50%,
+      #6F5F39 0%,   #D8C08C 7%,   #FAF2D8 13%,  #A89059 21%,
+      #7C6B3E 29%,  #D4AC2E 38%,  #F8EECE 45%,  #9E8752 53%,
+      #6F5F39 60%,  #C9A227 69%,  #FAF2D8 77%,  #A89059 85%,
+      #8A7646 93%,  #6F5F39 100%) border-box;
+  box-shadow:
+    0 0 70px -10px rgba(201,162,39,.42),
+    0 0 22px -6px rgba(201,162,39,.24),
+    0 26px 60px -30px rgba(0,0,0,.9);
+}
+
 /* ---------- FeedPanel — shared by the Ynet and ONE cards ----------
    Both are the same component: a rotating hero (image, category tag, headline,
    standfirst) over a static list of secondary updates. Only the partner logo,
@@ -552,12 +579,29 @@ img{display:block;}
 
 /* wide variant: short card, so the hero image sits BESIDE its headline
    instead of above it. Same component, same data — only the axis changes. */
-.is-wide .w-feed-hero{flex:0 0 156px;margin-bottom:16px;}
+.is-wide .card-label{height:34px;margin-bottom:10px;font-size:18px;}
+.is-wide .card-label-mark img{height:24px;}
+.is-wide .w-feed-hero{flex:0 0 128px;margin-bottom:10px;}
 .is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
-.is-wide .w-feed-media{flex:0 0 238px;height:100%;}
+.is-wide .w-feed-media{flex:0 0 218px;height:100%;}
 .is-wide .w-feed-copy{flex:1 1 auto;justify-content:center;}
-.is-wide .w-feed-title{margin-top:0;font-size:23px;-webkit-line-clamp:2;}
-.is-wide .w-feed-standfirst{-webkit-line-clamp:3;}
+/* the lead headline is the one thing on this card a resident reads from across
+   the lobby, so it takes the size the standfirst gives up */
+.is-wide .w-feed-title{margin-top:0;font-size:27px;-webkit-line-clamp:2;line-height:1.2;}
+/* one line, not two: at this card height the standfirst was eating the room
+   the second headline needed, and it is the least readable thing on the card
+   from across a lobby anyway */
+.is-wide .w-feed-standfirst{margin-top:6px;font-size:16px;-webkit-line-clamp:1;}
+.is-wide .w-feed-item{padding:7px 0;}
+.is-wide .w-feed-item:first-child{padding-top:0;}
+.is-wide .w-feed-thumb{flex:0 0 72px;height:46px;}
+/* one line here, unlike the tall card's two. The list box is 121px and two
+   rows come to 116 at one line each — at two lines a single long headline
+   grows its row and pushes the next one out of the card. A clamped row height
+   is deterministic; a clipped second headline is a bug waiting for a slow news
+   day. */
+.is-wide .w-feed-item-title{font-size:18px;-webkit-line-clamp:1;}
+.is-wide .w-feed-time{font-size:14px;}
 
 .w-feed-list{
   flex:1 1 auto;min-height:0;
@@ -805,6 +849,20 @@ img{display:block;}
   overflow:visible;
 }
 .w-notices-art{width:100%;height:100%;display:block;}
+
+/* v8.6 — drawn rather than baked, because Aviv wanted it centred and the
+   image has it on the right. Size and colour are measured off the source:
+   30px cap on its 587px card, which is 48px here, at #EFD09D. */
+.w-notices-head{
+  position:absolute;left:50%;top:10.6%;
+  transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:16px;
+  margin:0;
+  font-size:48px;font-weight:700;line-height:1;
+  color:#EFD09D;
+  white-space:nowrap;
+}
+.w-notices-head svg{width:44px;height:44px;flex:0 0 auto;}
 
 .w-notices-deck{position:absolute;inset:0;}
 .w-notice{

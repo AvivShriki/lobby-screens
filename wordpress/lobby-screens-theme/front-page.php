@@ -86,12 +86,11 @@ $lobby = array(
 	// the whole point of composing the screen here — not a rebuild.
 	'zones'    => array(
 		'lead'  => array( 'residents-panel' ),
-		// v8.3 — the Shabbat card is back, in the lower half of the left
-		// column. The upper half is deliberately left open: Aviv asked for
-		// room for a second frame of the same size above it, and a lone panel
-		// drops to the bottom slot on its own (see .zone-stack in style.css).
-		// Adding 'sports-panel' ahead of it fills that slot.
-		'stack' => array( 'shabbat-panel' ),
+		// v8.6 — the slot above the Shabbat card is filled, exactly as the
+		// architecture promised: one word in this array, no other change. The
+		// ONE card and its feed parser have been here since v7 and were only
+		// ever unlisted.
+		'stack' => array( 'sports-panel', 'shabbat-panel' ),
 	),
 );
 

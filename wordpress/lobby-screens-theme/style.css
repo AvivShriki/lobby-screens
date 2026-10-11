@@ -717,15 +717,24 @@ img{display:block;}
    its inner divider sits at 66.8% and it ends at 91.3%. Those percentages are
    what this block encodes.
 
-   WHAT COULD NOT BE COPIED: the reference is 2.15:1 and this slot is 876x337,
-   which is 2.6:1 — half of a column that also has to leave room for a second
-   frame above it. The layout is the reference's; the TYPE is not scaled down
-   to match, because at this height proportional type would put the times at
-   about 42px and this is read from across a lobby. Bigger type in the
-   reference's layout is the right trade and the deliberate departure. */
+   TYPE, measured rather than estimated. Cap heights were read off the
+   reference's own pixels and scaled by its card height (714) to ours (337):
+     time   77px cap = 10.78% -> 36px cap here -> 50px
+     title  44px cap =  6.16% -> 21px cap      -> 30px
+     label  32px cap =  4.48% -> 15px cap      -> 21px  (already matched)
+     parasha value 27px cap   -> 13px cap      -> 18px
+     city   19px cap =  2.66% ->  9px cap      -> 13px
+   The first three are used as measured. The last two are held at 20px and
+   15px instead of 18 and 13 — a two-pixel floor, because the reference is a
+   1672px hero graphic and this is a half-column on a lobby TV, and below
+   about 15px nobody standing in a lobby reads anything. Everything else here
+   follows the reference exactly. */
 .w-shabbat{
   position:relative;
-  padding:22px 26px;
+  /* 30px sides so the panel's left inset lands on the reference's 3.7% of the
+     card width (32px here); the header carries another 14px of its own to
+     reach the reference's 5.0%. */
+  padding:20px 30px 27px;
   border:2px solid transparent;
   border-radius:24px;
   overflow:hidden;
@@ -746,13 +755,18 @@ img{display:block;}
 /* --- the photo, bleeding off the right edge --- */
 .w-shabbat-photo{
   position:absolute;z-index:0;
-  top:0;bottom:0;right:0;width:35%;
+  /* 304 and 540 below are the reference's 34.7% and 61.6% OF THE CARD, given
+     in px on purpose: a percentage here resolves against the padding box, not
+     the card, and 61.6% quietly came out as 57.1% of the card the first time
+     round. The track is a fixed 876 design-px, so the arithmetic is stable. */
+  top:0;bottom:0;right:0;width:304px;
   overflow:hidden;
 }
-/* object-position favours the lower half: the flames and the reflection are
-   there, and the blurred book spines at the top are what the title needs
-   behind it */
-.w-shabbat-photo img{width:100%;height:100%;object-fit:cover;object-position:62% 66%;}
+/* Anchored to the TOP, so the dark band above the flames is never the part
+   that gets cropped — that band is what the title sits on. The source is
+   508x602 against a 304x337 slot, so cover trims about 23px, and it comes off
+   the bottom where it costs only a sliver of the table reflection. */
+.w-shabbat-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 0%;}
 /* Two jobs for one overlay: fade the photo into the card so it has no seam,
    and darken its top where the title sits over it. The title is the only text
    on this card with a photograph behind it. */
@@ -767,8 +781,8 @@ img{display:block;}
 /* --- header: title over the photo, city on the far side --- */
 .w-shabbat-head{
   position:relative;z-index:2;
-  display:flex;align-items:center;gap:20px;
-  height:46px;
+  display:flex;align-items:center;gap:18px;
+  height:38px;padding:0 14px;
 }
 .w-shabbat-brand{
   /* No `order` here. The first attempt set order:2 on the brand expecting it
@@ -782,8 +796,8 @@ img{display:block;}
   border-bottom:1px solid var(--gold-line);
   color:var(--gold-text);
 }
-.w-shabbat-candles{width:38px;height:38px;flex:0 0 auto;}
-.w-shabbat-title{font-size:36px;font-weight:700;letter-spacing:.01em;line-height:1;}
+.w-shabbat-candles{width:32px;height:32px;flex:0 0 auto;}
+.w-shabbat-title{font-size:30px;font-weight:700;letter-spacing:.01em;line-height:1;}
 .w-shabbat-headrule{
   flex:1 1 auto;height:1px;
   background:linear-gradient(90deg,transparent,rgba(157,147,121,.45) 20%,rgba(157,147,121,.45));
@@ -791,15 +805,15 @@ img{display:block;}
 .w-shabbat-city{
   flex:0 0 auto;
   display:flex;align-items:center;gap:10px;
-  font-size:21px;font-weight:300;letter-spacing:.06em;
+  font-size:15px;font-weight:300;letter-spacing:.06em;
   color:var(--dim);
 }
-.w-shabbat-city svg{width:21px;height:21px;color:var(--gold);}
+.w-shabbat-city svg{width:16px;height:16px;color:var(--gold);}
 
 /* --- the panel --- */
 .w-shabbat-panel{
   position:relative;z-index:1;
-  margin-top:14px;
+  margin-top:15px;
   /* The panel stops short of the photo, as the reference stages it. Two
      things make that work: align-self:flex-end, because the card is a COLUMN
      flex container so the cross axis is horizontal and its end is the left in
@@ -807,7 +821,7 @@ img{display:block;}
      right, directly on top of the photo; and flex:1 rather than a percentage
      height, which would have resolved against a flex item's indefinite
      height. */
-  width:63%;
+  width:540px;
   align-self:flex-end;
   flex:1 1 auto;min-height:0;
   display:flex;flex-direction:column;justify-content:center;
@@ -846,7 +860,7 @@ img{display:block;}
 .w-shabbat-t-label svg{width:21px;height:21px;flex:0 0 auto;}
 .w-shabbat-t-val{
   direction:ltr;
-  font-size:58px;font-weight:700;line-height:1.02;
+  font-size:50px;font-weight:700;line-height:1.02;
   letter-spacing:.01em;
   font-variant-numeric:tabular-nums;
   color:var(--white);
@@ -859,7 +873,12 @@ img{display:block;}
 }
 .w-shabbat-hrule{
   position:relative;z-index:1;
-  height:1px;margin:14px 0;
+  /* asymmetric on purpose: the panel is centre-justified, so shifting weight
+     from below the rule to above it slides the rule down without moving the
+     block. The reference puts it at 66.8% of the card height, and splits the
+     space around the rule 102/26 out of its 491px panel — 48/13 at this
+     panel's 233px. */
+  height:1px;margin:46px 0 13px;
   background:linear-gradient(90deg,transparent,rgba(157,147,121,.42) 12%,rgba(157,147,121,.42) 88%,transparent);
 }
 
@@ -877,13 +896,13 @@ img{display:block;}
   flex-direction:row;align-items:center;justify-content:center;gap:12px;
 }
 .w-shabbat-m-text{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;}
-.w-shabbat-book{flex:0 0 auto;width:30px;height:30px;color:var(--gold-text);}
+.w-shabbat-book{flex:0 0 auto;width:24px;height:24px;color:var(--gold-text);}
 .w-shabbat-m-label{
-  font-size:18px;font-weight:300;letter-spacing:.08em;
+  font-size:15px;font-weight:300;letter-spacing:.08em;
   color:var(--dimmer);
 }
 .w-shabbat-m-val{
-  font-size:28px;font-weight:700;line-height:1.15;
+  font-size:20px;font-weight:700;line-height:1.15;
   color:var(--gold-text);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }

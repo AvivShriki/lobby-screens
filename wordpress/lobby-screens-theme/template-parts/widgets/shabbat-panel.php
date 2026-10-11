@@ -15,10 +15,9 @@
  *     and the natural companion to the parasha. One line to change if Aviv
  *     wants something else there.
  *
- *  2. The photo is the repo's own licensed candle photo, not the reference's
- *     candlesticks-and-challah still life, which is generated art with no
- *     licence behind it. Dropping a replacement into assets/images and
- *     changing this src is the whole swap.
+ *  2. (settled 11.10.2026) The photo IS the reference's still life. Aviv was
+ *     asked about the licence, said use it, and it is his asset to supply —
+ *     so it is cut out of his own file rather than re-sourced.
  *
  *  3. No countdown band. v8 added a live count to candle lighting and the
  *     reference has no room for one. The data (candle_iso / havdalah_iso) and
@@ -56,7 +55,14 @@ $icon = function ( $paths, $class = '' ) {
 <section class="card w-shabbat reveal">
 
   <div class="w-shabbat-photo" aria-hidden="true">
-    <img class="kb" src="<?php echo esc_url( $theme_uri . '/assets/images/candles-pixabay.jpg' ); ?>" alt="">
+    <?php /* Aviv's own still life, cut straight out of his reference
+             (mockups/v8-3-shabbat.png) below the title band that was baked
+             into it. 508x549 — almost exactly this slot's aspect, so it is
+             shown very close to 1:1 and nothing is upscaled.
+             No Ken Burns on this one: with the crop already matching the slot
+             there are no spare pixels to drift across, and a still frame is
+             what the reference composes. */ ?>
+    <img src="<?php echo esc_url( $theme_uri . '/assets/images/shabbat-table.jpg' ); ?>" alt="">
   </div>
 
   <header class="w-shabbat-head">

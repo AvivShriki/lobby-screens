@@ -132,28 +132,13 @@ widget's CSS (see template-parts/widgets/).
   unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* The clock's own face. Fraunces is a high-contrast display serif — hairline
-   thins against heavy stems, ball terminals, a flat-topped 1 — and it is the
-   one thing on the screen allowed to be a serif. Aviv asked for the clock to be
-   clearer and a little out of the ordinary; this is both, and it was already in
-   the repo from v6, so it costs no new licence and no network.
-
-   ONE FILE, ONE WEIGHT. There is a single subset here (digits and the colon,
-   3.7KB) and asking for any other weight would make the browser synthesise a
-   fake bold — the exact trap the Heebo note below describes. Declared at 400
-   and used only at 400.
-
-   It has NO tabular figures: '1' is .38em wide against '0' at .62em. On an
-   always-on clock that is a visible jump every minute, so the digits are set in
-   fixed cells instead of trusting font-variant-numeric — see .w-clock-time. */
-@font-face{
-  font-family:'Fraunces';
-  font-style:normal;
-  font-weight:400;
-  font-display:swap;
-  src:url('assets/fonts/fraunces-clock-font.woff2') format('woff2');
-  unicode-range:U+0030-0039, U+003A;
-}
+/* The clock used to have a face of its own — Fraunces, a high-contrast
+   display serif. v9.0 took it out: Aviv asked for the clock and the
+   temperature to carry exactly the font the Shabbat times do, and uniformity
+   across the screen is worth more than one distinctive element on it. The
+   .woff2 stays in assets/fonts so putting it back is an @font-face and a
+   font-family, but nothing loads it now.
+*/
 
 :root{
   --night:#0A0B0E;
@@ -750,33 +735,48 @@ img{display:block;}
    bottom-aligning them put the clock's glyphs 28px above the temperature's.
    Aviv spotted it on screen. Anything that restates a component's type is a
    copy waiting to drift; this only adds what is genuinely clock-specific. */
+/* The clock carries .num itself — it does NOT restate the face and the size.
+   It did, for one version, and the copy was missing line-height, which put
+   its glyphs 28px above the temperature's. Anything that restates a
+   component's type is a copy waiting to drift. */
 .w-clock-time{justify-content:flex-start;}
 
 /* ---------- display numerals ----------
-   One component, used by the clock and the temperature — Aviv asked for the
-   two to be the same size in the same face, so they are literally the same
-   thing rather than two blocks of CSS that agree today.
+   v9.0 — Aviv asked for the clock and the temperature to carry exactly the
+   font the Shabbat times do, for uniformity. Measured rather than assumed:
+   those times resolve to Heebo 700, tabular-nums, #FBFAF7. So that is what
+   this is now, and Fraunces is out of the header.
 
-   Fixed cells, not font-variant-numeric: this face has no tabular figures, and
-   .62em is its widest digit. Every digit occupies the same box whatever it is,
-   so a reading is motionless when it changes — font-variant-numeric would
-   simply have done nothing here. */
+   THE FIXED CELLS WENT WITH IT. They existed only because Fraunces has no
+   tabular figures and an always-on clock shuffled sideways every minute.
+   Heebo's digits are naturally monospaced — measured, '1111' and '0000' are
+   both 231px at 100px even with font-variant-numeric off — so the cells had
+   nothing left to do, and machinery kept past its reason is the thing that
+   drifts later. tabular-nums stays as the explicit statement of intent.
+
+   What survives is the gold colon: that is a colour, not a font, and it is
+   what makes the figure read as a clock without anything having to move.
+
+   WEIGHT 600, NOT 700. Checking what the browser had actually loaded turned
+   up every 700 on the screen being SYNTHESISED — Heebo ships 100/300/400/600
+   /800 here and nothing else, so 700 was faux bold drawn from 600, which is
+   the exact trap recorded at the top of this file and which already shipped
+   once in v7.2. It was not only the clock: the Shabbat times, the parasha and
+   the notices card's title had all been sitting on a fake weight since they
+   were written. All four are real 600 now, so they render the same way in
+   every browser instead of each one inventing its own bold. */
 .num{
-  /* a reading is an LTR run. Without this the cells are laid out by the page's
-     RTL flex direction and "30°" comes out as "°03" — which is exactly what it
-     did the first time. */
+  /* a reading is an LTR run: without this the RTL context lays "30°" out as
+     "°03", which is exactly what it did the first time */
   direction:ltr;
-  font-family:'Fraunces',var(--sans);
-  font-size:104px;font-weight:400;line-height:.92;
+  font-family:var(--sans);
+  font-size:104px;font-weight:600;line-height:.92;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
 }
-.num-d{flex:0 0 auto;width:.62em;text-align:center;}
-/* the colon is the one coloured mark on the rail: it reads as a clock the way
-   a second hand does, without anything on the screen having to move */
-.num-sep{flex:0 0 auto;width:.30em;text-align:center;color:var(--gold-text);}
-/* a degree sign or a minus — not a digit, so it keeps its own width. It also
-   falls outside the clock face's subset (digits and colon only) and renders in
-   Heebo, which is why it is sized down to sit as a mark rather than a glyph. */
-.num-x{flex:0 0 auto;font-family:var(--sans);font-size:.46em;align-self:flex-start;margin-top:.12em;}
+.num-sep{color:var(--gold-text);padding:0 .02em;}
+/* the degree sign is a mark, not a glyph at reading size */
+.num-x{font-size:.46em;align-self:flex-start;margin-top:.14em;}
 
 /* ---------- ShabbatWidget (v8.4) ----------
    The card IS Aviv's image. assets/images/shabbat-card.jpg is his reference
@@ -834,7 +834,7 @@ img{display:block;}
 .f-lbl-candle {left:48.11%;top:34.45%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
 .f-lbl-hav    {left:20.13%;top:34.36%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
 .f-time-candle,
-.f-time-hav   {font-size:6.897cqw;font-weight:700;letter-spacing:.005em;color:#FBFAF7;
+.f-time-hav   {font-size:6.897cqw;font-weight:600;letter-spacing:.005em;color:#FBFAF7;
                direction:ltr;font-variant-numeric:tabular-nums;}
 .f-time-candle{left:49.51%;top:47.13%;}
 .f-time-hav   {left:19.61%;top:47.13%;}
@@ -844,7 +844,7 @@ img{display:block;}
    and at roughly double the size it had when it was sharing. */
 
 .f-lbl-parasha{left:34.5%;top:71.2%;font-size:2.345cqw;font-weight:300;letter-spacing:.08em;color:#ECCF96;}
-.f-val-parasha{left:34.5%;top:78.4%;font-size:5.241cqw;font-weight:700;color:#F9DFAE;}
+.f-val-parasha{left:34.5%;top:78.4%;font-size:5.241cqw;font-weight:600;color:#F9DFAE;}
 
 /* ---------- NoticesWidget (v8.5) ----------
    Same concept as the Shabbat card, which is what Aviv asked for: the card IS
@@ -884,7 +884,7 @@ img{display:block;}
   transform:translate(-50%,-50%);
   display:flex;align-items:center;gap:16px;
   margin:0;
-  font-size:48px;font-weight:700;line-height:1;
+  font-size:48px;font-weight:600;line-height:1;
   color:#EFD09D;
   white-space:nowrap;
 }

@@ -11,12 +11,11 @@
  */
 ?>
 <div class="w-clock">
-  <?php /* Each digit gets its own fixed-width cell (see .num-d): the
-           clock face has no tabular figures, so without this the time shifts
-           sideways every time a 1 turns into a 0. The placeholder carries the
-           same five cells, so nothing moves when JS fills them a moment later.
-           Dashes rather than the server's time on purpose — if JS never runs,
+  <?php /* Two number spans and a coloured colon — no per-digit cells. Heebo's
+           digits are naturally monospaced, so the clock cannot shuffle
+           sideways and the cells the old display face needed are gone.
+           Dashes rather than the server's time on purpose: if JS never runs,
            a frozen wrong clock is worse than an obviously blank one. */ ?>
-  <div class="w-clock-time num" id="clockTime"><span class="num-d">–</span><span class="num-d">–</span><span class="num-sep">:</span><span class="num-d">–</span><span class="num-d">–</span></div>
+  <div class="w-clock-time num" id="clockTime"><span>––</span><span class="num-sep">:</span><span>––</span></div>
   <div class="w-clock-date"><?php echo esc_html( lobby_screens_hebrew_date() ); ?></div>
 </div>

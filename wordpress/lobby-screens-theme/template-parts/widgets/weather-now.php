@@ -35,7 +35,7 @@ $conditions = array(
     <?php /* Same face and same size as the clock (Aviv, 9.10.2026), which
              means the same fixed cells — a 30° that becomes 9° must not drag
              the whole rail sideways. */ ?>
-    <span class="w-wx-now-temp num"><?php echo lobby_screens_numeral_cells( $weather['temp'] . '°' ); // phpcs:ignore ?></span>
+    <span class="w-wx-now-temp num"><?php echo esc_html( $weather['temp'] ); ?><span class="num-x">°</span></span>
   </div>
   <div class="w-wx-now-cond">
     <?php if ( '' !== $city ) : ?><span class="w-wx-now-city"><?php echo esc_html( $city ); ?></span><?php endif; ?>

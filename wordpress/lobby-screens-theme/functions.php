@@ -200,32 +200,6 @@ function lobby_screens_get_one_stories( $limit = 4 ) {
 }
 
 /**
- * Split a reading into fixed-width numeral cells.
- *
- * The display face (Fraunces) has no tabular figures — '1' is .62em narrower
- * than '0' — so anything that changes on screen shuffles sideways without
- * this: the clock every minute, the temperature every twenty.
- * font-variant-numeric does nothing at all in that face, so the cells do the
- * job instead. See .num-d in style.css.
- *
- * Digits and the colon get a cell; everything else (the degree sign, a minus)
- * is left to flow at its natural width.
- */
-function lobby_screens_numeral_cells( $text ) {
-	$out = '';
-	foreach ( preg_split( '//u', (string) $text, -1, PREG_SPLIT_NO_EMPTY ) as $ch ) {
-		if ( ctype_digit( $ch ) ) {
-			$out .= '<span class="num-d">' . $ch . '</span>';
-		} elseif ( ':' === $ch ) {
-			$out .= '<span class="num-sep">:</span>';
-		} else {
-			$out .= '<span class="num-x">' . esc_html( $ch ) . '</span>';
-		}
-	}
-	return $out;
-}
-
-/**
  * A theme asset URL with a content hash on it.
  *
  * WHY: style.css has been cache-busted by content since v7.2, but images never

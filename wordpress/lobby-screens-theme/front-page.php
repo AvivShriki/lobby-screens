@@ -298,7 +298,7 @@ if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
       var words = {sun:'בהיר', cloud:'מעונן', rain:'גשום'};
       var temp  = Math.round(Number(now.temperature));
       if (!isFinite(temp)) return;
-      /* the span goes in empty and its text is set below, so the only values
+      /* the spans go in empty and their text is set below, so the only values
          interpolated into markup here are ones this file wrote itself */
       var city = cell.dataset.city ? '<span class="w-wx-now-city"></span>' : '';
       cell.innerHTML =
@@ -306,16 +306,12 @@ if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
       +   '<div class="w-wx-now-main">'
       +     '<svg class="w-wx-now-icon"><use href="#wx'
       +       kind.charAt(0).toUpperCase() + kind.slice(1) + '"></use></svg>'
-      +     '<span class="w-wx-now-temp num">'
-      +       String(temp).split('').map(function(ch){
-                return /[0-9]/.test(ch) ? '<span class="num-d">'+ch+'</span>'
-                                        : '<span class="num-x">'+ch+'</span>';
-              }).join('')
-      +       '<span class="num-x">\u00B0</span>'
-      +     '</span>'
+      +     '<span class="w-wx-now-temp num"><span class="t"></span>'
+      +       '<span class="num-x">\u00B0</span></span>'
       +   '</div>'
       +   '<div class="w-wx-now-cond">' + city + '<span>' + words[kind] + '</span></div>'
       + '</div>';
+      cell.querySelector('.w-wx-now-temp .t').textContent = temp;
       if (cell.dataset.city) {
         cell.querySelector('.w-wx-now-city').textContent = cell.dataset.city;
       }
@@ -389,12 +385,12 @@ fitScreen();
 })();
 
 /* ---- ClockWidget ---- the only value rendered client-side.
-   The digits go into fixed-width cells rather than one text node, because the
-   clock face (Fraunces) has no tabular figures and a bare string would shuffle
-   sideways every minute. The cells are written once and only their text is
-   touched afterwards, so the common case — 59 ticks out of 60, when nothing
-   changed — does no DOM work at all. */
-var clockCells=null, clockLast='';
+   Hours and minutes are two spans either side of a coloured colon. The old
+   per-digit cells are gone with the old display face: Heebo's digits are
+   naturally monospaced, so there is nothing to hold still. The spans are
+   built once and only their text is touched afterwards, so 59 ticks out of
+   60 — when nothing changed — do no DOM work at all. */
+var clockParts=null, clockLast='';
 function tick(){
   var el=document.getElementById('clockTime');
   if(!el) return;
@@ -403,19 +399,16 @@ function tick(){
   var now=p(d.getHours())+':'+p(d.getMinutes());
   if(now===clockLast) return;
   clockLast=now;
-  if(!clockCells){
+  if(!clockParts){
     el.textContent='';
-    clockCells=[];
-    for(var i=0;i<now.length;i++){
-      var span=document.createElement('span');
-      span.className = now[i]===':' ? 'num-sep' : 'num-d';
-      el.appendChild(span);
-      clockCells.push(span);
-    }
+    var hh=document.createElement('span');
+    var sep=document.createElement('span'); sep.className='num-sep'; sep.textContent=':';
+    var mm=document.createElement('span');
+    el.appendChild(hh); el.appendChild(sep); el.appendChild(mm);
+    clockParts=[hh,mm];
   }
-  for(var j=0;j<now.length;j++){
-    if(clockCells[j].textContent!==now[j]) clockCells[j].textContent=now[j];
-  }
+  clockParts[0].textContent=now.slice(0,2);
+  clockParts[1].textContent=now.slice(3);
 }
 tick();setInterval(tick,1000);
 

@@ -438,20 +438,26 @@ img{display:block;}
    are derived from the card that was already signed off rather than both
    columns being renegotiated. */
 .zone-grid.is-pair{
-  /* 725 is the Shabbat card's width, which is its image's aspect at the 337px
-     row height — see --shab-w. space-between keeps the notices card on its
-     approved 960->1866 and lets the channel take the remainder. */
-  grid-template-columns:906px 725px;
+  /* v8.7 — Aviv: the channel between the columns was too wide. 725 -> 830
+     closes it from 181px to 76px and makes both left-hand cards 14.5% bigger.
+     830 is the most the column can take: the Shabbat card's height is locked
+     to its image's 2.151 aspect, so every pixel of width costs the ONE card
+     above it half a pixel of height, and below about 290 the ONE card stops
+     holding a hero and two headlines. space-between keeps the notices card on
+     its approved 960->1866. */
+  grid-template-columns:906px 830px;
   justify-content:space-between;
 }
 .zone-open{min-width:0;}
 .zone-stack{
   display:grid;
-  /* two equal slots — Aviv asked for room for a second frame the same size as
-     the Shabbat card above it, so the row heights are equal rather than the
-     1fr/300px split the old ONE+Shabbat pairing used. */
-  grid-template-rows:1fr 1fr;
-  gap:24px;
+  /* The Shabbat row is `auto` so it is exactly the card's own height, which
+     comes from its width and its image's aspect; the ONE card takes whatever
+     is left. That way --shab-w stays the single control: widen it and the row
+     below grows, the row above shrinks, and nothing has to be kept in step by
+     hand. */
+  grid-template-rows:1fr auto;
+  gap:22px;
   min-height:0;
 }
 /* A lone panel takes the LOWER slot and leaves the upper one visibly open,
@@ -505,11 +511,14 @@ img{display:block;}
    card on screen whose chrome is CSS, and if a reference turns up it swaps to
    the image treatment the same way the other two did. */
 .w-feed{
-  /* The slot is 337px and the card has to hold a label row, a hero and two
-     list rows. Measured on the first pass: 130px of rows in a 77px box, so the
-     second headline was simply cut off. The budget below is what fits —
-     label 34+10, hero 128+10, two rows at 58, padding 16+14, border 4 = 332. */
-  padding:16px 24px 14px;
+  /* v8.7 — the card is 830 wide now but 290 tall rather than 337, because the
+     Shabbat card below it took the height when it took the width. Aviv also
+     asked for the text to be bigger. Both at once only works by spending the
+     saved lines on size: the headline goes 27->30 and the list titles 18->21,
+     the standfirst goes entirely, and the budget comes to label 32+8, hero
+     81+8, two rows at 61, padding 14+12, border 4 = 281 of 290. Measured on
+     the page, not estimated on paper. */
+  padding:14px 24px 12px;
   border:2px solid transparent;
   border-radius:24px;
   background:
@@ -579,29 +588,35 @@ img{display:block;}
 
 /* wide variant: short card, so the hero image sits BESIDE its headline
    instead of above it. Same component, same data — only the axis changes. */
-.is-wide .card-label{height:34px;margin-bottom:10px;font-size:18px;}
-.is-wide .card-label-mark img{height:24px;}
-.is-wide .w-feed-hero{flex:0 0 128px;margin-bottom:10px;}
+.is-wide .card-label{height:32px;margin-bottom:8px;font-size:20px;}
+.is-wide .card-label-mark img{height:25px;}
+/* 81, not 85: at 85 the list box measured exactly its own content height with
+   zero spare, and a card that fits only because the rounding went its way is
+   a card that clips on the next browser. */
+.is-wide .w-feed-hero{flex:0 0 81px;margin-bottom:8px;}
 .is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
-.is-wide .w-feed-media{flex:0 0 218px;height:100%;}
+/* wider rather than taller: height here costs a whole list row, width costs
+   nothing the headline needs — 2 lines still fit in what is left. */
+.is-wide .w-feed-media{flex:0 0 252px;height:100%;}
 .is-wide .w-feed-copy{flex:1 1 auto;justify-content:center;}
 /* the lead headline is the one thing on this card a resident reads from across
    the lobby, so it takes the size the standfirst gives up */
-.is-wide .w-feed-title{margin-top:0;font-size:27px;-webkit-line-clamp:2;line-height:1.2;}
-/* one line, not two: at this card height the standfirst was eating the room
-   the second headline needed, and it is the least readable thing on the card
-   from across a lobby anyway */
-.is-wide .w-feed-standfirst{margin-top:6px;font-size:16px;-webkit-line-clamp:1;}
-.is-wide .w-feed-item{padding:7px 0;}
+.is-wide .w-feed-title{margin-top:0;font-size:30px;-webkit-line-clamp:2;line-height:1.18;}
+/* The standfirst is gone from this variant entirely. Measured: at the bigger
+   type Aviv asked for, two list rows need 122px and the card had 100 — and the
+   standfirst is 23 of those, for the least readable line on the card. A second
+   headline at 21px is worth more from across a lobby than a blurb at 18. */
+.is-wide .w-feed-standfirst{display:none;}
+.is-wide .w-feed-item{padding:6px 0;}
 .is-wide .w-feed-item:first-child{padding-top:0;}
-.is-wide .w-feed-thumb{flex:0 0 72px;height:46px;}
+.is-wide .w-feed-thumb{flex:0 0 76px;height:46px;}
 /* one line here, unlike the tall card's two. The list box is 121px and two
    rows come to 116 at one line each — at two lines a single long headline
    grows its row and pushes the next one out of the card. A clamped row height
    is deterministic; a clipped second headline is a bug waiting for a slow news
    day. */
-.is-wide .w-feed-item-title{font-size:18px;-webkit-line-clamp:1;}
-.is-wide .w-feed-time{font-size:14px;}
+.is-wide .w-feed-item-title{font-size:21px;-webkit-line-clamp:1;}
+.is-wide .w-feed-time{font-size:15px;}
 
 .w-feed-list{
   flex:1 1 auto;min-height:0;
@@ -775,7 +790,10 @@ img{display:block;}
    leave 267 for the frame above instead of an equal 337.
 
    TYPE. Cap heights were measured in the source and divided by its card height
-   (714), then multiplied by ours. Heebo's cap is about .72 of its em:
+   (714), then multiplied by ours. The px values below are what that came to at
+   a 725px card; they are written as cqw — a percentage of the card's own width
+   — so widening --shab-w carries the type with it instead of leaving a second
+   set of numbers to update by hand. Heebo's cap is about .72 of its em:
      time    77px cap -> 10.78% -> 50px font
      label   21px cap ->  2.94% -> 14px
      city    20px cap ->  2.80% -> 13px
@@ -785,8 +803,11 @@ img{display:block;}
    out to be gold on the right and white on the left rather than one or the
    other. */
 .w-shabbat{
-  --shab-w:725px;
+  --shab-w:830px;
   position:relative;
+  /* container units below are a percentage of THIS, so the type scales with
+     the card instead of being a second set of numbers to remember */
+  container-type:inline-size;
   width:var(--shab-w);
   aspect-ratio:1535 / 714;
   align-self:end;                 /* sits on the floor of its grid row */
@@ -804,11 +825,11 @@ img{display:block;}
   line-height:1;
   pointer-events:none;
 }
-.f-city       {left:14.07%;top:13.17%;font-size:13px;font-weight:300;letter-spacing:.04em;color:#EFEEEE;}
-.f-lbl-candle {left:48.11%;top:34.45%;font-size:14px;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
-.f-lbl-hav    {left:20.13%;top:34.36%;font-size:14px;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-city       {left:14.07%;top:13.17%;font-size:1.793cqw;font-weight:300;letter-spacing:.04em;color:#EFEEEE;}
+.f-lbl-candle {left:48.11%;top:34.45%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-lbl-hav    {left:20.13%;top:34.36%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
 .f-time-candle,
-.f-time-hav   {font-size:50px;font-weight:700;letter-spacing:.005em;color:#FBFAF7;
+.f-time-hav   {font-size:6.897cqw;font-weight:700;letter-spacing:.005em;color:#FBFAF7;
                direction:ltr;font-variant-numeric:tabular-nums;}
 .f-time-candle{left:49.51%;top:47.13%;}
 .f-time-hav   {left:19.61%;top:47.13%;}
@@ -817,8 +838,8 @@ img{display:block;}
    the whole row: centred on the panel rather than on the old right-hand cell,
    and at roughly double the size it had when it was sharing. */
 
-.f-lbl-parasha{left:34.5%;top:71.2%;font-size:17px;font-weight:300;letter-spacing:.08em;color:#ECCF96;}
-.f-val-parasha{left:34.5%;top:78.4%;font-size:38px;font-weight:700;color:#F9DFAE;}
+.f-lbl-parasha{left:34.5%;top:71.2%;font-size:2.345cqw;font-weight:300;letter-spacing:.08em;color:#ECCF96;}
+.f-val-parasha{left:34.5%;top:78.4%;font-size:5.241cqw;font-weight:700;color:#F9DFAE;}
 
 /* ---------- NoticesWidget (v8.5) ----------
    Same concept as the Shabbat card, which is what Aviv asked for: the card IS

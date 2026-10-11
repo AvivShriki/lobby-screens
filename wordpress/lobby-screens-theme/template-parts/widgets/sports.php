@@ -13,7 +13,7 @@ $theme_uri = get_stylesheet_directory_uri();
 <div class="card w-sports">
   <div class="card-label">
     ספורט
-    <img class="w-sports-logo" src="<?php echo esc_url( $theme_uri . '/assets/images/one-logo.png' ); ?>" alt="ONE.CO.IL">
+    <img class="w-sports-logo" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/one-logo.png' ) ); ?>" alt="ONE.CO.IL">
   </div>
   <div class="w-sports-viewport">
     <?php foreach ( $headlines as $i => $headline ) : ?>

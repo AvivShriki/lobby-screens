@@ -19,7 +19,7 @@ $theme_uri = get_stylesheet_directory_uri();
 ?>
 <div class="w-ticker reveal">
 
-  <img class="w-ticker-logo" src="<?php echo esc_url( $theme_uri . '/assets/images/ynet-logo-light.png' ); ?>" alt="Ynet">
+  <img class="w-ticker-logo" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/ynet-logo-light.png' ) ); ?>" alt="Ynet">
   <div class="w-ticker-sep"></div>
   <span class="w-ticker-kicker">עדכוני חדשות</span>
   <div class="w-ticker-sep"></div>
@@ -32,5 +32,5 @@ $theme_uri = get_stylesheet_directory_uri();
     ?></div>
   </div>
 
-  <img class="w-ticker-orn" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-ornament.png' ); ?>" alt="" aria-hidden="true">
+  <img class="w-ticker-orn" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/otzma-ornament.png' ) ); ?>" alt="" aria-hidden="true">
 </div>

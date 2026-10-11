@@ -151,9 +151,9 @@ $theme_uri = get_stylesheet_directory_uri();
        badly, and the luminance is fully under our control — which is what
        finally lets the cards be properly transparent (see style.css). -->
   <div class="bg-base"></div>
-  <img class="bg-contours bg-contours-a" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-contours.png' ); ?>" alt="">
-  <img class="bg-contours bg-contours-b" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-contours.png' ); ?>" alt="">
-  <img class="bg-watermark" src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-mark.png' ); ?>" alt="">
+  <img class="bg-contours bg-contours-a" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/otzma-contours.png' ) ); ?>" alt="">
+  <img class="bg-contours bg-contours-b" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/otzma-contours.png' ) ); ?>" alt="">
+  <img class="bg-watermark" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/otzma-mark.png' ) ); ?>" alt="">
   <div class="bg-scrim"></div>
 
   <div class="frame" dir="rtl" lang="he">

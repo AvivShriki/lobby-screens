@@ -14,7 +14,7 @@ if ( empty( $stories ) ) {
 }
 get_template_part( 'template-parts/parts/feed-card', null, array(
 	'label'    => 'עדכוני חדשות',
-	'logo'     => get_stylesheet_directory_uri() . '/assets/images/ynet-logo-light.png',
+	'logo'     => lobby_screens_asset( 'assets/images/ynet-logo-light.png' ),
 	'logo_alt' => 'Ynet',
 	'stories'  => $stories,
 	'hero'     => 3,

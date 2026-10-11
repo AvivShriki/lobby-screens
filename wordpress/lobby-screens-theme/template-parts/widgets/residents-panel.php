@@ -46,7 +46,7 @@ $glyphs = array(
 );
 ?>
 <section class="card w-notices reveal">
-  <img class="w-notices-art" src="<?php echo esc_url( $theme_uri . '/assets/images/notices-card.jpg' ); ?>" alt="">
+  <img class="w-notices-art" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/notices-card.jpg' ) ); ?>" alt="">
 
   <?php /* v8.6 — the title and its bell come out of the chrome and are drawn
           live, because Aviv asked for them centred and they were baked to the

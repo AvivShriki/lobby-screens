@@ -43,7 +43,7 @@ $occasion  = trim( preg_replace( '/^פרשת\s+/u', '', $shabbat['occasion'] ) )
 $city = $args['city'] ?? ( $shabbat['label'] ?? '' );
 ?>
 <section class="card w-shabbat reveal">
-  <img class="w-shabbat-art" src="<?php echo esc_url( $theme_uri . '/assets/images/shabbat-card.jpg' ); ?>" alt="">
+  <img class="w-shabbat-art" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/shabbat-card.jpg' ) ); ?>" alt="">
 
   <span class="w-shabbat-f f-city"><?php echo esc_html( $city ); ?></span>
 

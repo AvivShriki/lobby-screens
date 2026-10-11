@@ -10,6 +10,6 @@
 $theme_uri = get_stylesheet_directory_uri();
 ?>
 <div class="w-brand">
-  <img src="<?php echo esc_url( $theme_uri . '/assets/images/otzma-logo-dark.png' ); ?>"
+  <img src="<?php echo esc_url( lobby_screens_asset( 'assets/images/otzma-logo-dark.png' ) ); ?>"
        alt="עוצמה · ניהול ואחזקת מבנים">
 </div>

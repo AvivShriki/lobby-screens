@@ -20,7 +20,7 @@ unset( $story );
 
 get_template_part( 'template-parts/parts/feed-card', null, array(
 	'label'    => 'ספורט',
-	'logo'     => get_stylesheet_directory_uri() . '/assets/images/one-logo.png',
+	'logo'     => lobby_screens_asset( 'assets/images/one-logo.png' ),
 	'logo_alt' => 'ONE',
 	'stories'  => $stories,
 	'hero'     => 2,

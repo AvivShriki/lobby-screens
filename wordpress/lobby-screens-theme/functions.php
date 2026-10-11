@@ -226,6 +226,30 @@ function lobby_screens_numeral_cells( $text ) {
 }
 
 /**
+ * A theme asset URL with a content hash on it.
+ *
+ * WHY: style.css has been cache-busted by content since v7.2, but images never
+ * were — and on 11.10.2026 that bit. The notices card's chrome was regenerated
+ * at the same path, so the live page served the NEW html and css against the
+ * OLD jpg out of cache: the erased chevrons were back and the re-centred title
+ * was drawn on top of the baked one. Nothing in the code was wrong; the file
+ * just had the same name.
+ *
+ * Every asset the theme emits goes through here now, so replacing a file in
+ * place is enough — the URL changes with its bytes. Hashes are computed once
+ * per request and kept, because the same logo is asked for more than once.
+ */
+function lobby_screens_asset( $rel ) {
+	static $ver = array();
+	$rel = ltrim( $rel, '/' );
+	if ( ! isset( $ver[ $rel ] ) ) {
+		$path        = get_stylesheet_directory() . '/' . $rel;
+		$ver[ $rel ] = is_readable( $path ) ? substr( md5_file( $path ), 0, 10 ) : '0';
+	}
+	return get_stylesheet_directory_uri() . '/' . $rel . '?v=' . $ver[ $rel ];
+}
+
+/**
  * The building's coordinates for Open-Meteo. They were written out twice
  * below, and the page's client-side weather fallback needs them too
  * (front-page.php), so they live in one place.

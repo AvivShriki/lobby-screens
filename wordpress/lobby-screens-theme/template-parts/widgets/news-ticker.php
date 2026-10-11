@@ -14,7 +14,7 @@ foreach ( array_merge( $lines, $lines ) as $line ) {
 $theme_uri = get_stylesheet_directory_uri();
 ?>
 <div class="w-news">
-  <span class="w-news-chip"><img src="<?php echo esc_url( $theme_uri . '/assets/images/ynet-logo.png' ); ?>" alt="Ynet"></span>
+  <span class="w-news-chip"><img src="<?php echo esc_url( lobby_screens_asset( 'assets/images/ynet-logo.png' ) ); ?>" alt="Ynet"></span>
   <div class="w-news-flow">
     <div class="w-news-track"><?php echo $track; ?></div>
   </div>

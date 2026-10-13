@@ -731,14 +731,33 @@ img{display:block;}
 .hdr-brand{height:auto;}
 .w-brand img{height:172px;width:auto;}
 
-/* ---------- WelcomeWidget (rail cell 2) ---------- */
+/* ---------- WelcomeWidget (rail cell 2) ----------
+   v9.4 — Aviv asked for the greeting at the size of the clock and the
+   temperature, on one line with them. So it takes the numeral size itself
+   rather than a number that happens to match: --t-numeral, not 104px.
+
+   LINE-HEIGHT IS THE PART THAT MAKES THEM SHARE A BASELINE. The band is 96px
+   with the three cells bottom-aligned, so equal font sizes are not enough —
+   what lands on the shared baseline is the bottom of the LINE BOX, and the
+   half-leading under it has to match too. At 1.05 this line box was 109.2px
+   against the numerals' 95.7, which floated the greeting 6.8px above the
+   digits: close enough to look like a mistake rather than a decision. .92 is
+   the numeral component's own value, copied here deliberately.
+
+   TRACKING COMES DOWN WITH THE SIZE GOING UP, .14em -> .04em. The old .14 was
+   there to open up a 58px line; at 104px it only added 189px of air to a
+   phrase that now has to share the rail with three other cells, and large
+   display type wants less tracking, not the same amount. */
 .w-welcome-title{
-  font-size:var(--t-display);font-weight:600;
-  letter-spacing:.14em;
+  font-size:var(--t-numeral);font-weight:600;
+  letter-spacing:.04em;
   color:var(--gold-text);
-  line-height:1.05;
+  line-height:.92;
 }
+/* centred under the greeting (Aviv), which is also why the hairlines read as a
+   pair now rather than as a line that starts at the right edge */
 .w-welcome-sub{
+  justify-content:center;
   gap:var(--s-4);
   letter-spacing:0;          /* reading size: tracking breaks Hebrew word-shape */
   color:var(--white);

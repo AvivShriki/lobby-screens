@@ -412,6 +412,27 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
+/* ---- ticker speed ----
+   The marquee must cross at a constant 90.5 px/sec whatever is in it. Its
+   track length changes with the headlines, so the duration is derived from
+   the measured width rather than written down — a written-down duration is
+   only right for the news that was in it the day it was measured. The CSS
+   keeps a fallback for a page where this never runs. */
+(function(){
+  var track=document.querySelector('.w-ticker-track');
+  if(!track) return;
+  var SPEED=90.5;                       /* design-px per second */
+  function pace(){
+    var fit=document.querySelector('.fit');
+    var scale=fit ? fit.getBoundingClientRect().width/1920 : 1;
+    if(!scale) return;
+    var designWidth=track.getBoundingClientRect().width/scale;
+    if(designWidth>0) track.style.animationDuration=((designWidth/2)/SPEED).toFixed(1)+'s';
+  }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(pace); else pace();
+  addEventListener('resize',pace);
+})();
+
 /* ---- rotators ----
    One generic driver for every crossfading block on the screen. A container
    marked data-rotator="<hold ms>" cycles .is-active across its element

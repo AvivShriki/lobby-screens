@@ -176,6 +176,35 @@ widget's CSS (see template-parts/widgets/).
   --radius:20px;
   --pad:20px 22px 22px;
 
+  /* ---- type scale (v9.1) ----
+     The screen had 15 px sizes with no ratio between them, each picked on its
+     own and each defensible on its own. Six is the number of text ROLES this
+     screen actually has, so six is the number of sizes it gets. The steps land
+     on values already approved wherever one existed rather than being derived
+     from a ratio and then imposed — a scale that forces approved type to move
+     buys consistency by spending trust. 22 is the floor: below it nothing on a
+     lobby TV is read standing up. */
+  --t-meta:22px;      /* labels, timestamps, tags, status  */
+  --t-body:30px;      /* running copy                      */
+  --t-head:34px;      /* list headlines, the ticker        */
+  --t-card:44px;      /* a card's own title                */
+  --t-display:58px;   /* the one hero line per card        */
+  --t-numeral:104px;  /* clock and temperature             */
+
+  /* ---- spacing scale ----
+     19 distinct values were in use, 11 of them off any grid (2,3,6,9,10,13,14,
+     18,22,30,54). These seven cover every one of them. The layout constants
+     that encode a MEASUREMENT — 54px grid padding, the 30px channel, the card
+     widths — are not on this scale and should not be: a number that records a
+     measurement is not design debt. */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-6:24px; --s-8:32px; --s-12:48px;
+
+  /* ---- line-height: display, headline, body. Nothing else. ---- */
+  --lh-display:1; --lh-head:1.25; --lh-body:1.5;
+
+  /* ---- radii: item, media, card ---- */
+  --r-item:8px; --r-media:16px; --r-card:28px;
+
   /* header rail (v8.1). Every cell on the rail is one cell-height tall and
      splits into the same two bands, so the big line of each cell shares a
      baseline with every other and the small lines share a second one. Tokens
@@ -361,12 +390,19 @@ img{display:block;}
      assumed; the Shabbat row underneath it is fixed at 300px and untouched. */
   flex:0 0 196px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:28px;                 /* a floor, so nothing can collide on a long line */
+  gap:var(--s-8);           /* a floor, so nothing can collide on a long line */
   padding:0 54px;
   margin-top:24px;
 }
 /* one hairline closing the rail, inset to the same 54px as the cards below so
    the header reads as a band and not as content that trails off */
+/* space-between hands every gap the same number of pixels. Measured, that is
+   125px everywhere — arithmetically equal and optically wrong: 125px beside a
+   107px logo reads as far more air than 125px beside a 440px block. The middle
+   rule carries extra margin so the rail reads as two groups — identity on the
+   reading side, live data on the far side — with the members of each group
+   closer to one another than the groups are to each other. */
+.zone-top > :nth-child(4){margin:0 var(--s-8);}
 .zone-top::after{
   content:'';position:absolute;
   left:54px;right:54px;bottom:-11px;height:1px;
@@ -393,9 +429,14 @@ img{display:block;}
   flex:1 1 auto;min-height:0;
   display:grid;
   grid-template-columns:946px minmax(0,1fr) 690px;
+  /* 30 and 54 are deliberately NOT on the spacing scale: the channel and the
+     grid margin are what the card widths were measured against (906 + 30 +
+     830 = 1766 inside 54px margins), so moving them to 32 and 48 would move
+     every card edge that was signed off. A number that records a measurement
+     is not design debt. */
   gap:30px;
   padding:0 54px;
-  margin:22px 0;
+  margin:var(--s-6) 0;
 }
 /* v8.2.3 — the single card sits on the RIGHT half (Aviv).
    906 = 1920/2 - 54: the canvas is half 1920 wide, less the grid's own 54px
@@ -442,7 +483,7 @@ img{display:block;}
      below grows, the row above shrinks, and nothing has to be kept in step by
      hand. */
   grid-template-rows:1fr auto;
-  gap:22px;
+  gap:var(--s-6);
   min-height:0;
 }
 /* A lone panel takes the LOWER slot and leaves the upper one visibly open,
@@ -467,10 +508,10 @@ img{display:block;}
    the mockup's small chevron closing the line on the left */
 .card-label{
   flex:0 0 auto;
-  display:flex;align-items:center;gap:14px;
+  display:flex;align-items:center;gap:var(--s-4);
   height:40px;
-  margin-bottom:16px;
-  font-size:19px;font-weight:600;
+  margin-bottom:var(--s-4);
+  font-size:var(--t-meta);font-weight:600;
   color:var(--gold-text);
   letter-spacing:.02em;
 }
@@ -503,9 +544,9 @@ img{display:block;}
      the standfirst goes entirely, and the budget comes to label 32+8, hero
      81+8, two rows at 61, padding 14+12, border 4 = 281 of 290. Measured on
      the page, not estimated on paper. */
-  padding:14px 24px 12px;
+  padding:var(--s-4) var(--s-6) var(--s-3);
   border:2px solid transparent;
-  border-radius:24px;
+  border-radius:var(--r-card);
   background:
     linear-gradient(180deg, var(--card-top) 0%, var(--card-bot) 100%) padding-box,
     conic-gradient(from 212deg at 50% 50%,
@@ -526,7 +567,7 @@ img{display:block;}
 .w-feed-hero{
   position:relative;
   flex:0 0 336px;
-  margin-bottom:14px;
+  margin-bottom:var(--s-4);
 }
 .w-feed-hero-item{
   position:absolute;inset:0;
@@ -538,7 +579,7 @@ img{display:block;}
 .w-feed-media{
   position:relative;
   flex:0 0 198px;
-  border-radius:12px;
+  border-radius:var(--r-media);
   overflow:hidden;
   background:rgba(255,255,255,.04);
 }
@@ -548,65 +589,66 @@ img{display:block;}
   background:linear-gradient(180deg, rgba(8,9,12,.42) 0%, rgba(8,9,12,0) 46%, rgba(8,9,12,.34) 100%);
 }
 .w-feed-tag{
-  position:absolute;top:12px;left:12px;z-index:2;
-  font-size:16px;font-weight:600;letter-spacing:.06em;
+  position:absolute;top:var(--s-3);left:var(--s-3);z-index:2;
+  font-size:var(--t-meta);font-weight:600;letter-spacing:.02em;
   color:#fff;
   background:#D8232A;                 /* Ynet red, from their own roundel */
-  border-radius:4px;
-  padding:4px 10px;
+  border-radius:var(--r-item);
+  padding:var(--s-1) var(--s-3);
 }
 .is-sport .w-feed-tag{background:#2E4E9E;}   /* ONE blue */
 .w-feed-copy{display:flex;flex-direction:column;min-width:0;}
 .w-feed-title{
-  margin-top:14px;
-  font-size:24px;font-weight:800;line-height:1.26;
+  margin-top:var(--s-4);
+  font-size:var(--t-head);font-weight:800;line-height:var(--lh-head);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   overflow:hidden;
 }
 .w-feed-standfirst{
-  margin-top:9px;
-  font-size:16px;font-weight:300;line-height:1.45;
+  margin-top:var(--s-2);
+  font-size:var(--t-body);font-weight:300;line-height:var(--lh-body);
   color:var(--dim);
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
   overflow:hidden;
 }
 
 /* wide variant: short card, so the hero image sits BESIDE its headline
-   instead of above it. Same component, same data — only the axis changes. */
-.is-wide .card-label{height:32px;margin-bottom:8px;font-size:22px;}
+   instead of above it. Same component, same data — only the axis changes.
+
+   v9.1 rebalanced it against the type scale. The timestamp used to sit on its
+   own line above each headline; at the scale's 22px floor two such rows need
+   158px and the card has 118. It is now INLINE with the headline instead of
+   being dropped — the row loses a line, not a fact.
+
+   Budget, measured: padding 16+12, border 4, label 32+8, hero 92+8, two rows
+   at 50 = 272 of 290. */
+.is-wide .card-label{height:32px;margin-bottom:var(--s-2);}
 .is-wide .card-label-mark img{height:25px;}
-/* 73, not 81: the audit pass raised the row timestamps 15->17 and the label
-   20->22, which costs about 8px across the two rows, and the list had 6 to
-   give. The hero gives it back rather than the second headline being clipped
-   — the same trade as every other time this card has been rebalanced. */
-.is-wide .w-feed-hero{flex:0 0 73px;margin-bottom:8px;}
-.is-wide .w-feed-hero-item{flex-direction:row;gap:18px;align-items:stretch;}
-/* v8.8 — the box takes its SHAPE from the source instead of a width I picked.
-   ONE serves every image at 636x326 (1.95), and a 252x81 box is 3.11, so
-   object-fit:cover was throwing away 37% of each picture's height — which is
-   the hero image Aviv saw getting cut. Deriving the width from the height at
-   the feed's own ratio crops nothing, and it stays right if the hero height
-   ever changes again. */
+.is-wide .w-feed-hero{flex:0 0 92px;margin-bottom:var(--s-2);}
+.is-wide .w-feed-hero-item{flex-direction:row;gap:var(--s-4);align-items:stretch;}
+/* the box takes its SHAPE from the source: ONE serves every image at 636x326,
+   so deriving the width from the height at that ratio crops nothing */
 .is-wide .w-feed-media{flex:0 0 auto;height:100%;aspect-ratio:636 / 326;}
 .is-wide .w-feed-copy{flex:1 1 auto;justify-content:center;}
-/* the lead headline is the one thing on this card a resident reads from across
-   the lobby, so it takes the size the standfirst gives up */
-.is-wide .w-feed-title{margin-top:0;font-size:30px;-webkit-line-clamp:2;line-height:1.18;}
-/* The standfirst is gone from this variant entirely. Measured: at the bigger
-   type Aviv asked for, two list rows need 122px and the card had 100 — and the
-   standfirst is 23 of those, for the least readable line on the card. A second
-   headline at 21px is worth more from across a lobby than a blurb at 18. */
+.is-wide .w-feed-title{margin-top:0;-webkit-line-clamp:2;}
+/* the standfirst stays out of this variant: it was the least readable line on
+   the card and the room it took is what the second headline needed */
 .is-wide .w-feed-standfirst{display:none;}
-.is-wide .w-feed-item{padding:6px 0;}
+/* 8, not 12: with the timestamp inline the row's height is set by the
+   THUMBNAIL, not by the text — budgeting on the text put the list 17px over
+   and it clipped silently behind overflow:hidden. */
+.is-wide .w-feed-item{padding:var(--s-2) 0;}
 .is-wide .w-feed-item:first-child{padding-top:0;}
-.is-wide .w-feed-thumb{flex:0 0 auto;height:46px;aspect-ratio:636 / 326;}
-/* one line here, unlike the tall card's two. The list box is 121px and two
-   rows come to 116 at one line each — at two lines a single long headline
-   grows its row and pushes the next one out of the card. A clamped row height
-   is deterministic; a clipped second headline is a bug waiting for a slow news
-   day. */
-.is-wide .w-feed-item-title{font-size:21px;-webkit-line-clamp:1;}
-.is-wide .w-feed-time{font-size:17px;}
+.is-wide .w-feed-thumb{flex:0 0 auto;height:38px;aspect-ratio:636 / 326;}
+/* time and headline on one line. One clamped line, not two: at two lines a
+   single long headline grows its row and pushes the next one out of the card,
+   and a deterministic row beats a headline that clips on a slow news day. */
+.is-wide .w-feed-item-body{display:flex;align-items:baseline;gap:var(--s-3);min-width:0;}
+.is-wide .w-feed-time{flex:0 0 auto;}
+.is-wide .w-feed-item-title{
+  flex:1 1 auto;min-width:0;margin-top:0;
+  font-size:var(--t-body);-webkit-line-clamp:1;
+}
 
 .w-feed-list{
   flex:1 1 auto;min-height:0;
@@ -617,27 +659,27 @@ img{display:block;}
    text-first order and the row is reversed visually */
 .w-feed-item{
   display:flex;flex-direction:row-reverse;
-  gap:13px;align-items:center;
-  padding:13px 0;
+  gap:var(--s-3);align-items:center;
+  padding:var(--s-3) 0;
   border-top:1px solid var(--line);
 }
-.w-feed-item:first-child{border-top:none;padding-top:2px;}
+.w-feed-item:first-child{border-top:none;padding-top:0;}
 .w-feed-thumb{
   flex:0 0 78px;height:54px;
-  border-radius:8px;overflow:hidden;
+  border-radius:var(--r-item);overflow:hidden;
   background:rgba(255,255,255,.04);
 }
 .w-feed-thumb img{width:100%;height:100%;object-fit:cover;}
 .w-feed-item-body{flex:1 1 auto;min-width:0;}
 .w-feed-time{
-  font-size:13px;font-weight:600;
+  font-size:var(--t-meta);font-weight:600;
   color:var(--gold-text);
-  letter-spacing:.04em;
+  letter-spacing:.02em;
   font-variant-numeric:tabular-nums;
 }
 .w-feed-item-title{
-  margin-top:3px;
-  font-size:16px;font-weight:400;line-height:1.34;
+  margin-top:var(--s-1);
+  font-size:var(--t-head);font-weight:400;line-height:var(--lh-head);
   color:var(--white);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   overflow:hidden;
@@ -672,7 +714,7 @@ img{display:block;}
   height:var(--hdr-sub-h);
   margin-top:var(--hdr-band-gap);
   display:flex;align-items:center;
-  font-size:28px;font-weight:300;
+  font-size:var(--t-body);font-weight:300;
 }
 /* the separator — defined once, used four times */
 .hdr-rule{
@@ -691,14 +733,14 @@ img{display:block;}
 
 /* ---------- WelcomeWidget (rail cell 2) ---------- */
 .w-welcome-title{
-  font-size:58px;font-weight:600;
+  font-size:var(--t-display);font-weight:600;
   letter-spacing:.14em;
   color:var(--gold-text);
   line-height:1.05;
 }
 .w-welcome-sub{
-  gap:18px;
-  letter-spacing:.20em;
+  gap:var(--s-4);
+  letter-spacing:0;          /* reading size: tracking breaks Hebrew word-shape */
   color:var(--white);
 }
 .w-welcome-sub::before,
@@ -708,15 +750,15 @@ img{display:block;}
 }
 
 /* ---------- WeatherNowWidget ---------- */
-.w-wx-now-main{gap:22px;}
+.w-wx-now-main{gap:var(--s-6);}
 /* the icon is optically heavier than the numeral, so it sits a touch above the
    baseline rather than on it. Scaled with the reading: 84 against the clock's
    104 is the same ratio the 62 held against the old 78. */
-.w-wx-now-icon{flex:0 0 auto;width:84px;height:84px;margin-bottom:10px;}
+.w-wx-now-icon{flex:0 0 auto;width:84px;height:84px;margin-bottom:var(--s-3);}
 .w-wx-now-temp{display:flex;align-items:flex-end;}
 /* city · condition. The middot is drawn rather than typed so the two halves
    stay separate elements — the city is server data, the condition is ours. */
-.w-wx-now-cond{gap:12px;letter-spacing:.10em;color:var(--dim);}
+.w-wx-now-cond{gap:var(--s-3);letter-spacing:.02em;color:var(--dim);}
 .w-wx-now-city + span::before{
   content:'';display:inline-block;vertical-align:.28em;
   width:4px;height:4px;margin-inline-end:12px;border-radius:50%;
@@ -728,7 +770,7 @@ img{display:block;}
    right, so the rail has a clean margin at both ends. In RTL that edge is
    flex-end — except on the time itself, which is direction:ltr so the digits
    render as one LTR run, which flips the meaning of the keyword. */
-.w-clock-date{justify-content:flex-end;color:var(--dim);letter-spacing:.05em;}
+.w-clock-date{justify-content:flex-end;color:var(--dim);letter-spacing:.02em;}
 /* The clock carries .num itself — it does NOT restate the face and the size.
    It did, for one version, and the copy was missing line-height: .num sets .92
    and the copy inherited `normal`, so the two boxes were different heights and
@@ -770,7 +812,7 @@ img{display:block;}
      "°03", which is exactly what it did the first time */
   direction:ltr;
   font-family:var(--sans);
-  font-size:104px;font-weight:600;line-height:.92;
+  font-size:var(--t-numeral);font-weight:600;line-height:.92;
   letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
@@ -882,9 +924,9 @@ img{display:block;}
 .w-notices-head{
   position:absolute;left:50%;top:10.6%;
   transform:translate(-50%,-50%);
-  display:flex;align-items:center;gap:16px;
+  display:flex;align-items:center;gap:var(--s-4);
   margin:0;
-  font-size:48px;font-weight:600;line-height:1;
+  font-size:var(--t-card);font-weight:600;line-height:var(--lh-display);
   color:#EFD09D;
   white-space:nowrap;
 }
@@ -912,21 +954,21 @@ img{display:block;}
 }
 .f-title{
   left:50.06%;top:41.31%;
-  font-size:62px;font-weight:800;letter-spacing:-.005em;
+  font-size:var(--t-display);font-weight:800;letter-spacing:-.005em;
   color:#F5F3EC;white-space:nowrap;
 }
 .f-body{
   left:50.45%;top:63.9%;
   width:560px;                   /* the reference's own measure, scaled */
-  font-size:30px;font-weight:300;line-height:1.5;
+  font-size:var(--t-body);font-weight:300;line-height:var(--lh-body);
   text-align:center;color:#E4E3E2;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
 .f-date{
   left:49.04%;top:78.45%;
   direction:ltr;                 /* icon left of the numerals, as in the image */
-  display:flex;align-items:center;gap:12px;
-  font-size:30px;font-weight:400;letter-spacing:.01em;
+  display:flex;align-items:center;gap:var(--s-3);
+  font-size:var(--t-body);font-weight:400;letter-spacing:.01em;
   color:#D3C8B4;white-space:nowrap;
 }
 .f-date svg{width:28px;height:28px;flex:0 0 auto;}
@@ -937,7 +979,7 @@ img{display:block;}
   position:absolute;left:48.21%;top:93.78%;
   transform:translate(-50%,-50%);
   direction:ltr;
-  display:flex;align-items:center;gap:14px;
+  display:flex;align-items:center;gap:var(--s-4);
 }
 .w-notices-dots span{
   width:9px;height:9px;border-radius:50%;
@@ -957,8 +999,8 @@ img{display:block;}
 .w-ticker{
   position:relative;
   height:118px;
-  display:flex;align-items:center;gap:28px;
-  padding:0 48px;
+  display:flex;align-items:center;gap:var(--s-8);
+  padding:0 var(--s-12);
   background:linear-gradient(180deg, rgba(10,11,14,.94) 0%, rgba(6,7,9,.98) 100%);
   /* the rule is the band's top edge against a dark screen — it carries more of
      the "this is a thing" than the height does, so it gains with it */
@@ -969,7 +1011,7 @@ img{display:block;}
 .w-ticker-logo{flex:0 0 auto;height:46px;width:auto;}
 .w-ticker-kicker{
   flex:0 0 auto;
-  font-size:24px;font-weight:400;letter-spacing:.10em;
+  font-size:var(--t-body);font-weight:400;letter-spacing:.02em;
   color:var(--gold-text);
   white-space:nowrap;
 }
@@ -989,16 +1031,17 @@ img{display:block;}
    gets reordered by bidi and lands on the wrong side. As flex items they are
    placed by the flex algorithm, which ignores bidi. */
 .w-ticker-track{
-  display:inline-flex;align-items:center;gap:40px;
-  /* The duration is NOT a style choice — it is the old 66s scaled by how much
-     longer the track got, so the headlines still cross the screen at exactly
-     the same speed. Leaving it at 66s would have sped the marquee up by 41%
-     purely because the text grew, which is the opposite of readable.
-     Measured, not estimated: the track went 11944 -> 16837 design-px, a ratio
-     of 1.41, so 66 x 1.41 = 93s. Both come to 90.5 px/sec. Re-measure this if
-     the type size or the gaps change again. */
+  display:inline-flex;align-items:center;gap:var(--s-12);
+  /* Speed, not duration, is the thing that has to stay constant: 90.5 px/sec
+     is what makes a headline readable as it crosses. The duration that
+     produces it is set from the measured track width in front-page.php,
+     because the track's LENGTH depends on the headlines currently in it — it
+     measured 16837 design-px one afternoon and 15567 the next, same type. A
+     fixed duration therefore drifts with the news, which the earlier
+     calibration here did not account for.
+     The value below is only the fallback for a page where JS never runs. */
   animation:ticker 93s linear infinite;
-  font-size:34px;font-weight:300;
+  font-size:var(--t-head);font-weight:400;
   color:var(--white);
 }
 .w-ticker-track span{flex:0 0 auto;}
@@ -1045,12 +1088,12 @@ img{display:block;}
    screen has one honest hint, not so it competes with the content. */
 .stale-badge{
   position:absolute;left:22px;bottom:102px;z-index:5;
-  font-size:13px;font-weight:300;letter-spacing:.06em;
+  font-size:var(--t-meta);font-weight:300;letter-spacing:.02em;
   color:var(--dimmer);
   background:rgba(10,11,14,.72);
   border:1px solid var(--frame-soft);
   border-radius:999px;
-  padding:6px 14px;
+  padding:var(--s-2) var(--s-4);
   opacity:0;
   transition:opacity 600ms ease;
   pointer-events:none;
@@ -1151,12 +1194,13 @@ body.is-refreshing .fit{opacity:0;transition:opacity 700ms ease;}
 [data-theme="contrast"] .f-time-hav   {font-size:7.20cqw;}
 [data-theme="contrast"] .f-val-parasha{font-size:5.60cqw;}
 
-/* ONE's rows move in single pixels, not leaps: this card has six pixels of
-   headroom and the second headline is the first thing a careless bump clips */
-[data-theme="contrast"] .is-wide .card-label{font-size:24px;}
-[data-theme="contrast"] .is-wide .w-feed-time{font-size:18px;}
-[data-theme="contrast"] .is-wide .w-feed-item-title{font-size:22px;line-height:1.3;}
-[data-theme="contrast"] .w-feed-tag{font-size:18px;}
+/* ONE's sizes are NOT overridden here any more. These four rules used to lift
+   them, and once the base moved onto the type scale they were lifting them
+   DOWNWARDS — 18px over a 22px base, 22 over 30. A variant that quietly
+   shrinks the thing it exists to enlarge is worse than no variant, and this is
+   what happens when one design hardcodes numbers the other one owns. The base
+   scale carries both designs; this variant only changes what is genuinely its
+   own. */
 
 /* the notices card's body opens up — the one long paragraph on the screen */
 [data-theme="contrast"] .f-body{line-height:1.58;color:#EFEEED;}

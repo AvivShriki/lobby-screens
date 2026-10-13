@@ -1023,8 +1023,14 @@ img{display:block;}
      gap in RTL. Forcing LTR on the flow element only (the Hebrew runs inside
      still shape RTL via bidi) keeps it seamless. See README. */
   direction:ltr;
-  mask-image:linear-gradient(90deg,transparent,#000 3%,#000 94%,transparent);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 94%,transparent);
+  /* The fade is ASYMMETRIC, and it was asymmetric the wrong way round.
+     Measured: a Hebrew headline's sentence starts at the RIGHT edge of its
+     span, and the track travels leftward, so spans enter from the right —
+     which means every sentence's opening words arrived through an 85px fade
+     while its already-read tail left through a 42px one. The first thing a
+     reader needs was the washed-out thing. Narrow on entry, wide on exit. */
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 98%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 98%,transparent);
 }
 /* headlines and separators are siblings of the inline-flex track, not nested
    spans: a separator sitting after a Hebrew run inside a direction:ltr line

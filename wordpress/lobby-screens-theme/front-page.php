@@ -421,7 +421,10 @@ tick();setInterval(tick,1000);
 (function(){
   var track=document.querySelector('.w-ticker-track');
   if(!track) return;
-  var SPEED=90.5;                       /* design-px per second */
+  /* design-px per second. This is the one dial on the ticker: lower is
+     easier to read, higher fits more headlines per hour. 90.5 is what the
+     bar was calibrated at; a lobby with older residents may want 70-80. */
+  var SPEED=90.5;
   function pace(){
     var fit=document.querySelector('.fit');
     var scale=fit ? fit.getBoundingClientRect().width/1920 : 1;

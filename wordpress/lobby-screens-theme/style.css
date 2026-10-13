@@ -530,6 +530,15 @@ img{display:block;}
 }
 .card-label-chev{flex:0 0 auto;width:15px;height:15px;color:var(--gold);}
 
+/* v9.3 — the ONE card wears its title in the MIDDLE, like the other two.
+   Centring is what removes the fill rule and the chevron: both exist only to
+   drive the group against the right edge, and a hairline trailing off the left
+   of a centred title is a line pointing at nothing. The mark, the separator
+   and the word stay, and now read as one object. */
+.w-feed .card-label{justify-content:center;}
+.w-feed .card-label-fill,
+.w-feed .card-label-chev{display:none;}
+
 /* ---------- the ONE card's frame (v8.6) ----------
    The other two cards are Aviv's own images. There is no reference for a
    sports card, so this frame is BUILT to match them rather than cut out of
@@ -622,8 +631,16 @@ img{display:block;}
 
    Budget, measured: padding 16+12, border 4, label 32+8, hero 92+8, two rows
    at 50 = 272 of 290. */
-.is-wide .card-label{height:32px;margin-bottom:var(--s-2);}
-.is-wide .card-label-mark img{height:25px;}
+/* v9.3 — and bigger with it. 22px was the scale's smallest step, set when the
+   title was a caption pinned to the edge; a centred title is the card's name
+   and was reading smaller than every line beneath it. 30px puts it level with
+   the list headlines, with gold, weight and letterspacing doing the separating
+   instead of size. The row grows 8px and the list below it absorbs them: it
+   had 111.9px for two rows that need 100, and now has 103.9. Measured on the
+   page, not estimated on paper. */
+.is-wide .card-label{height:40px;margin-bottom:var(--s-2);font-size:var(--t-body);}
+.is-wide .card-label-mark img{height:34px;}
+.is-wide .card-label-rule{height:30px;}
 .is-wide .w-feed-hero{flex:0 0 92px;margin-bottom:var(--s-2);}
 .is-wide .w-feed-hero-item{flex-direction:row;gap:var(--s-4);align-items:stretch;}
 /* the box takes its SHAPE from the source: ONE serves every image at 636x326,
@@ -862,6 +879,31 @@ img{display:block;}
   overflow:visible;
 }
 .w-shabbat-art{width:100%;height:100%;display:block;}
+
+/* v9.3 — the card title, drawn rather than baked: Aviv asked for it centred
+   and bigger, and in the image it sits in the top-right corner at an effective
+   32px. It is now 44px, the same as the notices card's title, so the two read
+   as one pair across the screen.
+
+   Measured off the source (1450x674): the glyphs' own centre sat at y=80.5,
+   which is 12% — kept, so the band's vertical rhythm is unchanged. The group
+   then clears the frame by 8.5px above and the panel by 11.3px below.
+
+   The candle mark is his artwork, lifted out of the jpg as a cutout. It stood
+   1.9x the title's cap height there; here it is 1.35em, because at the larger
+   type the source ratio puts the flames into the frame's top edge. The band is
+   86px tall on screen and the mark is 59 of them. */
+.w-shabbat-head{
+  position:absolute;left:50%;top:12%;
+  transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:.72em;
+  margin:0;
+  font-size:5.301cqw;              /* = 44px at the 830px card */
+  font-weight:600;line-height:1;
+  color:#FCDFAB;                   /* sampled from the glyphs that were erased */
+  white-space:nowrap;
+}
+.w-shabbat-head img{height:1.35em;width:auto;display:block;}
 
 /* every live string: positioned by its measured centre, so a longer or shorter
    value grows about that point exactly as the source's did */

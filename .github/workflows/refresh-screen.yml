@@ -92,6 +92,28 @@ jobs:
           grep -q 'data-theme="contrast"' docs/contrast.html || { echo "contrast.html is not the variant" >&2; exit 1; }
           [ -s docs/compare.html ] || { echo "compare.html missing" >&2; exit 1; }
 
+          # The ONE card, by name. A widget whose feed does not answer renders
+          # NOTHING at all (brief §18 — on a lobby wall a missing card beats an
+          # error message), which is right on the screen and wrong in a build:
+          # the page still passes every check above and quietly publishes over
+          # a deploy that had the card. That happened on 13.10.2026 — ONE
+          # stopped answering this runner while Ynet, fetched from the same
+          # job seconds apart, kept returning headlines — and the card was gone
+          # from the live screen for half an hour before anyone looked.
+          #
+          # Failing here keeps the previous deploy serving until a build gets
+          # the feed again. The cost is that NOTHING else refreshes while ONE
+          # is down, the ticker included; that is Aviv's call, made knowing it.
+          #
+          # If the ONE card is ever dropped on purpose, the way the Ynet card
+          # was, this check comes out with it.
+          for page in index contrast; do
+            grep -q 'is-sport' "docs/$page.html" || {
+              echo "the ONE card is missing from $page.html — its feed did not answer." >&2
+              echo "keeping the previous deploy rather than publishing a screen without it." >&2
+              exit 1; }
+          done
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

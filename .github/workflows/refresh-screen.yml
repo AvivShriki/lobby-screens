@@ -79,6 +79,17 @@ jobs:
         # Both designs are checked, not just the one that ships: the variant is
         # rendered from the same run, and a build that quietly stopped
         # producing it would leave compare.html pointing at a stale file.
+        #
+        # THERE IS DELIBERATELY NO CHECK FOR THE ONE CARD. One stood here for
+        # two hours on 13.10.2026, after ONE's feed stopped answering this
+        # runner and the card was published away. It came out the same day,
+        # with v9.5: the screen fetches ONE itself now, so a build without the
+        # card produces a screen that fills it in within five minutes, while
+        # failing the build stopped EVERYTHING from publishing — the Ynet
+        # ticker included, and the ticker is the one feed that has no second
+        # route. Guarding a feed that heals itself, at the cost of the one
+        # that cannot, is the wrong trade. Aviv's call, twice: added, then
+        # removed once it had a better alternative.
         run: |
           for page in index contrast; do
             for needle in zone-ticker card bg-contours; do
@@ -91,37 +102,6 @@ jobs:
           grep -q 'data-theme="classic"'  docs/index.html    || { echo "index.html is not the classic design" >&2; exit 1; }
           grep -q 'data-theme="contrast"' docs/contrast.html || { echo "contrast.html is not the variant" >&2; exit 1; }
           [ -s docs/compare.html ] || { echo "compare.html missing" >&2; exit 1; }
-
-          # The ONE card, by name. A widget whose feed does not answer renders
-          # NOTHING at all (brief §18 — on a lobby wall a missing card beats an
-          # error message), which is right on the screen and wrong in a build:
-          # the page still passes every check above and quietly publishes over
-          # a deploy that had the card. That happened on 13.10.2026 — ONE
-          # stopped answering this runner while Ynet, fetched from the same
-          # job seconds apart, kept returning headlines — and the card was gone
-          # from the live screen for half an hour before anyone looked.
-          #
-          # Failing here keeps the previous deploy serving until a build gets
-          # the feed again. The cost is that NOTHING else refreshes while ONE
-          # is down, the ticker included; that is Aviv's call, made knowing it.
-          #
-          # If the ONE card is ever dropped on purpose, the way the Ynet card
-          # was, this check comes out with it.
-          #
-          # v9.5 moved the needle. The card now always emits a shell for the
-          # browser to fill, so `is-sport` is in the page whether or not the
-          # build got the feed — grepping for it would have looked like a
-          # guard and checked nothing. data-served carries the count the
-          # SERVER rendered, which is the only thing this step can know about.
-          for page in index contrast; do
-            grep -q 'data-served="0"' "docs/$page.html" && {
-              echo "the ONE card came back empty in $page.html — its feed did not answer." >&2
-              echo "keeping the previous deploy rather than publishing a screen without it." >&2
-              exit 1; }
-            grep -q 'data-served=' "docs/$page.html" || {
-              echo "$page.html has no ONE card at all — the widget did not render." >&2
-              exit 1; }
-          done
 
       - uses: actions/upload-pages-artifact@v3
         with:

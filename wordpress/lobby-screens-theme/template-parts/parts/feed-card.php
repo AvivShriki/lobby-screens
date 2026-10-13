@@ -52,10 +52,12 @@ $rest = array_slice( $stories, $hero_n );
   <?php if ( $live ) : ?>
   data-live="<?php echo esc_attr( $live ); ?>"
   data-count="<?php echo $count; ?>"
-  <?php /* how many the SERVER got. The build reads this to tell a card that
-           rendered from a live feed apart from a shell waiting for the
-           browser — the class list cannot say it, because a shell carries the
-           same modifiers a full card does. */ ?>
+  <?php /* how many the SERVER got — 0 means the page shipped a shell and the
+           browser filled it. Nothing depends on this; it is here because it
+           is the only way to tell those two apart by looking at a published
+           page, and that is exactly the question asked the day ONE stopped
+           answering the build. The class list cannot answer it: a shell
+           carries the same modifiers a full card does. */ ?>
   data-served="<?php echo count( $stories ); ?>"
   data-hero="<?php echo (int) $hero_n; ?>"
   data-thumbs="<?php echo $list_thumbs ? '1' : '0'; ?>"

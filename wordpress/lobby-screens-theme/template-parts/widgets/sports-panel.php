@@ -16,11 +16,18 @@
  * rather than above it — and carries two hero stories over two list rows
  * instead of three over three.
  */
+/**
+ * v9.5: no early return. ONE's RSS sends CORS headers, so the screen itself
+ * can fetch it — measured against the Pages origin on 13.10.2026, 200 in
+ * 312ms. That matters twice over: the card refills itself between rebuilds
+ * instead of going stale, and it comes back on its own when the build server
+ * could not reach ONE at all, which is what emptied it that morning while
+ * Ynet, fetched from the same job seconds apart, kept answering.
+ */
 $stories = lobby_screens_get_one_stories( 4 );
-if ( empty( $stories ) ) {
-	return;
-}
 get_template_part( 'template-parts/parts/feed-card', null, array(
+	'live'     => 'one',
+	'count'    => 4,
 	'label'    => 'ספורט',
 	'logo'     => lobby_screens_asset( 'assets/images/one-logo.png' ),
 	'logo_alt' => 'ONE',

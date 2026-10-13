@@ -107,10 +107,19 @@ jobs:
           #
           # If the ONE card is ever dropped on purpose, the way the Ynet card
           # was, this check comes out with it.
+          #
+          # v9.5 moved the needle. The card now always emits a shell for the
+          # browser to fill, so `is-sport` is in the page whether or not the
+          # build got the feed — grepping for it would have looked like a
+          # guard and checked nothing. data-served carries the count the
+          # SERVER rendered, which is the only thing this step can know about.
           for page in index contrast; do
-            grep -q 'is-sport' "docs/$page.html" || {
-              echo "the ONE card is missing from $page.html — its feed did not answer." >&2
+            grep -q 'data-served="0"' "docs/$page.html" && {
+              echo "the ONE card came back empty in $page.html — its feed did not answer." >&2
               echo "keeping the previous deploy rather than publishing a screen without it." >&2
+              exit 1; }
+            grep -q 'data-served=' "docs/$page.html" || {
+              echo "$page.html has no ONE card at all — the widget did not render." >&2
               exit 1; }
           done
 

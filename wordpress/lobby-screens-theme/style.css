@@ -492,6 +492,13 @@ img{display:block;}
 .zone-stack > :only-child{grid-row:2;}
 .zone-ticker{flex:0 0 88px;}
 
+/* A live card that has nothing in it yet takes itself out of the layout, the
+   same way an empty header cell does (brief §18): on a lobby wall an empty
+   frame is worse than a gap. The shell is still in the DOM, which is the point
+   — it is where the browser puts the feed when it gets it, and the card
+   appears at that moment rather than waiting for the next rebuild. */
+.card.is-empty{display:none;}
+
 /* ---------- shared card ---------- */
 .card{
   position:relative;

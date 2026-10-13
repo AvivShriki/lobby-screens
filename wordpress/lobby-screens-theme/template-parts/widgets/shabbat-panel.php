@@ -32,30 +32,39 @@
  * STILL NOTHING SCHEDULED. Hebcal's /shabbat endpoint always answers with the
  * upcoming Shabbat — asked on a Sunday it already returns the coming Friday —
  * so the values roll over on their own within the hour after havdalah.
+ *
+ * v9.5 — "within the hour" was only true of a WordPress install. On the
+ * published screen the values are as old as the last build, and the builds are
+ * hours apart, so after havdalah the card could show the Shabbat that had just
+ * ended for most of Saturday night. Hebcal sends CORS headers, so the screen
+ * now re-reads it directly; the card keeps its shell when the server came back
+ * empty so there is somewhere to put the answer.
  */
-$shabbat = lobby_screens_get_shabbat_times( $args['shabbat_city'] ?? 'beersheva' );
-if ( empty( $shabbat['primary']['candle'] ) ) {
-	return;
-}
+$city_key = $args['shabbat_city'] ?? 'beersheva';
+$cities   = lobby_screens_shabbat_cities();
+$geoname  = $cities[ $city_key ]['geonameid'] ?? 0;
+$shabbat  = lobby_screens_get_shabbat_times( $city_key );
+$is_empty = empty( $shabbat['primary']['candle'] );
 $theme_uri = get_stylesheet_directory_uri();
-$occasion  = trim( preg_replace( '/^פרשת\s+/u', '', $shabbat['occasion'] ) );
+$occasion  = trim( preg_replace( '/^פרשת\s+/u', '', $shabbat['occasion'] ?? '' ) );
 // the building's own city, not Hebcal's "ב״ש" abbreviation
 $city = $args['city'] ?? ( $shabbat['label'] ?? '' );
 ?>
-<section class="card w-shabbat reveal">
+<section class="card w-shabbat reveal<?php echo $is_empty ? ' is-empty' : ''; ?>"
+  data-live="shabbat" data-geonameid="<?php echo (int) $geoname; ?>">
   <img class="w-shabbat-art" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/shabbat-card.jpg' ) ); ?>" alt="">
 
   <span class="w-shabbat-f f-city"><?php echo esc_html( $city ); ?></span>
 
   <span class="w-shabbat-f f-lbl-candle">הדלקת נרות</span>
-  <span class="w-shabbat-f f-time-candle"><?php echo esc_html( $shabbat['primary']['candle'] ); ?></span>
+  <span class="w-shabbat-f f-time-candle"><?php echo esc_html( $shabbat['primary']['candle'] ?? '' ); ?></span>
 
   <?php /* the end label is live rather than baked so a yom tov week reads
           "צאת החג" instead of quietly lying */ ?>
-  <span class="w-shabbat-f f-lbl-hav"><?php echo esc_html( $shabbat['end_label'] ); ?></span>
-  <span class="w-shabbat-f f-time-hav"><?php echo esc_html( $shabbat['primary']['havdalah'] ); ?></span>
+  <span class="w-shabbat-f f-lbl-hav"><?php echo esc_html( $shabbat['end_label'] ?? '' ); ?></span>
+  <span class="w-shabbat-f f-time-hav"><?php echo esc_html( $shabbat['primary']['havdalah'] ?? '' ); ?></span>
 
-  <span class="w-shabbat-f f-lbl-parasha"><?php echo esc_html( $shabbat['parasha'] ? 'פרשת' : 'המועד' ); ?></span>
+  <span class="w-shabbat-f f-lbl-parasha"><?php echo esc_html( empty( $shabbat['parasha'] ) ? 'המועד' : 'פרשת' ); ?></span>
   <span class="w-shabbat-f f-val-parasha"><?php echo esc_html( $occasion ); ?></span>
 
 </section>

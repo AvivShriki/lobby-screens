@@ -278,7 +278,7 @@ if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
    separator (.hdr-cell:empty) — no error text on a lobby wall, brief §18. */
 (function(){
   var cell = document.querySelector('.hdr-wx');
-  if (!cell || cell.children.length) return;   /* the server already filled it */
+  if (!cell) return;
 
   var url = 'https://api.open-meteo.com/v1/forecast'
           + '?latitude='  + encodeURIComponent(cell.dataset.lat)
@@ -286,6 +286,14 @@ if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
           + '&current_weather=true'
           + '&timezone='  + encodeURIComponent(cell.dataset.tz);
 
+  /* v9.5 — this used to bail out when the cell was already full, which made it
+     a fallback only. On the published screen the cell is never already full
+     (Open-Meteo is the one source that does not answer the build server), but
+     a temperature is a reading, not a headline: served from a WordPress
+     install it was as old as the page. It now repaints on a timer from the
+     same request, so what is on the wall is the current hour's weather rather
+     than the hour the page was built. */
+  function paint(){
   fetch(url, {cache:'no-store'})
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(d){
@@ -316,7 +324,10 @@ if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], $designs, true ) ) {
         cell.querySelector('.w-wx-now-city').textContent = cell.dataset.city;
       }
     })
-    .catch(function(){ /* leave the cell collapsed */ });
+    .catch(function(){ /* leave whatever is on screen alone */ });
+  }
+  paint();
+  setInterval(paint, 10*60*1000);
 })();
 
 /* ---- fit-to-screen ----
@@ -445,15 +456,21 @@ tick();setInterval(tick,1000);
    data-rotator-dots="<element id>" optionally mirrors the position onto a row
    of dots. The alternative was a second timer next to this one, which is how
    the dots and the panel end up disagreeing after a few hours. */
-(function(){
+/* v9.5 — a function rather than a one-shot, because a card can now be filled
+   by the browser after load: a rotator armed over an empty box would never
+   start, and one left running over replaced children would be out of phase
+   with them. Re-arming is therefore both allowed and idempotent — the old
+   timer is cleared and the cycle restarts from the item now showing. */
+function armRotators(){
   document.querySelectorAll('[data-rotator]').forEach(function(box){
+    if(box._rot){ clearInterval(box._rot); box._rot=null; }
     var items=box.children;
     if(items.length<2) return;
     var hold=parseInt(box.getAttribute('data-rotator'),10)||12000;
     var dotBox=document.getElementById(box.getAttribute('data-rotator-dots')||'');
     var dots=dotBox?dotBox.children:null;
     var i=0;
-    setInterval(function(){
+    box._rot=setInterval(function(){
       items[i].classList.remove('is-active');
       if(dots&&dots[i]) dots[i].classList.remove('is-active');
       i=(i+1)%items.length;
@@ -461,6 +478,161 @@ tick();setInterval(tick,1000);
       if(dots&&dots[i]) dots[i].classList.add('is-active');
     },hold);
   });
+}
+armRotators();
+
+/* ---- live feeds (v9.5) ----
+   Three of the four sources send CORS headers, so the screen can read them
+   itself instead of waiting for a rebuild. Measured against the Pages origin
+   on 13.10.2026: ONE answered in 312ms, Hebcal in 475ms, Ynet refused
+   outright — which is why the ticker is the build's job and always will be.
+
+   WHY THIS EXISTS. The published screen is a static render, refreshed when
+   GitHub Actions runs. The workflow asks for every 15 minutes; measured over
+   the preceding 48 hours it actually ran seven times, between 3.5 and 9.5
+   hours apart. The TV reloads itself diligently every 15 minutes and gets the
+   same hours-old headlines back. These two blocks are the fix for the two
+   feeds that can be fixed, and they fix the ONE card's other failure with the
+   same stroke: when the build server cannot reach ONE at all, the card is
+   published empty and hidden, and the screen — which is in Israel, where ONE
+   answers — fills it in within five minutes.
+
+   THE RULES ARE THE WEATHER BLOCK'S RULES. The server's render is the
+   baseline; this only ever replaces it with something newer, and a failed
+   fetch changes nothing on screen. No feed text is ever interpolated into
+   markup: elements are created empty and filled with textContent, and the one
+   attribute that comes from a feed is an image URL, used only when it is
+   https. Feed HTML that has to be reduced to text goes through DOMParser,
+   which is inert, rather than through an element's innerHTML, which is not. */
+(function(){
+  var ONE_EVERY = 5*60*1000, SHABBAT_EVERY = 30*60*1000;
+
+  function el(tag,cls){ var n=document.createElement(tag); if(cls) n.className=cls; return n; }
+  function clear(n){ while(n.firstChild) n.removeChild(n.firstChild); }
+  function set(root,sel,val){ var n=root.querySelector(sel); if(n) n.textContent=val; }
+  function strip(html){
+    return new DOMParser().parseFromString(html||'','text/html').body.textContent.trim();
+  }
+  function photo(url,cls){
+    if(!/^https:\/\//.test(url||'')) return null;
+    var i=el('img',cls); i.loading='lazy'; i.alt=''; i.src=url; return i;
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  /* ---- ONE ----------------------------------------------------------
+     Rebuilt rather than patched, because the feed can reorder: matching
+     old rows to new ones would be guesswork, and the card is six elements.
+
+     One thing changes for the better on the way through. The server renders
+     each row's time with the SITE's timezone, and the build server's is UTC,
+     so the published card has been three hours behind all along — 09:36 on a
+     story filed at 12:36. Built here it is the screen's own clock, which in
+     a Be'er Sheva lobby is the right one. */
+  function one(){
+    var card=document.querySelector('[data-live="one"]');
+    if(!card) return;
+    var want=parseInt(card.dataset.count,10)||4,
+        heroN=parseInt(card.dataset.hero,10)||2,
+        thumbs=card.dataset.thumbs==='1',
+        heroBox=card.querySelector('.w-feed-hero'),
+        listBox=card.querySelector('.w-feed-list');
+    if(!heroBox||!listBox) return;
+
+    fetch('https://www.one.co.il/rss',{cache:'no-store'})
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(xml){
+        if(!xml) return;
+        var doc=new DOMParser().parseFromString(xml,'application/xml');
+        if(doc.querySelector('parsererror')) return;
+        var nodes=[].slice.call(doc.querySelectorAll('item')).slice(0,want);
+        if(!nodes.length) return;               /* keep what is on screen */
+
+        var frag=document.createDocumentFragment(), rows=document.createDocumentFragment();
+        nodes.forEach(function(n,i){
+          var t=n.querySelector('title'), d=n.querySelector('description'),
+              e=n.querySelector('enclosure'), p=n.querySelector('pubDate');
+          var title=t?t.textContent.trim():'';
+          if(!title) return;
+          var image=e?e.getAttribute('url'):'';
+          var when=p?new Date(p.textContent):null;
+          var time=(when&&!isNaN(when))?pad(when.getHours())+':'+pad(when.getMinutes()):'';
+
+          if(i<heroN){
+            var art=el('article','w-feed-hero-item'+(i===0?' is-active':''));
+            var media=el('div','w-feed-media'), im=photo(image,'kb');
+            if(im) media.appendChild(im);
+            var copy=el('div','w-feed-copy'), h=el('h2','w-feed-title');
+            h.textContent=title; copy.appendChild(h);
+            var sum=strip(d?d.textContent:'');
+            if(sum){ var sf=el('p','w-feed-standfirst'); sf.textContent=sum; copy.appendChild(sf); }
+            art.appendChild(media); art.appendChild(copy); frag.appendChild(art);
+          } else {
+            var row=el('article','w-feed-item');
+            if(thumbs){
+              var th=el('div','w-feed-thumb'), ti=photo(image,'');
+              if(ti){ th.appendChild(ti); row.appendChild(th); }
+            }
+            var body=el('div','w-feed-item-body');
+            if(time){ var tm=el('div','w-feed-time'); tm.textContent=time; body.appendChild(tm); }
+            var ht=el('div','w-feed-item-title'); ht.textContent=title; body.appendChild(ht);
+            row.appendChild(body); rows.appendChild(row);
+          }
+        });
+        if(!frag.childNodes.length) return;
+
+        clear(heroBox); heroBox.appendChild(frag);
+        clear(listBox); listBox.appendChild(rows);
+        card.classList.remove('is-empty');
+        armRotators();
+      })
+      .catch(function(){ /* leave the server's render alone */ });
+  }
+
+  /* ---- Shabbat ------------------------------------------------------
+     Mirrors lobby_screens_get_shabbat_times() item for item — the eve of a
+     chag listed before the chag itself, the havdalah that must fall after
+     the candles, the parasha taken from `hebrew`. Keep the two in step.
+
+     Only the values move; the card is Aviv's image and nothing here touches
+     it. Nothing is written unless a candle-lighting time came back, so a
+     half-answer cannot blank the card. */
+  function shabbat(){
+    var card=document.querySelector('[data-live="shabbat"]');
+    if(!card) return;
+    var id=card.dataset.geonameid;
+    if(!id||id==='0') return;
+
+    fetch('https://www.hebcal.com/shabbat?cfg=json&geonameid='+encodeURIComponent(id)+'&M=on',
+          {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        var items=d&&d.items;
+        if(!items||!items.length) return;
+        var candle='',candleTs=0,hav='',parasha='',yomtov='',holiday='',isYomtov=false;
+        items.forEach(function(it){
+          var ts=it.date?Date.parse(it.date):0;
+          if(it.category==='candles'&&!candle){ candle=String(it.title||'').slice(-5); candleTs=ts; }
+          else if(it.category==='havdalah'&&!hav&&ts>=candleTs){ hav=String(it.title||'').slice(-5); }
+          else if(it.category==='parashat'&&!parasha){ parasha=it.hebrew||''; }
+          else if(it.category==='holiday'){
+            if(it.yomtov){ isYomtov=true; if(!yomtov) yomtov=it.hebrew||''; }
+            else if(!holiday){ holiday=it.hebrew||''; }
+          }
+        });
+        if(!candle) return;
+        var occasion=(parasha||yomtov||holiday).replace(/^פרשת\s+/,'').trim();
+        set(card,'.f-time-candle',candle);
+        set(card,'.f-time-hav',hav);
+        set(card,'.f-lbl-hav',isYomtov?'צאת החג':'צאת השבת');
+        set(card,'.f-lbl-parasha',parasha?'פרשת':'המועד');
+        set(card,'.f-val-parasha',occasion);
+        card.classList.remove('is-empty');
+      })
+      .catch(function(){ /* leave the server's render alone */ });
+  }
+
+  one();      setInterval(one, ONE_EVERY);
+  shabbat();  setInterval(shabbat, SHABBAT_EVERY);
 })();
 
 /* ---- data refresh (brief §17-18) ----

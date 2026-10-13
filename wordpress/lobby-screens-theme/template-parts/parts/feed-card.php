@@ -15,8 +15,14 @@
  * 9.9.2026 — the ticker along the bottom already carries Ynet — but the
  * component stays general, and lobby_screens_get_ynet_stories() stays with it.
  *
+ * v9.5 — the card can now be kept current by the browser as well as by the
+ * server. `live` names a feed the page knows how to fetch for itself; with it
+ * set the card is rendered even when the server came back with nothing, as an
+ * empty shell that hides itself until something fills it. Without it the old
+ * behaviour stands: no stories, no card.
+ *
  * $args: label, logo (url), logo_alt, stories (array), hero (int), hold (ms),
- * modifier, list_thumbs (bool, default true)
+ * modifier, list_thumbs (bool, default true), live (feed key), count (int)
  */
 $stories  = $args['stories'] ?? array();
 $hero_n   = $args['hero'] ?? 3;
@@ -30,14 +36,30 @@ $hold     = $args['hold'] ?? 13000;
 // screen does not fetch pictures it has decided not to show.
 $list_thumbs = $args['list_thumbs'] ?? true;
 
-if ( empty( $stories ) ) {
+// A live card keeps its shell so the browser has somewhere to put the feed;
+// a server-only card still disappears whole rather than leaving a frame with
+// nothing in it (brief §18).
+$live  = $args['live'] ?? '';
+$count = (int) ( $args['count'] ?? count( $stories ) );
+if ( empty( $stories ) && ! $live ) {
 	return;
 }
 
 $hero = array_slice( $stories, 0, $hero_n );
 $rest = array_slice( $stories, $hero_n );
 ?>
-<section class="card w-feed reveal <?php echo esc_attr( $modifier ); ?>">
+<section class="card w-feed reveal <?php echo esc_attr( $modifier ); ?><?php echo empty( $stories ) ? ' is-empty' : ''; ?>"
+  <?php if ( $live ) : ?>
+  data-live="<?php echo esc_attr( $live ); ?>"
+  data-count="<?php echo $count; ?>"
+  <?php /* how many the SERVER got. The build reads this to tell a card that
+           rendered from a live feed apart from a shell waiting for the
+           browser — the class list cannot say it, because a shell carries the
+           same modifiers a full card does. */ ?>
+  data-served="<?php echo count( $stories ); ?>"
+  data-hero="<?php echo (int) $hero_n; ?>"
+  data-thumbs="<?php echo $list_thumbs ? '1' : '0'; ?>"
+  <?php endif; ?>>
 
   <?php get_template_part( 'template-parts/parts/card-label', null, array(
     'text'     => $args['label'] ?? '',

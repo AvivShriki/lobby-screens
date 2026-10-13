@@ -2,12 +2,6 @@
 /**
  * ShabbatPanel — brief §7.
  *
- * v9.3 — the title "זמני שבת" and its candle mark are no longer baked into
- * the corner: Aviv asked for them centred and larger, which cannot be done to
- * pixels, so they were erased out of the chrome and are drawn here. The mark
- * is a cutout of his own artwork, not a redrawing. All three cards now wear
- * their title the same way — centred at the top.
- *
  * v8.5 — the haftarah is gone (Aviv: the numbers mean nothing to him and the
  * parasha name is enough), so the book icon and the divider that separated the
  * two bottom cells are erased from the chrome too, and the parasha moves to the
@@ -50,17 +44,6 @@ $city = $args['city'] ?? ( $shabbat['label'] ?? '' );
 ?>
 <section class="card w-shabbat reveal">
   <img class="w-shabbat-art" src="<?php echo esc_url( lobby_screens_asset( 'assets/images/shabbat-card.jpg' ) ); ?>" alt="">
-
-  <?php /* v9.3 — the title is drawn rather than baked, because Aviv asked for
-          it centred and bigger and the image has it in the top-right corner.
-          The candle mark beside it is STILL his pixels: it was lifted out of
-          the same jpg as a cutout rather than redrawn, so the only thing that
-          changed about it is where it stands. The two hairlines that framed
-          the old corner arrangement came out of the chrome with them. */ ?>
-  <h2 class="w-shabbat-head">
-    <img src="<?php echo esc_url( lobby_screens_asset( 'assets/images/shabbat-candles.png' ) ); ?>" alt="">
-    <span>זמני שבת</span>
-  </h2>
 
   <span class="w-shabbat-f f-city"><?php echo esc_html( $city ); ?></span>
 

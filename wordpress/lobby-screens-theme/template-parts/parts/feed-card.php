@@ -15,7 +15,8 @@
  * 9.9.2026 — the ticker along the bottom already carries Ynet — but the
  * component stays general, and lobby_screens_get_ynet_stories() stays with it.
  *
- * $args: label, logo (url), logo_alt, stories (array), hero (int), hold (ms), modifier
+ * $args: label, logo (url), logo_alt, stories (array), hero (int), hold (ms),
+ * modifier, list_thumbs (bool, default true)
  */
 $stories  = $args['stories'] ?? array();
 $hero_n   = $args['hero'] ?? 3;
@@ -23,6 +24,11 @@ $modifier = $args['modifier'] ?? '';
 // hold is per-card on purpose: two cards crossfading on the same beat reads
 // as the whole screen twitching, so the panels are given different periods.
 $hold     = $args['hold'] ?? 13000;
+// Whether the secondary rows carry a thumbnail. A tall card has room for them;
+// the short wide one does not, and an image small enough to fit there is too
+// small to tell you anything. Off means the <img> is never emitted, so the
+// screen does not fetch pictures it has decided not to show.
+$list_thumbs = $args['list_thumbs'] ?? true;
 
 if ( empty( $stories ) ) {
 	return;
@@ -63,7 +69,7 @@ $rest = array_slice( $stories, $hero_n );
   <div class="w-feed-list">
     <?php foreach ( $rest as $story ) : ?>
       <article class="w-feed-item">
-        <?php if ( ! empty( $story['image'] ) ) : ?>
+        <?php if ( $list_thumbs && ! empty( $story['image'] ) ) : ?>
           <div class="w-feed-thumb">
             <img src="<?php echo esc_url( $story['image'] ); ?>" alt="" loading="lazy">
           </div>

@@ -26,6 +26,11 @@ get_template_part( 'template-parts/parts/feed-card', null, array(
 	'logo_alt' => 'ONE',
 	'stories'  => $stories,
 	'hero'     => 2,
+	// Aviv: the thumbnails on the secondary rows were hurting the card. At the
+	// size this layout can give them they carried no information anyway — a
+	// 74x38 crop of a football photo is a smudge — while taking 86px of width
+	// from the headline, which is the part anyone actually reads.
+	'list_thumbs' => false,
 	'hold'     => 15500,
 	'modifier' => 'is-sport is-wide',
 ) );

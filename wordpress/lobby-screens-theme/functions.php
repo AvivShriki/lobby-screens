@@ -93,7 +93,33 @@ function lobby_screens_get_ynet_headlines( $limit = 6 ) {
 	}
 
 	require_once ABSPATH . WPINC . '/feed.php';
-	$feed = fetch_feed( 'https://www.ynet.co.il/Integration/StoryRss2.xml' );
+	/*
+	 * MEVAZAKIM, NOT THE NEWS FEED (v9.7). This read StoryRss2 — ynet's main
+	 * news feed — until Aviv said the ticker was carrying headlines with no
+	 * context. He was right, and the cause is not the stories: it is that the
+	 * two feeds are written for different presentations.
+	 *
+	 * A headline on the news feed is written to sit BESIDE a photograph and a
+	 * standfirst, so it can be a tease or a fragment and the page supplies the
+	 * rest — "זעקי ארץ אהובה", or three clauses that assume you already know
+	 * whose meeting is being denied. A מבזק is written to be read ALONE, in
+	 * one line, by someone who knows nothing: "דיווח ראשוני: פצועים קשה
+	 * בפיצוץ במפעל בקריית גת".
+	 *
+	 * The ticker has no photograph and no standfirst. It is a מבזק-shaped hole
+	 * and it was being fed headlines.
+	 *
+	 * Measured over 30 items of each: average length is the same (54.2 vs
+	 * 55.7 characters, so the bar's pacing is unaffected), but the news feed
+	 * carries five titles under 28 characters — column names and fragments
+	 * that say nothing on their own — against one in מבזקים, whose shortest
+	 * item is still 25 characters of actual sentence.
+	 *
+	 * NOT StoryRss8 ("דף הבית"), which sounds like the front page and is not:
+	 * five items, mostly promotional — a hi-tech conference, a branded AI
+	 * piece, a Yedioth anniversary notice.
+	 */
+	$feed = fetch_feed( 'https://www.ynet.co.il/Integration/StoryRss1854.xml' );
 
 	$headlines = array();
 	if ( ! is_wp_error( $feed ) ) {
@@ -461,6 +487,11 @@ function lobby_screens_get_ynet_stories( $limit = 4 ) {
 	}
 
 	require_once ABSPATH . WPINC . '/feed.php';
+	/* STAYS on the news feed, deliberately. The ticker moved to מבזקים in
+	   v9.7 because it shows a bare line; this component draws a photograph
+	   and a standfirst beside the headline, which is the presentation that
+	   feed is written for. The rule is match the feed to the format, not
+	   prefer one feed. */
 	$feed = fetch_feed( 'https://www.ynet.co.il/Integration/StoryRss2.xml' );
 
 	$stories = array();

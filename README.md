@@ -54,7 +54,7 @@
 
 ## v8.9 — מעבר עיצובי + גרסה שנייה
 
-**השוואה חיה**: [`compare.html`](https://avivshriki.github.io/lobby-screens/compare.html) — שתי הגרסאות זו לצד זו, שתיהן עם נתונים חיים.
+**השוואה חיה**: [`compare.html`](https://lobby.otzma.pro/compare.html) — שתי הגרסאות זו לצד זו, שתיהן עם נתונים חיים.
 
 ### קודם מדדתי, ורק אחר כך נגעתי
 

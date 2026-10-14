@@ -881,6 +881,10 @@ img{display:block;}
   /* container units below are a percentage of THIS, so the type scales with
      the card instead of being a second set of numbers to remember */
   container-type:inline-size;
+  /* Every size on this card is written as a multiple of --shab-u, so each one
+     is ONE number and the unit is decided in a single place. See the @supports
+     block below for why that matters. */
+  --shab-u:1cqw;
   width:var(--shab-w);
   aspect-ratio:1535 / 714;
   align-self:end;                 /* sits on the floor of its grid row */
@@ -898,11 +902,11 @@ img{display:block;}
   line-height:1;
   pointer-events:none;
 }
-.f-city       {left:14.07%;top:13.17%;font-size:1.793cqw;font-weight:300;letter-spacing:.04em;color:#EFEEEE;}
-.f-lbl-candle {left:48.11%;top:34.45%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
-.f-lbl-hav    {left:20.13%;top:34.36%;font-size:1.931cqw;font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-city       {left:14.07%;top:13.17%;font-size:calc(1.793 * var(--shab-u));font-weight:300;letter-spacing:.04em;color:#EFEEEE;}
+.f-lbl-candle {left:48.11%;top:34.45%;font-size:calc(1.931 * var(--shab-u));font-weight:400;letter-spacing:.03em;color:#E7C99C;}
+.f-lbl-hav    {left:20.13%;top:34.36%;font-size:calc(1.931 * var(--shab-u));font-weight:400;letter-spacing:.03em;color:#E7C99C;}
 .f-time-candle,
-.f-time-hav   {font-size:6.897cqw;font-weight:600;letter-spacing:.005em;color:#FBFAF7;
+.f-time-hav   {font-size:calc(6.897 * var(--shab-u));font-weight:600;letter-spacing:.005em;color:#FBFAF7;
                direction:ltr;font-variant-numeric:tabular-nums;}
 .f-time-candle{left:49.51%;top:47.13%;}
 .f-time-hav   {left:19.61%;top:47.13%;}
@@ -911,8 +915,23 @@ img{display:block;}
    the whole row: centred on the panel rather than on the old right-hand cell,
    and at roughly double the size it had when it was sharing. */
 
-.f-lbl-parasha{left:34.5%;top:71.2%;font-size:2.345cqw;font-weight:300;letter-spacing:.08em;color:#ECCF96;}
-.f-val-parasha{left:34.5%;top:78.4%;font-size:5.241cqw;font-weight:600;color:#F9DFAE;}
+.f-lbl-parasha{left:34.5%;top:71.2%;font-size:calc(2.345 * var(--shab-u));font-weight:300;letter-spacing:.08em;color:#ECCF96;}
+.f-val-parasha{left:34.5%;top:78.4%;font-size:calc(5.241 * var(--shab-u));font-weight:600;color:#F9DFAE;}
+
+/* TV INSURANCE (v9.6). Container query units are Chrome 105, August 2022. The
+   screen runs in an Android TV's WebView, which updates through the Play Store
+   and on a new set will be far past that — but the WebView version is the one
+   thing about the target we do not control, and on an old one every size above
+   would be an invalid value and the whole card would fall back to the body's
+   font. Not a degraded card: a broken one, on the wall, with no way to know.
+
+   One line fixes it, because the unit is named once. 1cqw is one percent of
+   --shab-w, so at 830px it is 8.3px — any browser that cannot resolve cqw gets
+   exactly the sizes a modern one computes, and a browser that can never sees
+   this rule. Keep the two in step if --shab-w ever moves: 8.3 = 830 / 100. */
+@supports not (font-size: 1cqw){
+  .w-shabbat{ --shab-u:8.3px; }
+}
 
 /* ---------- NoticesWidget (v8.5) ----------
    Same concept as the Shabbat card, which is what Aviv asked for: the card IS
@@ -1218,13 +1237,15 @@ body.is-refreshing .fit{opacity:0;transition:opacity 700ms ease;}
    no layout at all — this is the card the audit found the smallest text in
    (15px city, 16px labels) and the one the base cannot touch without breaking
    the proportions measured off Aviv's mockup */
-[data-theme="contrast"] .f-city       {font-size:2.40cqw;}
+/* through --shab-u like the base, so the variant inherits the TV fallback
+   instead of being the one place that still breaks on an old WebView */
+[data-theme="contrast"] .f-city       {font-size:calc(2.40 * var(--shab-u));}
 [data-theme="contrast"] .f-lbl-candle,
-[data-theme="contrast"] .f-lbl-hav    {font-size:2.55cqw;font-weight:400;}
-[data-theme="contrast"] .f-lbl-parasha{font-size:2.85cqw;}
+[data-theme="contrast"] .f-lbl-hav    {font-size:calc(2.55 * var(--shab-u));font-weight:400;}
+[data-theme="contrast"] .f-lbl-parasha{font-size:calc(2.85 * var(--shab-u));}
 [data-theme="contrast"] .f-time-candle,
-[data-theme="contrast"] .f-time-hav   {font-size:7.20cqw;}
-[data-theme="contrast"] .f-val-parasha{font-size:5.60cqw;}
+[data-theme="contrast"] .f-time-hav   {font-size:calc(7.20 * var(--shab-u));}
+[data-theme="contrast"] .f-val-parasha{font-size:calc(5.60 * var(--shab-u));}
 
 /* ONE's sizes are NOT overridden here any more. These four rules used to lift
    them, and once the base moved onto the type scale they were lifting them
